@@ -12,8 +12,8 @@ except:
     raise()
 
 nodeDict = {
-            'node tony-dell':
-                ['Data Vault'],
+            'node UMI':
+                ['Data Vault', 'NI Analog Server'],
     }
 
 for node in nodeDict.keys(): #sets the order of opening
