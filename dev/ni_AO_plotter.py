@@ -1,3 +1,12 @@
+
+##### a gui to display NI AO data
+
+
+
+
+
+
+from PyQt4 import QtGui
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar2QT
@@ -11,49 +20,27 @@ import numpy
 import time
 #from drift_tracker_config import config_729_tracker as c
 
-'''
-Drift Tracker GUI. 
-Version 1.15
-'''
-
-class drift_tracker(QtGui.QWidget):
+class AO_plotter(QtGui.QWidget):
     def __init__(self, reactor, clipboard = None, cxn = None, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.reactor = reactor
         self.clipboard = clipboard
         self.cxn = cxn
         self.subscribed = False
-        #see if favoirtes are provided in the configuration. if not, use an empty dictionary
-        #try:
-        #    self.favorites =  c.favorites
-        #except AttributeError:
-        #    self.favorites = {}
-        #updater = LoopingCall(self.update_lines)
         #updater.start(c.update_rate)
         
         ## number of total analog channels
-        self.channel = 3
+
+        ##self.channel = 3
         ## sampling rate
-        self.sampling_rate = 100000
-        
-        self.create_layout()
+
+        ##self.sampling_rate = 100000
         self.load_plot_data()
-        self.plot_ao_channel(0)
-        self.plot_ao_channel(1)
-        self.plot_ao_channel(2)
+
+        self.create_plot_layout()
+        self.plot_ao_channel()
         #self.connect_labrad()
     
-    def create_layout(self):
-        layout = QtGui.QGridLayout()
-        plot_layout = self.create_plot_layout()
-        #widget_layout = self.create_widget_layout()
-        #spectrum_layout = self.create_spectrum_layout()
-        layout.addLayout(plot_layout, 0, 0, 1, 2)
-        #layout.addLayout(widget_layout, 1, 0, 1, 1)
-        #layout.addLayout(spectrum_layout, 1, 1, 1, 1)
-        self.setLayout(layout)
-        #self.plot_ao_channel(0)
-   
     def create_plot_layout(self):
         layout = QtGui.QVBoxLayout()
         self.fig = Figure()
@@ -86,16 +73,18 @@ class drift_tracker(QtGui.QWidget):
         layout.addWidget(self.plot_canvas)
         return layout
             
-    def plot_ao_channel(self, p):
+    def plot_ao_channel(self):
         
         #method for plotting channel p on the analog plot
-
-        self.analog_plot[p].plot(self.plot_data[0], self.plot_data[p+1], '-r')
         
+        for p in range(self.channel):
+            self.analog_plot[p].plot(self.plot_data[0], self.plot_data[p+1], '-r')
         self.plot_canvas.draw()
         
     def load_plot_data(self):
-        self.plot_data = numpy.array([[0,0.2,0.4,0.6,0.8,1.0],[0,1,2,3,4,5],[5,4,3,2,1,0],[1,2,3,2,1,0]])
+        self.plot_data = numpy.load("test_ao_sequence1.npy")
+        self.channel = self.plot_data.shape[0]-1 ## get the number of channel from the file
+        #print self.plot_data
         
     @inlineCallbacks
     def disable(self):
@@ -119,6 +108,6 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    widget = drift_tracker(reactor, clipboard)
+    widget = AO_plotter(reactor, clipboard)
     widget.show()
     reactor.run()
