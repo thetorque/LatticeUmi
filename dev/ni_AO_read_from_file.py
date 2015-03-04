@@ -138,16 +138,17 @@ class WaveformThread( threading.Thread ):
         nidaq.DAQmxClearTask( self.taskHandle )
 if __name__ == '__main__':
     import time
-    data1 = np.load('test_ao_sequence1.npy')
-    data2 = np.load('test_ao_sequence2.npy')
+    #data1 = np.load('test_ao_sequence1.npy')
+    #data2 = np.load('test_ao_sequence2.npy')
+    data1 = np.load('ramp.npy')
     mythread = WaveformThread(data1)
     mythread.run()
     mythread.wait()
     mythread.stop()
     
-    mythread = WaveformThread(data2)
-    mythread.run()
-    mythread.wait()
-    mythread.stop()
+#     mythread = WaveformThread(data2)
+#     mythread.run()
+#     mythread.wait()
+#     mythread.stop()
     
     print "program finished"

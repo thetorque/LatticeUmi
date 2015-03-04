@@ -55,21 +55,26 @@ class AO_plotter(QtGui.QWidget):
         
         ## loop and create all channel plots
         for i in range(self.channel):
-            print i
-            plot = self.fig.add_subplot(gs[i,0])
+            print "channel ",i
+            #plot = self.fig.add_subplot(gs[i,0])
+            
+            if i == 0:
+                plot = self.fig.add_subplot(gs[i,0])
+            else:
+                plot = self.fig.add_subplot(gs[i,0],sharex=plot) ## scale the x-axis to be the same as the first plot for subsequent plots
+                
             plot.set_ylabel('V')
             ## show x label only for the lowest channel
             plot.tick_params(axis='x',which='both',labelbottom='off')
             if i == (self.channel-1):
-                print "True"
                 plot.set_xlabel('Time (s)')
                 plot.tick_params(axis='x',which='both',labelbottom='on')
             plot.set_title("Analog "+str(i))
             ## add plot to the analog_plot list
             self.analog_plot.append(plot)
 
-        #self.mpl_toolbar = NavigationToolbar2QT(self.drift_canvas, self)
-        #layout.addWidget(self.mpl_toolbar)
+        self.mpl_toolbar = NavigationToolbar2QT(self.plot_canvas, self)
+        layout.addWidget(self.mpl_toolbar)
         layout.addWidget(self.plot_canvas)
         return layout
             
@@ -82,7 +87,8 @@ class AO_plotter(QtGui.QWidget):
         self.plot_canvas.draw()
         
     def load_plot_data(self):
-        self.plot_data = numpy.load("test_ao_sequence1.npy")
+        #self.plot_data = numpy.load("test_ao_sequence1.npy")
+        self.plot_data = numpy.load("ramp.npy")
         self.channel = self.plot_data.shape[0]-1 ## get the number of channel from the file
         #print self.plot_data
         
