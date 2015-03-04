@@ -1,5 +1,5 @@
 ## this program creates a sequence of analog out 
-## The idea is to suppl vortices of the ramp and then create an array of voltages
+## The idea is to suppl vertices of the ramp and then create an array of voltages
 
 
 import numpy as np
@@ -13,8 +13,10 @@ sample_size = sampling_rate*duration ## calculate total number of points
 time_array = np.linspace(0, duration, sample_size+1)
 volt_array = np.ones_like(time_array)
 
+
+## sample vertices array
 t = np.array([0,0.1,0.3,0.4,0.42,0.45,0.997,1])
-v = np.array([0,0,1,2,-1,2,-1,0])
+v = np.array([0,0,1,2,2,2,-1,0])
 
 #print volt_array
 
@@ -31,7 +33,7 @@ for i in range(t.size-1):
 
 
 channel_0 = volt_array
-channel_1 = -volt_array
+channel_1 = volt_array
 
 data = time_array
 data = np.vstack((data,channel_0,channel_1))
