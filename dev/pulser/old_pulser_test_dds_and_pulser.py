@@ -14,7 +14,7 @@ xem.ConfigureFPGA('C:\Users\Thaned\Dropbox\Hardware\RIKEN_Hardware\Pulser_w_line
 delay = 0.1
 
 padding = bytearray.fromhex(u'0000') 
-setting_0 = bytearray.fromhex(u'0000 0080 0000 0001')
+setting_0 = bytearray.fromhex(u'0000 0080 0000 0001') ## []frequency[7 to 0][15 to 8][23 to 16][31 to 24]
 setting_1 = bytearray.fromhex(u'0000 0000 0000 0002')
 setting_2 = bytearray.fromhex(u'0000 0080 0000 0003')
 setting_3 = bytearray.fromhex(u'0000 0000 0000 0004')
