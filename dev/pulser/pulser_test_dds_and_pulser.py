@@ -4,7 +4,7 @@ import ok
 
 xem = ok.FrontPanel()
 xem.OpenBySerial('')
-xem.ConfigureFPGA('C:\Users\Thaned\Desktop\Hardware\RIKEN_Hardware\Pulser_Altera\output_files\Pulser.rbf')
+xem.ConfigureFPGA('C:\Users\Thaned\Dropbox\Hardware\RIKEN_Hardware\Pulser_Altera\output_files\Pulser.rbf')
 
 #xem.SetWireInValue(0x04,0b00000000,0xFF)
 #xem.UpdateWireIns()
@@ -49,7 +49,7 @@ xem.SetWireInValue(0x04,0x00,0xFF)
 xem.UpdateWireIns()
 ### For USB 3.0, data must be a multiple of 16 bytes.
 print '1'
-xem.WriteToBlockPipeIn(0x81,16,data)
+xem.WriteToPipeIn(0x81,data)
 
 time.sleep(0.5)
 xem.ActivateTriggerIn(0x40,5)
@@ -63,18 +63,22 @@ time.sleep(0.5)
 xem.ActivateTriggerIn(0x40,5)
 
 for i in range(4000):
+    #xem.ResetFPGA()
     #xem.ConfigureFPGA('C:\Users\Thaned\Desktop\Hardware\RIKEN_Hardware\Pulser_Altera\output_files\Pulser.rbf')
+    print i
     logic_0 = bytearray.fromhex(u'0000 0000 0000 0004 0000 0000 0000 0000')
     logic_1 = bytearray.fromhex(u'0000 0000 0000 0000 0000 0000 0000 0000')
     data = logic_0 + logic_1
     xem.ActivateTriggerIn(0x40,4)
-    xem.WriteToBlockPipeIn(0x81,16,data)
-    #time.sleep(0.1)
+    #xem.WriteToBlockPipeIn(0x81,16,data)
+    xem.WriteToPipeIn(0x81,data)
+    time.sleep(1)
     logic_0 = bytearray.fromhex(u'0000 0000 0000 0002 0000 0000 0000 0000')
     logic_1 = bytearray.fromhex(u'0000 0000 0000 0000 0000 0000 0000 0000')
     data = logic_0 + logic_1
     xem.ActivateTriggerIn(0x40,4)
-    xem.WriteToBlockPipeIn(0x81,16,data)
-    #time.sleep(0.1)
+    #xem.WriteToBlockPipeIn(0x81,16,data)
+    xem.WriteToPipeIn(0x81,data)
+    time.sleep(1)
 
 
