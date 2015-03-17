@@ -189,7 +189,7 @@ class DDS(LabradServer):
         else:
             buf = self._intToBuf_coherent(num)
         #buf = buf + '\x00\x00' #adding termination
-        buf = bytearray.fromhex(u'0000') + buf 
+        #buf = bytearray.fromhex(u'0000') + buf 
         #print buf
         return buf
     

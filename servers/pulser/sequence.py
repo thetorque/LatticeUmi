@@ -46,11 +46,21 @@ class Sequence():
         step = int(step)
         return step
     
+#     def numToHex(self, number):
+#         '''converts the number to the hex representation for a total of 32 bits
+#         i.e: 3 -> 00000000...000100 ->  \x00\x00\x03\x00, note that the order of 8bit pieces is switched'''
+#         a,b = number // 65536, number % 65536
+#         return str(numpy.uint16([a,b]).data)
+
     def numToHex(self, number):
-        '''converts the number to the hex representation for a total of 32 bits
-        i.e: 3 -> 00000000...000100 ->  \x00\x00\x03\x00, note that the order of 8bit pieces is switched'''
-        a,b = number // 65536, number % 65536
-        return str(numpy.uint16([a,b]).data)
+        number = int(number)
+        b = bytearray(4)
+        b[2] = number%256
+        b[3] = (number//256)%256
+        b[0] = (number//65536)%256
+        b[1] = (number//16777216)%256
+        #print numpy.array([b[0],b[1],b[2],b[3]])
+        return b
 
     def _addNewSwitch(self, timeStep, chan, value):
         if self.switchingTimes.has_key(timeStep):
@@ -180,8 +190,11 @@ class Sequence():
         return program
     
     def ttlHumanRepresentation(self, rep):
+        rep = str(rep)
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
+        #arr = numpy.frombuffer(rep, dtype = numpy.uint16)
         arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large numbers
+        #arr = numpy.array(rep,dtype = numpy.uint16)
         arr = arr.reshape(-1,4)
         times =( 65536  *  arr[:,0] + arr[:,1]) * float(self.timeResolution)
         channels = ( 65536  *  arr[:,2] + arr[:,3])

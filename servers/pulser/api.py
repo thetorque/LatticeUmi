@@ -38,7 +38,8 @@ class api(object):
         #self.xem.SetPLL22150Configuration(pll)
         
     def programBoard(self, sequence):
-        self.xem.WriteToBlockPipeIn(0x80, 16, sequence)
+        sequence_data = self.padTo16(sequence)
+        self.xem.WriteToBlockPipeIn(0x80, 16, sequence_data)
   
     def startLooped(self):
         self.xem.SetWireInValue(0x00,0x06,0x06)
@@ -175,6 +176,7 @@ class api(object):
     def programDDS(self, prog):
         '''program the dds channel with a list of frequencies and amplitudes. The channel of the particular channel must be selected first'''
         ### pad to 16 if needed
+        prog = bytearray.fromhex(u'0000') + prog 
 #         for i in range(len(prog)):
 #             print "prog dds",i,"=", prog[i]
         prog_padded = self.padTo16(prog)
