@@ -99,8 +99,10 @@ class api(object):
         return counted
     
     def getResolvedCounts(self, number):
-        buf = "\x00"*(number*2)
+        #buf = "\x00"*(number*2)
+        buf = bytearray(number*2)
         self.xem.ReadFromBlockPipeOut(0xa0,2,buf)
+        buf = str(buf)
         return buf
     
     def getNormalTotal(self):
@@ -111,8 +113,10 @@ class api(object):
         return done
     
     def getNormalCounts(self, number):
-        buf = "\x00"* ( number * 2 )
+        #buf = "\x00"* ( number * 2 )
+        buf = bytearray(number * 2)
         self.xem.ReadFromBlockPipeOut(0xa1,2,buf)
+        buf = str(buf)
         return buf
     
     def getReadoutTotal(self):
@@ -123,8 +127,10 @@ class api(object):
         return done
         
     def getReadoutCounts(self, number):
-        buf = "\x00"* ( number * 2 )
+        #buf = "\x00"* ( number * 2 )
+        buf = bytearray(number*2)
         self.xem.ReadFromBlockPipeOut(0xa2,2,buf)
+        buf = str(buf)
         return buf
     
     def howManySequencesDone(self):

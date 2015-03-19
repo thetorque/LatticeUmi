@@ -41,4 +41,6 @@ for node in nodeDict.keys(): #sets the order of opening
 
 
 
-time.sleep(3)
+time.sleep(1)
+print "Have a good day!"
+time.sleep(1)

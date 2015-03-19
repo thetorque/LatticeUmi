@@ -74,7 +74,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         #gridLayout.addWidget(cavityWidget(reactor),             0,2,3,2)
         #gridLayout.addWidget(multiplexerWidget(reactor),        0,4,3,1)
         gridLayout.addWidget(switchWidget(reactor, cxn),        4,0,1,2)
-        #gridLayout.addWidget(pmtWidget(reactor),                3,2,1,1)
+        gridLayout.addWidget(pmtWidget(reactor),                3,2,1,1)
         #gridLayout.addWidget(linetriggerWidget(reactor, cxn),   3,3,1,1)
         gridLayout.addWidget(DDS_CONTROL(reactor, cxn),         3,4,1,1)
         widget.setLayout(gridLayout)
