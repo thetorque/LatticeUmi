@@ -194,7 +194,7 @@ class Sequence():
         return program
     
     def ttlHumanRepresentation(self, rep):
-        rep = str(rep)
+        rep = str(rep) ### recast rep from bytearray into string
         arr = numpy.fromstring(rep, dtype = numpy.uint16) #does the decoding from the string
         #arr = numpy.frombuffer(rep, dtype = numpy.uint16)
         arr = numpy.array(arr, dtype = numpy.uint32) #once decoded, need to be able to manipulate large numbers

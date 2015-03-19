@@ -1,7 +1,7 @@
 from pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 from treedict import TreeDict
-from plot_sequence import SequencePlotter
+from servers.pulser.pulse_sequences.plot_sequence import SequencePlotter
 
 class sampleDDS(pulse_sequence):
     
@@ -12,10 +12,10 @@ class sampleDDS(pulse_sequence):
         freq = WithUnit(85.0, 'MHz')
         ampl = WithUnit(-23.0, 'dBm')
 
-        self.addDDS('DDS_0', WithUnit(0.1, 'ms'), WithUnit(499.9, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-13.0, 'dBm'))
-        self.addDDS('DDS_0', WithUnit(500, 'ms'), WithUnit(500, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-33.0, 'dBm'))
-        self.addDDS('DDS_1', WithUnit(1000, 'ms'), WithUnit(100, 'ms'), WithUnit(88.0, 'MHz'), WithUnit(-33.0, 'dBm'))
-        self.addDDS('DDS_1', WithUnit(2000, 'ms'), WithUnit(2000, 'ms'), WithUnit(87.0, 'MHz'), WithUnit(-23.0, 'dBm'))
+        self.addDDS('DDS_0', WithUnit(0.1, 'ms'), WithUnit(250, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-23.0, 'dBm'))
+        self.addDDS('DDS_0', WithUnit(500, 'ms'), WithUnit(250, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-23.0, 'dBm'))
+        self.addDDS('DDS_1', WithUnit(1000, 'ms'), WithUnit(100, 'ms'), WithUnit(88.0, 'MHz'), WithUnit(-40.0, 'dBm'))
+        self.addDDS('DDS_1', WithUnit(2000, 'ms'), WithUnit(2000, 'ms'), WithUnit(87.0, 'MHz'), WithUnit(-40.0, 'dBm'))
         
         self.addTTL('channel_0',WithUnit(0,'ms'),WithUnit(100,'ms'))
         self.addTTL('channel_0',WithUnit(200,'ms'),WithUnit(100,'ms'))

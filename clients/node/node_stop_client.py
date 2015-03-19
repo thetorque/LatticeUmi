@@ -21,7 +21,6 @@ nodeDict = {
                 'ParameterVault',
                 'Pulser'],
     }
-
 for node in nodeDict.keys(): #sets the order of opening
     #make sure all node servers are up
     if not node in cxn.servers: print node + ' is not running'
@@ -31,13 +30,15 @@ for node in nodeDict.keys(): #sets the order of opening
         running_servers = np.array(cxn.servers[node].running_servers().asarray)
         for server in nodeDict[node]:
             if server in running_servers: 
-                print server + ' is already running'
-            else:
-                print 'starting ' + server
+                print server + ' is running'
                 try:
-                    cxn.servers[node].start(server)
+                    cxn.servers[node].stop(server)
+                    print server, 'is stopped'
                 except:
                     print 'ERROR with ' + server
+            else:
+                print server, 'is not running'
+
 
 
 time.sleep(3)
