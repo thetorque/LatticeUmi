@@ -11,17 +11,15 @@ class sampleDDS(pulse_sequence):
         off_time = WithUnit(100, 'ms')
         freq = WithUnit(85.0, 'MHz')
         ampl = WithUnit(-23.0, 'dBm')
-#         self.addDDS('DDS_0', start_first, on_time, freq, ampl)
-#         self.addDDS('DDS_1', start_second, on_time, freq, ampl)
-        self.addDDS('DDS_0', WithUnit(1, 'ms'), WithUnit(500, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-13.0, 'dBm'))
-        self.addDDS('DDS_0', WithUnit(501, 'ms'), WithUnit(500, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-33.0, 'dBm'))
+
+        self.addDDS('DDS_0', WithUnit(1, 'ms'), WithUnit(499, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-13.0, 'dBm'))
+        self.addDDS('DDS_0', WithUnit(500, 'ms'), WithUnit(500, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-33.0, 'dBm'))
         self.addDDS('DDS_1', WithUnit(250, 'ms'), WithUnit(100, 'ms'), WithUnit(88.0, 'MHz'), WithUnit(-33.0, 'dBm'))
-        #self.addDDS('DDS_0', WithUnit(100, 'ms'), WithUnit(10, 'ms'), freq, ampl)
-        #self.addDDS('DDS_1', WithUnit(1000, 'ms'), WithUnit(500, 'ms'), WithUnit(87.0, 'MHz'), WithUnit(-23.0, 'dBm'))
+        self.addDDS('DDS_1', WithUnit(1000, 'ms'), WithUnit(500, 'ms'), WithUnit(87.0, 'MHz'), WithUnit(-23.0, 'dBm'))
         
-#         self.addTTL('channel_0',WithUnit(0,'ms'),WithUnit(100,'ms'))
-#         self.addTTL('channel_0',WithUnit(200,'ms'),WithUnit(100,'ms'))
-#         self.addTTL('channel_0',WithUnit(400,'ms'),WithUnit(100,'ms'))
+        self.addTTL('channel_0',WithUnit(0,'ms'),WithUnit(100,'ms'))
+        self.addTTL('channel_0',WithUnit(200,'ms'),WithUnit(100,'ms'))
+        self.addTTL('channel_0',WithUnit(400,'ms'),WithUnit(100,'ms'))
         
 if __name__ == '__main__':
     import labrad

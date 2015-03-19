@@ -162,7 +162,9 @@ class Sequence():
     
     def ddsHumanRepresentation(self, dds):
         program = []
+        print dds
         for name,buf in dds.iteritems():
+            print "name is ", name
             arr = array.array('B', buf)
             arr = arr[:-2] #remove termination
             channel = hardwareConfiguration.ddsDict[name]
@@ -181,11 +183,13 @@ class Sequence():
                     ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
                     program.append((name, freq,ampl)) 
             else:
-                for a,b,c,d,e,f,g,h in chunks(arr, 8):
-                    freq_num = 256**2*(256*h + g) + (256*f + e)
-                    ampl_num = 256*d + c
+                for a0,a1,amp0,amp1,a2,a3,a4,a5,f0,f1,f2,f3,f4,f5,f6,f7, in chunks(arr, 16):
+                    freq_num = 256**2*(256*f7 + f6) + (256*f5 + f4)
+                    ampl_num = 256*amp1 + amp0
                     freq = freq_min +  freq_num * (freq_max - freq_min) / float(16**8 - 1)
+                    print "freq is ", freq
                     ampl = ampl_min +  ampl_num * (ampl_max - ampl_min) / float(16**4 - 1)
+                    print " ampl is ", ampl
                     program.append((name, freq,ampl)) 
         return program
     
