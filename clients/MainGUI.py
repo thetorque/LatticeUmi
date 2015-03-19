@@ -67,7 +67,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         #from agilent_E3633A.agilent_E3633A import magnet_Control, oven_Control
         gridLayout = QtGui.QGridLayout()
         #gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,2)
-        gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,2)
+        #gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,2)
         gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,2)
         #gridLayout.addWidget(magnet_Control(reactor, cxn),      3,0,1,1)
         #gridLayout.addWidget(oven_Control(reactor, cxn),        3,1,1,1)
