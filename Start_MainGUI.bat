@@ -1,1 +1,1 @@
-python C:\Users\Thaned\Desktop\LatticeUmi\clients\node\MainGUI.py
+python C:\Users\Thaned\Desktop\LatticeUmi\clients\MainGUI.py
