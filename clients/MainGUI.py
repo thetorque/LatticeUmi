@@ -56,6 +56,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
     def makeControlWidget(self, reactor, cxn):
         widget = QtGui.QWidget()
         #from electrode_client.electrode import electrode_widget
+        from dev.gui.Simple_DAC_control import dac_widget
         #from common.clients.CAVITY_CONTROL import cavityWidget
         #from common.clients.multiplexer.MULTIPLEXER_CONTROL import multiplexerWidget
         from PMT_CONTROL import pmtWidget
@@ -66,7 +67,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from indicator.indicator import indicator_widget
         #from agilent_E3633A.agilent_E3633A import magnet_Control, oven_Control
         gridLayout = QtGui.QGridLayout()
-        #gridLayout.addWidget(electrode_widget(reactor, cxn),    0,0,1,2)
+        gridLayout.addWidget(dac_widget(reactor, cxn),    0,0,1,1)
         #gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,2)
         gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,2)
         #gridLayout.addWidget(magnet_Control(reactor, cxn),      3,0,1,1)

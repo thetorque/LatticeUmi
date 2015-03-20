@@ -13,7 +13,7 @@ class widget_ui(base, form):
         super(widget_ui, self).__init__(parent)
         self.setupUi(self)
 
-class actions_widget(QtGui.QFrame, widget_ui):
+class dac_widget(QtGui.QFrame, widget_ui):
     def __init__(self,reactor,cxn = None, parent=None):
         self.reactor = reactor
         self.cxn = cxn
@@ -113,6 +113,6 @@ if __name__=="__main__":
     import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
-    dac = actions_widget(reactor)
+    dac = dac_widget(reactor)
     dac.show()
     reactor.run()
