@@ -1,6 +1,6 @@
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar2QT
 from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
 from twisted.internet.defer import inlineCallbacks, returnValue
@@ -66,7 +66,7 @@ class drift_tracker(QtGui.QWidget):
         self.b_drift_lines = []
         self.b_drift_fit_line = []
         self.b_drift = b_drift
-        self.mpl_toolbar = NavigationToolbar(self.drift_canvas, self)
+        self.mpl_toolbar = NavigationToolbar2QT(self.drift_canvas, self)
         layout.addWidget(self.mpl_toolbar)
         layout.addWidget(self.drift_canvas)
         return layout
@@ -84,7 +84,7 @@ class drift_tracker(QtGui.QWidget):
         spec.set_ylabel('Arb')
         spec.set_title("Predicted Spectrum")
         self.spec = spec
-        self.mpl_toolbar = NavigationToolbar(self.spec_canvas, self)
+        self.mpl_toolbar = NavigationToolbar2QT(self.spec_canvas, self)
         self.spectral_lines = []
         layout.addWidget(self.mpl_toolbar)
         layout.addWidget(self.spec_canvas)

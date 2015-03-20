@@ -1,6 +1,6 @@
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar2QT
 from matplotlib.figure import Figure
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
@@ -39,7 +39,7 @@ class camera_histogram(QtGui.QWidget):
         self.axes = self.fig.add_subplot(111)
         self.axes.set_xlim(left = 0, right = 1)
         self.axes.set_ylim(bottom = 0, top = 50)
-        self.mpl_toolbar = NavigationToolbar(self.canvas, self)
+        self.mpl_toolbar = NavigationToolbar2QT(self.canvas, self)
         self.axes.set_title('Camera Readout', fontsize = 22)
         self.fig.tight_layout()
         layout.addWidget(self.mpl_toolbar)

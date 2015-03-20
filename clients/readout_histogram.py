@@ -1,6 +1,6 @@
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar2QT
 from matplotlib.figure import Figure
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.threads import deferToThread
@@ -43,7 +43,7 @@ class readout_histogram(QtGui.QWidget):
         self.axes.set_ylim(bottom = 0, top = 50)
         self.thresholdLine = self.axes.axvline(self.thresholdVal, linewidth=3.0, color = 'r', label = 'Threshold')
         self.axes.legend(loc = 'best')
-        self.mpl_toolbar = NavigationToolbar(self.canvas, self)
+        self.mpl_toolbar = NavigationToolbar2QT(self.canvas, self)
         self.axes.set_title('PMT Readout', fontsize = 22)
         self.fig.tight_layout()
         layout.addWidget(self.mpl_toolbar)

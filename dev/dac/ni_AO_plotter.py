@@ -9,16 +9,15 @@
 from PyQt4 import QtGui
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar2QT
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar2QT
 from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twisted.internet.task import LoopingCall
-from helper_widgets.helper_widgets import saved_frequencies_table
-from helper_widgets.compound_widgets import table_dropdowns_with_entry
+# from helper_widgets.helper_widgets import saved_frequencies_table
+# from helper_widgets.compound_widgets import table_dropdowns_with_entry
 import numpy
 import time
-#from drift_tracker_config import config_729_tracker as c
 
 class AO_plotter(QtGui.QWidget):
     def __init__(self, reactor, clipboard = None, cxn = None, parent=None):
@@ -87,7 +86,7 @@ class AO_plotter(QtGui.QWidget):
         self.plot_canvas.draw()
         
     def load_plot_data(self):
-        #self.plot_data = numpy.load("test_ao_sequence1.npy")
+#         self.plot_data = numpy.load("test_ao_sequence1.npy")
         self.plot_data = numpy.load("ramp.npy")
         self.channel = self.plot_data.shape[0]-1 ## get the number of channel from the file
         #print self.plot_data

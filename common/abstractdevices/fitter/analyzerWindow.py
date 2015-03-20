@@ -5,7 +5,7 @@ from PyQt4 import QtGui, QtCore
 # from twisted.internet.defer import inlineCallbacks
 # from twisted.internet.task import LoopingCall
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,NavigationToolbar2QTAgg as NavigationToolbar)
+from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,NavigationToolbar2QT as NavigationToolbar2QT)
 
 class AnalyzerWindow(QtGui.QWidget):
        
@@ -33,7 +33,7 @@ class AnalyzerWindow(QtGui.QWidget):
         self.fig.subplots_adjust(left=0.07, right=0.93, top=0.93, bottom=0.07)
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self)
-        mpl_toolbar = NavigationToolbar(self.canvas, self)
+        mpl_toolbar = NavigationToolbar2QT(self.canvas, self)
         vbox = QtGui.QVBoxLayout()
         vbox.addWidget(mpl_toolbar)
         vbox.addWidget(self.canvas)
