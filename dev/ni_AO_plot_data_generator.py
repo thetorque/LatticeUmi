@@ -4,8 +4,8 @@
 import numpy as np
 import time
 
-sampling_rate = 10000 ## set sampling rate
-duration = 5.0 ## set duration of the whole sequence
+sampling_rate = 1000 ## set sampling rate
+duration = 0.2 ## set duration of the whole sequence
 sample_size = sampling_rate*duration ## calculate total number of points
 
 ## create time array
