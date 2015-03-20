@@ -74,7 +74,7 @@ class NI_Analog_Server(LabradServer):
         input of dictionay of voltage channel
         '''
         
-        time_array = np.linspace(0, 0.01, 2)
+        time_array = np.linspace(0, 0.001, 2)
         voltage_array = np.zeros(shape=(len(d)+1,2))
         voltage_array[0]= time_array
         for key, chan in d.iteritems():
@@ -99,7 +99,7 @@ class NI_Analog_Server(LabradServer):
         try:
             ### check of the name of channel is correct or not
             chan = self.d[channel]
-            minim,total,channel_number = chan.min_voltage, chan.vpp, chan.channel_number
+            channel_number = chan.channel_number
         except KeyError:
             raise Exception ("Channel {} not found".format(channel))
         
