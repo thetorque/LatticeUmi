@@ -1,4 +1,4 @@
-from servers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
+from common.okfpgaservers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 
 class record_timetags(pulse_sequence):
     
