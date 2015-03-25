@@ -10,7 +10,7 @@ import numpy as np
 
 class spectrum(experiment):
     
-    name = 'Spectrum729_two'
+    name = 'Spectrum729'
     spectrum_required_parameters = [
                            ('Spectrum','custom'),
                            ('Spectrum','normal'),
