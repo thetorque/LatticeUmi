@@ -40,11 +40,12 @@ class double_pass_729(dds_channel):
         return phase
         
 #defining available dds channels
-dds729DP = double_pass_729('729DP')
-dds729DP_1 = double_pass_729('729DP_1')
-dds110DP = dds_channel('110DP')
-dds866DP = dds_channel('866DP')
-dds854DP = dds_channel('854DP')
+#dds729DP = double_pass_729('729DP')
+#dds729DP_1 = double_pass_729('729DP_1')
+DDS_0 = dds_channel('DDS_0')
+DDS_1 = dds_channel('DDS_1')
+#dds866DP = dds_channel('866DP')
+#dds854DP = dds_channel('854DP')
 
 '''
 channel_dictionary provides a translation between the channels of the pulse sequence
@@ -53,14 +54,6 @@ There can be multiple keys for the same value.
 '''
     
 dds_name_dictionary = {
-                        '729':dds729DP,
-                        '729DP':dds729DP,
-                        '729_1':dds729DP_1,
-                        '729DP_1':dds729DP_1,
-                        '397':dds110DP,
-                        '110DP':dds110DP,
-                        '866':dds866DP,
-                        '866DP':dds866DP,
-                        '854':dds854DP,
-                        '854DP':dds854DP,
+                        'cooling':DDS_0,
+                        'lattice':DDS_1
                         }
