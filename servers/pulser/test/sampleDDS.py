@@ -11,6 +11,7 @@ class sampleDDS(pulse_sequence):
         off_time = WithUnit(100, 'ms')
         freq = WithUnit(85.0, 'MHz')
         ampl = WithUnit(-23.0, 'dBm')
+        ##
 
         self.addDDS('DDS_0', WithUnit(0.1, 'ms'), WithUnit(250, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-23.0, 'dBm'))
         self.addDDS('DDS_0', WithUnit(500, 'ms'), WithUnit(250, 'ms'), WithUnit(85.0, 'MHz'), WithUnit(-23.0, 'dBm'))
