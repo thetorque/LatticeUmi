@@ -55,6 +55,7 @@ class WaveformThread( threading.Thread ):
         ## extract time array
         self.time_array = self.data[0]
         self.number_of_sample = np.size(self.time_array)
+        #print self.number_of_sample
         self.duration = self.time_array[-1]
         self.sampling_rate = (self.number_of_sample-1)/self.duration
         
@@ -78,7 +79,7 @@ class WaveformThread( threading.Thread ):
         self.data_1d = self.data[1]
         for i in range(self.channel-1):
             self.data_1d = np.concatenate((self.data_1d,self.data[i+2])) 
-        print self.data_1d
+        #print self.data_1d
         
         ## initialize channel instance
         self.CHK(nidaq.DAQmxCreateTask("",ctypes.byref( self.taskHandle )))
@@ -131,7 +132,6 @@ class WaveformThread( threading.Thread ):
             nidaq.DAQmxGetErrorString(err,ctypes.byref(buf),buf_size)
             raise RuntimeError('nidaq generated warning %d: %s'%(err,repr(buf.value)))
     def run( self ):
-        counter = 0
         self.CHK(nidaq.DAQmxStartTask( self.taskHandle ))
         #self.CHK(nidaq.DAQmxWaitUntilTaskDone( self.taskHandle,float64(10)))
     
@@ -155,3 +155,67 @@ class api_dac():
         mythread.run()
         mythread.wait()
         mythread.stop()
+        
+#     def setVoltagePattern(self, time_vertex_array, v_vertex_array, trigger, sampling_rate):
+#         t = time_vertex_array
+#         v = v_vertex_array
+#         duration = t[-1] ## get the last value of the time array. This is the duration of the pulse sequence.
+#         sample_size = sampling_rate*duration
+#         ## make sample size an even number
+#         sample_size = (sample_size//2)*2
+#         time_array = np.linspace(0,duration, sample_size)
+#         volt_array = np.ones_like(time_array)
+#         volt_array[0] = v[0] #initialize first point
+#         
+#         for i in range(t.size-1):
+#             #i = 0
+#             #print i
+#             time_location = np.where((time_array>t[i])*(time_array<=t[i+1])) ### look for the location of the time span we are interested in
+#             slope = (v[i+1]-v[i])/(t[i+1]-t[i]) ### calculate the voltage slope in this region
+#             #print "v is ", v[i]
+#             #print "slope is ", slope
+#             volt_array[time_location] = v[i]+slope*(time_array[time_location]-t[i]) ## compute the voltage value
+#             
+#         data = time_array
+#         channel_0 = volt_array
+#         data = np.vstack((data,channel_0))
+#         
+#         ## write to NI analog ##
+#         mythread = WaveformThread(data, True)
+#         mythread.run()
+#         print "waiting for the sequence to be done"
+#         mythread.wait()
+#         print "done waiting"
+#         mythread.stop()
+        
+    def setVoltagePattern(self, vertex_array, trigger, sampling_rate):
+        t = vertex_array[0]
+        channel = vertex_array.shape[0]-1
+        duration = t[-1] ## get the last value of the time array. This is the duration of the pulse sequence.
+        sample_size = sampling_rate*duration
+        ## make sample size an even number
+        sample_size = (sample_size//2)*2
+        time_array = np.linspace(0,duration, sample_size)
+        
+        volt_array = np.ones((channel,np.size(time_array)))
+        volt_array[:,0] = vertex_array[:,0][1:] #initialize first point
+        print volt_array[:,0]
+        for j in range(channel):
+            v = vertex_array[j+1]
+            for i in range(t.size-1):
+                 time_location = np.where((time_array>t[i])*(time_array<=t[i+1]))### look for the location of the time span we are interested in
+                 slope = (v[i+1]-v[i])/(t[i+1]-t[i]) ### calculate the voltage slope in this region
+                 volt_array[j][time_location] = v[i]+slope*(time_array[time_location]-t[i])
+            print volt_array[j]
+        
+        data = np.vstack((time_array,volt_array))
+        mythread = WaveformThread(data, trigger)
+        mythread.run()
+        print "waiting for the sequence to be done"
+        mythread.wait()
+        print "done waiting"
+        mythread.stop()
+        
+        
+        
+        

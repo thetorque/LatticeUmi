@@ -42,12 +42,16 @@ class NI_Analog_Server(LabradServer):
     
     @inlineCallbacks
     def initServer(self):
-        print "hello"
+        print "NI Analog says hello to you."
         self.api_dac  = api_dac()
         self.inCommunication = DeferredLock()
         self.d = yield self.initAnalogChannel()
         self.chan_number = len(self.d)
         self.listeners = set() 
+        
+        ##
+        #vertex_array = ([[0,1,2],[0,1,0], [-1,-2,-1]])
+        #self.setVoltagePattern(-1, vertex_array, False, 1000)
         
         
     @inlineCallbacks
@@ -99,7 +103,7 @@ class NI_Analog_Server(LabradServer):
         try:
             ### check of the name of channel is correct or not
             chan = self.d[channel]
-            channel_number = chan.channel_number
+            #channel_number = chan.channel_number
         except KeyError:
             raise Exception ("Channel {} not found".format(channel))
         
@@ -124,6 +128,26 @@ class NI_Analog_Server(LabradServer):
         yield self.inCommunication.acquire()
         try:
             yield deferToThread(self.api_dac.setVoltage, voltage_array, trigger)
+        except Exception as e:
+            raise e
+        finally:
+            self.inCommunication.release()
+            
+    @setting(2, "Set Voltage Pattern", vertex_array = '*2v', trigger = 'b', sampling = 'v', returns = '')
+    def setVoltagePattern(self, c, vertex_array, trigger, sampling):
+        #print "array is", vertex_array
+        vertex_array = np.asarray(vertex_array)
+        yield self.do_set_voltagePattern(vertex_array, trigger, sampling)
+        #self.notifyOtherListeners(c, (channel, voltage), self.onNewVoltage)
+            
+    @inlineCallbacks
+    def do_set_voltagePattern(self, vertex_array, trigger, sampling):
+        '''
+        This method takes the input voltage array and program the NI analog card via the api calling
+        '''
+        yield self.inCommunication.acquire()
+        try:
+            yield deferToThread(self.api_dac.setVoltagePattern, vertex_array, trigger,sampling)
         except Exception as e:
             raise e
         finally:
