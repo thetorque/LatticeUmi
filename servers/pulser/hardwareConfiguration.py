@@ -70,12 +70,12 @@ class hardwareConfiguration(object):
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
-                '866DP':ddsConfiguration(        0,  (70.0,150.0),    (-63.0,-5.0),   80.0,   -63.0),
-                'global397':ddsConfiguration(    1,  (70.0,150.0),   (-63.0,-12.0),  90.0,   -63.0),
-                '110DP':ddsConfiguration(       0,  (70.0,150.0),   (-63.0,-12.0),   110.0,  -63.0),
-                'radial':ddsConfiguration(       0,  (70.0,150.0),   (-63.0,-5.0),   74.0,  -63.0),
-                '854DP':ddsConfiguration(        0,  (70.0,150.0),    (-63.0,-4.0),   80.0,   -63.0),
-                '729DP':ddsConfiguration(        0,  (150.0,250.0),  (-63.0,-5.0),   220.0,  -63.0),
+                '866DP':ddsConfiguration(        0,  (1.0,250.0),    (-63.0,-5.0),   80.0,   -63.0),
+                'global397':ddsConfiguration(    1,  (1.0,250.0),   (-63.0,-5.0),  90.0,   -63.0),
+                '110DP':ddsConfiguration(       0,  (1.0,250.0),   (-63.0,-5.0),   110.0,  -63.0),
+                'radial':ddsConfiguration(       0,  (1.0,250.0),   (-63.0,-5.0),   74.0,  -63.0),
+                '854DP':ddsConfiguration(        0,  (1.0,250.0),    (-63.0,-5.0),   80.0,   -63.0),
+                '729DP':ddsConfiguration(        0,  (1.0,250.0),  (-63.0,-5.0),   220.0,  -63.0),
                 }
     remoteChannels = {
                     }
