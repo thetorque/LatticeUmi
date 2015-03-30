@@ -32,8 +32,8 @@ p.program_sequence()
 ##start once
 p.start_number(2)
 
-##wait until sequence is done
+# ##wait until sequence is done
 p.wait_sequence_done()
-
-## stop sequence
+# 
+# ## stop sequence
 p.stop_sequence()

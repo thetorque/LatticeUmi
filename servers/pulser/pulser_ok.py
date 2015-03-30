@@ -91,6 +91,7 @@ class Pulser(LabradServer, DDS, LineTrigger):
         """
         Create New Pulse Sequence
         """
+        #print "new sequence"
         c['sequence'] = Sequence(self)
     
     @setting(1, "Program Sequence", returns = '')
@@ -98,6 +99,7 @@ class Pulser(LabradServer, DDS, LineTrigger):
         """
         Programs Pulser with the current sequence.
         """
+        #print "program sequence"
         sequence = c.get('sequence')
         if not sequence: raise Exception("Please create new sequence first")
         dds,ttl = sequence.progRepresentation()
@@ -185,16 +187,19 @@ class Pulser(LabradServer, DDS, LineTrigger):
         self.sequenceType = None
         self.ddsLock = False
     
-    @setting(9, "Start Number", repeatitions = 'w')
-    def startNumber(self, c, repeatitions):
+    @setting(9, "Start Number", repetition = 'w')
+    def startNumber(self, c, repetition):
         """
-        Starts the repeatitions number of iterations
+        Starts the repetition number of iterations
         """
         if not self.isProgrammed: raise Exception ("No Programmed Sequence")
-        repeatitions = int(repeatitions)
-        if not 1 <= repeatitions <= (2**16 - 1): raise Exception ("Incorrect number of pulses")
+        repeatitions = int(repetition)
+        
+        #print "start iterations of ", repetition
+        
+        if not 1 <= repetition <= (2**16 - 1): raise Exception ("Incorrect number of pulses")
         yield self.inCommunication.acquire()
-        yield deferToThread(self.api.setNumberRepeatitions, repeatitions)
+        yield deferToThread(self.api.setNumberRepeatitions, repetition)
         yield deferToThread(self.api.resetSeqCounter)
         yield deferToThread(self.api.startLooped)
         self.sequenceType = 'Number'
