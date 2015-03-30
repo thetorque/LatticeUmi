@@ -55,19 +55,27 @@ class hardwareConfiguration(object):
     
     #name: (channelNumber, ismanual, manualstate,  manualinversion, autoinversion)
     channelDict = {
-                   'ttl_0':channelConfiguration(0, False, False, False, False),
-                   'ttl_1':channelConfiguration(1, False, False, False, False),
-                   'channel_2':channelConfiguration(2, True, False, False, False),
-                   'channel_3':channelConfiguration(3, True, False, False, False),
-                   'channel_4':channelConfiguration(4, True, False, False, False),
+                   '866DP':channelConfiguration(0, False, True, False, True),
+                   'crystallization':channelConfiguration(1, True, False, False, False),
+                   'bluePI':channelConfiguration(2, True, False, True, False),
+                   'camera':channelConfiguration(5, False, False, True, True),
+                   'coil_dir':channelConfiguration(6, False, False, True, True),
+                   #------------INTERNAL CHANNEgiLS----------------------------------------#
+                   'Internal866':channelConfiguration(12, False, False, False, False),
+                   'DiffCountTrigger':channelConfiguration(16, False, False, False, False),
+                   'TimeResolvedCount':channelConfiguration(17, False, False, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
-                   
+                   'ReadoutCount':channelConfiguration(20, False, False, False, False),
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
-                'DDS_0':ddsConfiguration(        0,  (1.0,400.0),    (-63.0,-5.0),   70.0,   -63.0),
-                'DDS_1':ddsConfiguration(    1,  (70.0,100.0),   (-63.0,-12.0),  90.0,   -63.0),
+                '866DP':ddsConfiguration(        0,  (1.0,250.0),    (-63.0,-5.0),   80.0,   -63.0),
+                'global397':ddsConfiguration(    1,  (1.0,250.0),   (-63.0,-5.0),  90.0,   -63.0),
+                '110DP':ddsConfiguration(       0,  (1.0,250.0),   (-63.0,-5.0),   110.0,  -63.0),
+                'radial':ddsConfiguration(       0,  (1.0,250.0),   (-63.0,-5.0),   74.0,  -63.0),
+                '854DP':ddsConfiguration(        0,  (1.0,250.0),    (-63.0,-5.0),   80.0,   -63.0),
+                '729DP':ddsConfiguration(        0,  (1.0,250.0),  (-63.0,-5.0),   220.0,  -63.0),
                 }
     remoteChannels = {
                     }

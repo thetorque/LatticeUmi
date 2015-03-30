@@ -14,6 +14,9 @@ class widget_ui(base, form):
         self.setupUi(self)
 
 class dac_widget(QtGui.QFrame, widget_ui):
+    
+    SIGNALID = 3902384
+    
     def __init__(self,reactor,cxn = None, parent=None):
         self.reactor = reactor
         self.cxn = cxn
@@ -39,6 +42,10 @@ class dac_widget(QtGui.QFrame, widget_ui):
             print e
             self.setDisabled(True)
         self.server = yield self.cxn.get_server('NI Analog Server')
+        ## setup a connection to listen to a signal from the server
+        yield self.server.signal__new_voltage(self.SIGNALID, context = self.context)
+        yield self.server.addListener(listener = self.followSignal, source = None, ID = self.SIGNALID, context = self.context)
+        
         value1 = yield self.server.get_voltage('comp1')
         value2 = yield self.server.get_voltage('comp2')
         value3 = yield self.server.get_voltage('endcap1')
@@ -99,6 +106,29 @@ class dac_widget(QtGui.QFrame, widget_ui):
             #self.setFreqNoSignal(old_value)
             #self.displayError(e.msg)
             pass
+        
+    def followSignal(self, x, y):
+        chan, param = y
+        if chan == 'comp1':
+            print "comp1 just got updated"
+            self.doubleSpinBox0.blockSignals(True)
+            self.doubleSpinBox0.setValue(param['V'])
+            self.doubleSpinBox0.blockSignals(False)
+        elif chan == "comp2":
+            print "comp2 just got updated"
+            self.doubleSpinBox1.blockSignals(True)
+            self.doubleSpinBox1.setValue(param['V'])
+            self.doubleSpinBox1.blockSignals(False)
+        elif chan == "endcap1":
+            print "endcap1 just got updated"
+            self.doubleSpinBox2.blockSignals(True)
+            self.doubleSpinBox2.setValue(param['V'])
+            self.doubleSpinBox2.blockSignals(False)
+        elif chan == "endcap2":
+            print "endcap2 just got updated"
+            self.doubleSpinBox3.blockSignals(True)
+            self.doubleSpinBox3.setValue(param['V'])
+            self.doubleSpinBox3.blockSignals(False)
     
     @inlineCallbacks
     def disable(self):
