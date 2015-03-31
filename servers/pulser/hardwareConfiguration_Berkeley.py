@@ -37,19 +37,19 @@ class remoteChannel(object):
         
 class hardwareConfiguration(object):
     channelTotal = 32
-    timeResolution = '40.0e-9' #seconds
+    timeResolution = '40.0e-9' # seconds
     timeResolvedResolution = 10.0e-9
     maxSwitches = 1022
-    resetstepDuration = 2 #duration of advanceDDS and resetDDS TTL pulses in units of timesteps
-    collectionTimeRange = (0.010, 5.0) #range for normal pmt counting
-    sequenceTimeRange = (0.0, 85.0) #range for duration of pulse sequence    
+    resetstepDuration = 2 # duration of advanceDDS and resetDDS TTL pulses in units of timesteps
+    collectionTimeRange = (0.010, 5.0) # range for normal pmt counting
+    sequenceTimeRange = (0.0, 85.0) # range for duration of pulse sequence    
     isProgrammed = False
-    sequenceType = None #none for not programmed, can be 'one' or 'infinite'
-    collectionMode = 'Normal' #default PMT mode
-    collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
+    sequenceType = None # none for not programmed, can be 'one' or 'infinite'
+    collectionMode = 'Normal' # default PMT mode
+    collectionTime = {'Normal':0.100,'Differential':0.100} # default counting rates
     okDeviceID = 'Pulser2'
     okDeviceFile = 'pulser_riken_2015_03_17.bit'
-    lineTriggerLimits = (0, 15000)#values in microseconds 
+    lineTriggerLimits = (0, 15000)# values in microseconds 
     secondPMT = False
     DAC = False
     

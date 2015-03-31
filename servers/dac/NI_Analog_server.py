@@ -42,11 +42,14 @@ class NI_Analog_Server(LabradServer):
     
     @inlineCallbacks
     def initServer(self):
+        '''
+        Initialize the server
+        '''
         print "NI Analog says hello to you."
-        self.api_dac  = api_dac()
-        self.inCommunication = DeferredLock()
-        self.d = yield self.initAnalogChannel()
-        self.chan_number = len(self.d)
+        self.api_dac  = api_dac()    # import api for DAC
+        self.inCommunication = DeferredLock()   # twisted function
+        self.d = yield self.initAnalogChannel() 
+        self.chan_number = len(self.d) # channel number is how many elements in self.d
         self.listeners = set() 
         
         ##
@@ -58,17 +61,17 @@ class NI_Analog_Server(LabradServer):
     def initAnalogChannel(self):
         '''creates dictionary for information storage''' 
         d = {}
-        for name,channel_number in [
+        for name,channel_number in [        # make a dictionary of the channel name and ID. Should be somewhere less obscure.
                              ('comp1', 0),
                              ('comp2', 1),
                              ('endcap1', 2),
                              ('endcap2', 3),
-                             ]:
+                             ]: 
             chan = dac_channel(name, channel_number)
-            chan.voltage = yield self.getRegValue(name)
+            chan.voltage = yield self.getRegValue(name)   # get value of each channel from the registry
             d[name] = chan
             
-        voltage_array = self.genStaticVoltageArray(d)
+        voltage_array = self.genStaticVoltageArray(d)     # generate initial value according to the values in the registry
         yield self.do_set_voltage(voltage_array, trigger = False)
         returnValue( d )
         
@@ -78,8 +81,8 @@ class NI_Analog_Server(LabradServer):
         input of dictionay of voltage channel
         '''
         
-        time_array = np.linspace(0, 0.001, 2)
-        voltage_array = np.zeros(shape=(len(d)+1,2))
+        time_array = np.linspace(0, 0.001, 2)   # kind of arbitrary time array. We want to write to the current static voltage so should be relativel fast
+        voltage_array = np.zeros(shape=(len(d)+1,2))  # initialize voltage array according to the number of channels
         voltage_array[0]= time_array
         for key, chan in d.iteritems():
             voltage = chan.voltage
@@ -90,6 +93,9 @@ class NI_Analog_Server(LabradServer):
             
     @inlineCallbacks
     def getRegValue(self, name):
+        '''
+        Get the values of the voltage from the registry
+        '''
         yield self.client.registry.cd(['','Servers', 'DAC'], True)
         try:
             voltage = yield self.client.registry.get(name)
@@ -100,6 +106,9 @@ class NI_Analog_Server(LabradServer):
         
     @setting(0, "Set Voltage",channel = 's', voltage = 'v[V]', returns = '')
     def setVoltage(self, c, channel, voltage):
+        '''
+        Set voltage for a given channel name
+        '''
         try:
             ### check of the name of channel is correct or not
             chan = self.d[channel]
@@ -110,10 +119,13 @@ class NI_Analog_Server(LabradServer):
         self.d[channel].voltage = voltage['V'] ## cast from voltage unit to normal float
         voltage_array = self.genStaticVoltageArray(self.d)
         yield self.do_set_voltage(voltage_array, False)
-        self.notifyOtherListeners(c, (channel, voltage), self.onNewVoltage)
+        self.notifyOtherListeners(c, (channel, voltage), self.onNewVoltage)  ## tell other listeners that the voltage is updated
         
     @setting(1, "Get Voltage", channel = 's', returns = 'v[V]')
     def getVoltage(self, c, channel):
+        '''
+        Get the voltage value for the given channel.
+        '''
         try:
             voltage = self.d[channel].voltage
         except KeyError:
@@ -135,6 +147,10 @@ class NI_Analog_Server(LabradServer):
             
     @setting(2, "Set Voltage Pattern", vertex_array = '*2v', trigger = 'b', sampling = 'v', returns = '')
     def setVoltagePattern(self, c, vertex_array, trigger, sampling):
+        '''
+        Generate the voltage pattern given the vertex of the time (first row) and voltages (subsequent rows). Trigger
+        indiciate if the voltage pattern will wait for a trigger or not. Sampling is the sample rate of this voltage pattern.
+        '''
         #print "array is", vertex_array
         vertex_array = np.asarray(vertex_array)
         yield self.do_set_voltagePattern(vertex_array, trigger, sampling)

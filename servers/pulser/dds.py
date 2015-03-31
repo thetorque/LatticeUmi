@@ -252,6 +252,7 @@ class DDS(LabradServer):
         power is in dbm
         '''
         ans = 0
+        ## changed the precision from 32 to 64 to handle super fine frequency tuning
         for val,r,m, precision in [(freq,channel.boardfreqrange, 1, 64), (ampl,channel.boardamplrange, 2 ** 64,  16), (phase,channel.boardphaserange, 2 ** 80,  16)]:
             minim, maxim = r
             resolution = (maxim - minim) / float(2**precision - 1)
@@ -271,10 +272,9 @@ class DDS(LabradServer):
         '''
         takes the integer representing the setting and returns the buffer string for dds programming
         '''
-        #freq_num = (num % 2**32)*2**32
-        freq_num = (num % 2**64)
-        #print "freq num is", freq_num
-        b = bytearray(8)
+        
+        freq_num = (num % 2**64)  # change according to the new DDS which supports 64 bit tuning of the frequency. Used to be #freq_num = (num % 2**32)*2**32
+        b = bytearray(8)          # initialize the byte array to sent to the pusler later
         for i in range(8):
             b[i]=(freq_num//(2**(i*8)))%256
             #print i, "=", (freq_num//(2**(i*8)))%256

@@ -74,7 +74,7 @@ class WaveformThread( threading.Thread ):
             
         #print self.channel_name
         
-        ### parse data array into single array
+        ### parse data array into a single dimensional array
         
         self.data_1d = self.data[1]
         for i in range(self.channel-1):
@@ -148,6 +148,10 @@ class api_dac():
         pass
         
     def setVoltage(self, voltage_array, trigger):
+        '''
+        Set the voltage pattern according to the input voltage array. We use this to do a quick write for the 
+        static voltage value.
+        '''
         #print "set Voltage"
         #data1 = np.load('test_ao_sequence1.npy')
         data1 = voltage_array
@@ -188,28 +192,32 @@ class api_dac():
 #         print "done waiting"
 #         mythread.stop()
         
-    def setVoltagePattern(self, vertex_array, trigger, sampling_rate):
-        t = vertex_array[0]
-        channel = vertex_array.shape[0]-1
-        duration = t[-1] ## get the last value of the time array. This is the duration of the pulse sequence.
+    def setVoltagePattern(self, vertex_array, trigger = True, sampling_rate):
+        '''
+        Set the voltage pattern according to the input vertex_array. Also the trigger indicated if the pattern will wait for
+        the trigger or just go when ready. The sampling_rate is the resolution in time for the voltage pattern.
+        '''
+        t = vertex_array[0]                 ## first row of the vertex array is the time array
+        channel = vertex_array.shape[0]-1   ## the rest is the channel information
+        duration = t[-1]                    ## get the last value of the time array. This is the duration of the pulse sequence.
         sample_size = sampling_rate*duration
-        ## make sample size an even number
+                                            ## make sample size an even number. This is required by the hardware
         sample_size = (sample_size//2)*2
-        time_array = np.linspace(0,duration, sample_size)
+        time_array = np.linspace(0,duration, sample_size) ## create time array
         
-        volt_array = np.ones((channel,np.size(time_array)))
-        volt_array[:,0] = vertex_array[:,0][1:] #initialize first point
-        print volt_array[:,0]
-        for j in range(channel):
-            v = vertex_array[j+1]
-            for i in range(t.size-1):
+        volt_array = np.ones((channel,np.size(time_array))) ## create voltage array which in the end will get sent to the NI card
+        volt_array[:,0] = vertex_array[:,0][1:]             # initialize first points
+        #print volt_array[:,0]
+        for j in range(channel):               # loop through all the channels
+            v = vertex_array[j+1]              # v extract the voltage information for the current channel
+            for i in range(t.size-1):          # loop through the vertex
                  time_location = np.where((time_array>t[i])*(time_array<=t[i+1]))### look for the location of the time span we are interested in
-                 slope = (v[i+1]-v[i])/(t[i+1]-t[i]) ### calculate the voltage slope in this region
-                 volt_array[j][time_location] = v[i]+slope*(time_array[time_location]-t[i])
+                 slope = (v[i+1]-v[i])/(t[i+1]-t[i])  # calculate the voltage slope in this region
+                 volt_array[j][time_location] = v[i]+slope*(time_array[time_location]-t[i])  # simply a linear equation to calculate the voltage at each time stamp
             print volt_array[j]
         
-        data = np.vstack((time_array,volt_array))
-        mythread = WaveformThread(data, trigger)
+        data = np.vstack((time_array,volt_array)) # stack the time array and voltage array together
+        mythread = WaveformThread(data, trigger)  #
         mythread.run()
         print "waiting for the sequence to be done"
         mythread.wait()
