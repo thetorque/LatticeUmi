@@ -1,3 +1,5 @@
+### This is exactly the same as spectrum 1 but is here only for demonstration.
+
 from servers.script_scanner.scan_methods import experiment
 from excitations import excitation_729
 from experiment.misc_scripts.common_methods_729 import common_methods_729 as cm

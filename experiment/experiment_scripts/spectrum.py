@@ -10,7 +10,8 @@ import numpy as np
 
 class spectrum(experiment):
     
-    name = 'Spectrum729_two'
+    name = 'Spectrum729_two'  # name to display in the scriptscanner
+    # list the required parameters for this experiment
     spectrum_required_parameters = [
                            ('Spectrum','custom'),
                            ('Spectrum','normal'),
@@ -58,12 +59,12 @@ class spectrum(experiment):
     
     def initialize(self, cxn, context, ident):
         self.ident = ident
-        self.excite = self.make_experiment(excitation_729)
-        self.excite.initialize(cxn, context, ident)
-        if self.parameters.Crystallization.auto_crystallization:
+        self.excite = self.make_experiment(excitation_729)   # make experiment. Instantiate the experiment object.
+        self.excite.initialize(cxn, context, ident)          # initialize the experiment
+        if self.parameters.Crystallization.auto_crystallization:  # see if the auto crystallization is on or not. If on then also initialize the auto-xtal experiment.
             self.crystallizer = self.make_experiment(crystallization)
             self.crystallizer.initialize(cxn, context, ident)
-        self.scan = []
+        self.scan = []                                       # empty list of things to be scanned later (probably the frequency)
         self.amplitude = None
         self.duration = None
         #self.cxnlab = labrad.connect('192.168.169.49') #connection to labwide network
@@ -72,12 +73,16 @@ class spectrum(experiment):
         self.spectrum_save_context = cxn.context()
     
     def setup_sequence_parameters(self):
+        '''
+        Setup the required paramters for this experiment. The most important this is the frequency array which we will use to scan.
+        '''
         sp = self.parameters.Spectrum
-        if sp.scan_selection == 'manual':
+        if sp.scan_selection == 'manual':   # manual scan parameter or the preset one
             minim,maxim,steps = sp.manual_scan
             duration = sp.manual_excitation_time
             amplitude = sp.manual_amplitude_729
         elif sp.scan_selection == 'auto':
+            # if auto, then we need to ask the drift tracker about the most updated frequency.
             center_frequency = cm.frequency_from_line_selection(sp.scan_selection, None , sp.line_selection, self.drift_tracker)
             center_frequency = cm.add_sidebands(center_frequency, sp.sideband_selection, self.parameters.TrapFrequencies)
             span, resolution, duration, amplitude = sp[sp.sensitivity_selection]
@@ -87,21 +92,24 @@ class spectrum(experiment):
         else:
             raise Exception("Incorrect Spectrum Scan Type")
         #making the scan
-        self.parameters['Excitation_729.rabi_excitation_duration'] = duration
-        self.parameters['Excitation_729.rabi_excitation_amplitude'] = amplitude
+        self.parameters['Excitation_729.rabi_excitation_duration'] = duration  # set the parameter of the experiment
+        self.parameters['Excitation_729.rabi_excitation_amplitude'] = amplitude  # set the parameter of the experiment
         minim = minim['MHz']; maxim = maxim['MHz']
         self.scan = np.linspace(minim,maxim, steps)
-        self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]
+        self.scan = [WithUnit(pt, 'MHz') for pt in self.scan]    # setup an array of the frequency scan
         
     def setup_data_vault(self):
-        localtime = time.localtime()
-        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
-        directory = ['','Experiments']
+        '''
+        This method setup the data vault to be ready for data saving
+        '''
+        localtime = time.localtime()                                            # get local time in secs from epoch.
+        datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)           # make the string according to the current time
+        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]  # make the directory name
+        directory = ['','Experiments']                                          # go to the directory
         directory.extend([self.name])
         directory.extend(dirappend)
-        self.dv.cd(directory ,True, context = self.spectrum_save_context)
-        output_size = self.excite.output_size
+        self.dv.cd(directory ,True, context = self.spectrum_save_context)       # True means if the directory is not there, then create one.
+        output_size = self.excite.output_size                                   # output size is used mainly for scanning multiple ions so the data is initialized with a correct dimensions
         dependants = [('Excitation','Ion {}'.format(ion),'Probability') for ion in range(output_size)]
         self.dv.new('Spectrum {}'.format(datasetNameAppend),[('Excitation', 'us')], dependants , context = self.spectrum_save_context)
         window_name = self.parameters.get('Spectrum.window_name', ['Spectrum'])
@@ -109,18 +117,23 @@ class spectrum(experiment):
         self.dv.add_parameter('plotLive', True, context = self.spectrum_save_context)
         
     def run(self, cxn, context):
-        self.setup_data_vault()
+        '''
+        Main method that run the experiment. An experiment will, by default, do "initialize" then "run" and then "finalize".
+        '''
+        
+        self.setup_data_vault()                    # call this to setup all necessary parameters and data saving
         self.setup_sequence_parameters()
-        for i,freq in enumerate(self.scan):
-            should_stop = self.pause_or_stop()
+        
+        for i,freq in enumerate(self.scan):        # loop the experiment through the scan array
+            should_stop = self.pause_or_stop()     
             if should_stop: break
-            excitation = self.get_excitation_crystallizing(cxn, context, freq)
-            if excitation is None: break
-            submission = [freq['MHz']]
+            excitation = self.get_excitation_crystallizing(cxn, context, freq)  # get excitation in the method (which includes auto-xtalization
+            if excitation is None: break      
+            submission = [freq['MHz']]             # initialize a list with the frequency first, then append the excitation data
             submission.extend(excitation)
-            self.dv.add(submission, context = self.spectrum_save_context)
-            self.update_progress(i)
-        return 12.0
+            self.dv.add(submission, context = self.spectrum_save_context)  # save to datavault
+            self.update_progress(i)                # update progress
+        return
     
     def get_excitation_crystallizing(self, cxn, context, freq):
         excitation = self.do_get_excitation(cxn, context, freq)

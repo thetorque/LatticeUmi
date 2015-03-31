@@ -42,9 +42,12 @@ class dac_widget(QtGui.QFrame, widget_ui):
             print e
             self.setDisabled(True)
         self.server = yield self.cxn.get_server('NI Analog Server')
+        
         ## setup a connection to listen to a signal from the server
         yield self.server.signal__new_voltage(self.SIGNALID, context = self.context)
         yield self.server.addListener(listener = self.followSignal, source = None, ID = self.SIGNALID, context = self.context)
+        
+        # get values from the registry and set the value of each spin box
         
         value1 = yield self.server.get_voltage('comp1')
         value2 = yield self.server.get_voltage('comp2')
@@ -72,6 +75,7 @@ class dac_widget(QtGui.QFrame, widget_ui):
         
     
     def connect_layout(self):
+        # set the layout to display the name of the channel
         self.doubleSpinBox0.valueChanged.connect(lambda: self.setVoltage('comp1'))
         self.doubleSpinBox1.valueChanged.connect(lambda: self.setVoltage('comp2'))
         self.doubleSpinBox2.valueChanged.connect(lambda: self.setVoltage('endcap1'))
@@ -83,6 +87,9 @@ class dac_widget(QtGui.QFrame, widget_ui):
         
     @inlineCallbacks
     def setVoltage(self, chan_name):
+        '''
+        Set the voltage according to the given channel name
+        '''
         try:
             if chan_name == 'comp1':
                 voltage = self.doubleSpinBox0.value()
@@ -108,6 +115,9 @@ class dac_widget(QtGui.QFrame, widget_ui):
             pass
         
     def followSignal(self, x, y):
+        '''
+        Use to update the display of the channel once the signal is received from the server that the new values are there
+        '''
         chan, param = y
         if chan == 'comp1':
             print "comp1 just got updated"
