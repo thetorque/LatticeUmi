@@ -192,7 +192,7 @@ class api_dac():
 #         print "done waiting"
 #         mythread.stop()
         
-    def setVoltagePattern(self, vertex_array, trigger = True, sampling_rate):
+    def setVoltagePattern(self, vertex_array, trigger, sampling_rate):
         '''
         Set the voltage pattern according to the input vertex_array. Also the trigger indicated if the pattern will wait for
         the trigger or just go when ready. The sampling_rate is the resolution in time for the voltage pattern.
