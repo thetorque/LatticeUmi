@@ -47,7 +47,7 @@ class QCustomFreqPower(QtGui.QFrame):
         self.spinFreq = QtGui.QDoubleSpinBox()
         self.spinFreq.setFont(QtGui.QFont('MS Shell Dlg 2',pointSize=16))
         self.spinFreq.setDecimals(9)
-        self.spinFreq.setSingleStep(0.00001) ## set single step here
+        self.spinFreq.setSingleStep(0.1) ## set single step here
         self.spinFreq.setRange(10.0,250.0)
         self.spinFreq.setKeyboardTracking(False)
         self.spinPower = QtGui.QDoubleSpinBox()

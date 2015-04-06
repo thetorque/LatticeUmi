@@ -65,10 +65,10 @@ class DDS(LabradServer):
         frequency = WithUnit(channel.frequency, 'MHz')
         returnValue(frequency)
     
-    @setting(45, 'Add DDS Pulses',  values = ['*(sv[s]v[s]v[MHz]v[dBm]v[deg])'])
+    @setting(45, 'Add DDS Pulses',  values = ['*(sv[s]v[s]v[MHz]v[dBm]v[deg]v[MHz])'])
     def addDDSPulses(self, c, values):
         '''
-        input in the form of a list [(name, start, duration, frequency, amplitude, phase)]
+        input in the form of a list [(name, start, duration, frequency, amplitude, phase, ramp_rate)]
         '''
         #print "add DDS"
         sequence = c.get('sequence')
@@ -77,8 +77,9 @@ class DDS(LabradServer):
             try:
                 name,start,dur,freq,ampl = value
                 phase  = 0.0
+                ramp_rate = 0.0
             except ValueError:
-                name,start,dur,freq,ampl,phase = value
+                name,start,dur,freq,ampl,phase, ramp_rate = value
             try:
                 channel = self.ddsDict[name]
             except KeyError:
@@ -88,18 +89,19 @@ class DDS(LabradServer):
             freq = freq['MHz']
             ampl = ampl['dBm']
             phase = phase['deg']
+            ramp_rate = ramp_rate['MHz']
             freq_off, ampl_off = channel.off_parameters
             if freq == 0 or ampl == 0: #off state
                 freq, ampl = freq_off,ampl_off
             else:
                 self._checkRange('frequency', channel, freq)
                 self._checkRange('amplitude', channel, ampl)
-            num = self.settings_to_num(channel, freq, ampl, phase)
+            num = self.settings_to_num(channel, freq, ampl, phase, ramp_rate)
             if not channel.phase_coherent_model:
                 num_off = self.settings_to_num(channel, freq_off, ampl_off)
             else:
                 #note that keeping the frequency the same when switching off to preserve phase coherence
-                num_off = self.settings_to_num(channel, freq, ampl_off, phase) 
+                num_off = self.settings_to_num(channel, freq, ampl_off, phase, ramp_rate) 
             #note < sign, because start can not be 0. 
             #this would overwrite the 0 position of the ram, and cause the dds to change before pulse sequence is launched
             if not self.sequenceTimeRange[0] < start <= self.sequenceTimeRange[1]: 
@@ -195,11 +197,11 @@ class DDS(LabradServer):
         #print buf
         return buf
     
-    def settings_to_num(self, channel, freq, ampl, phase = 0.0):
+    def settings_to_num(self, channel, freq, ampl, phase = 0.0, ramp_rate = 0.0):
         if not channel.phase_coherent_model:
             num = self._valToInt(channel, freq, ampl)
         else:
-            num = self._valToInt_coherent(channel, freq, ampl, phase)
+            num = self._valToInt_coherent(channel, freq, ampl, phase, ramp_rate)
         return num
     
     @inlineCallbacks
@@ -245,7 +247,7 @@ class DDS(LabradServer):
         num = self.settings_to_num(channel, freq, ampl)
         return num
     
-    def _valToInt_coherent(self, channel, freq, ampl, phase = 0):
+    def _valToInt_coherent(self, channel, freq, ampl, phase = 0, ramp_rate = 0): ### add ramp for ramping functionality
         '''
         takes the frequency and amplitude values for the specific channel and returns integer representation of the dds setting
         freq is in MHz
@@ -253,7 +255,7 @@ class DDS(LabradServer):
         '''
         ans = 0
         ## changed the precision from 32 to 64 to handle super fine frequency tuning
-        for val,r,m, precision in [(freq,channel.boardfreqrange, 1, 64), (ampl,channel.boardamplrange, 2 ** 64,  16), (phase,channel.boardphaserange, 2 ** 80,  16)]:
+        for val,r,m, precision in [(freq,channel.boardfreqrange, 1, 64), (ampl,channel.boardamplrange, 2 ** 64,  16), (phase,channel.boardphaserange, 2**80, 16), (ramp_rate, channel.boardramprange, 2**96, 16)]:
             minim, maxim = r
             resolution = (maxim - minim) / float(2**precision - 1)
             seq = int((val - minim)/resolution) #sequential representation
@@ -283,10 +285,19 @@ class DDS(LabradServer):
         phase_ampl_num = (num // 2**64)%(2**16)
         #print phase_ampl_num
         
-        a = bytearray(2)
-        a[0] = phase_ampl_num%256
-        a[1] = (phase_ampl_num//256)%256
-        a = bytearray.fromhex(u'0000') + a + bytearray.fromhex(u'0000 0000')
+        ### amplitude
+        amp = bytearray(2)
+        amp[0] = phase_ampl_num%256
+        amp[1] = (phase_ampl_num//256)%256
+        
+        ### ramp rate. 16 bit tunability from roughly 116 Hz/ms to 7.5 MHz/ms 
+        ramp_rate = (num // 2**96)%(2**16)
+        ramp = bytearray(2)
+        ramp[0] = ramp_rate%256
+        ramp[1] = (ramp_rate//256)%256
+        
+        ##a = bytearray.fromhex(u'0000') + amp + bytearray.fromhex(u'0000 0000')
+        a = bytearray.fromhex(u'0000') + amp + bytearray.fromhex(u'0000') + ramp
         
         ans = a + b
         return ans

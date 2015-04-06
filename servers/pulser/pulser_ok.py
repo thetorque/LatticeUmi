@@ -291,6 +291,7 @@ class Pulser(LabradServer, DDS, LineTrigger):
         Returns true if the sequence has completed within a timeout period
         """
         if timeout is None: timeout = self.sequenceTimeRange[1]
+        #print timeout
         requestCalls = int(timeout / 0.050 ) #number of request calls
         for i in range(requestCalls):
             yield self.inCommunication.acquire()
