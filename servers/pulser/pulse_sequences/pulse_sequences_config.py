@@ -21,6 +21,12 @@ class dds_channel(object):
         can be overwitten to provide a custom phase conversion
         '''
         return phase
+    
+    def ramprate_conversion(self, ramprate):
+        '''
+        can be overwitten to provide a custom phase conversion
+        '''
+        return ramprate    
         
 class double_pass_729(dds_channel):
     def __init__(self, name):

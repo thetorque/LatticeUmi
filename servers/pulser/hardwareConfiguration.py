@@ -21,7 +21,7 @@ class ddsConfiguration(object):
         self.amplitude = amplitude
         self.state = True
         self.boardfreqrange = args.get('boardfreqrange', (0.0, 2000.0))
-        self.boardramprange = args.get('boardramprange', (0.000116, 7.7))
+        self.boardramprange = args.get('boardramprange', (0.000113687, 7.4505806))
         self.boardamplrange = args.get('boardamplrange', (-63.0, -3.0))
         self.boardphaserange = args.get('boardphaserange', (0.0, 360.0))
         self.off_parameters = args.get('off_parameters', (0.0, -63.0))
@@ -67,8 +67,8 @@ class hardwareConfiguration(object):
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
-                'DDS_0':ddsConfiguration(        0,  (1.0,400.0),    (-63.0,-5.0),   71.0,   -22.0),
-                'DDS_1':ddsConfiguration(    1,  (70.0,100.0),   (-63.0,-12.0),  90.0,   -63.0),
+                'DDS_0':ddsConfiguration(        0,  (1.0,400.0),    (-63.0,-5.0),   70.0,   -63.0),
+                'DDS_1':ddsConfiguration(    1,  (1.0,400.0),   (-63.0,-12.0),  70.0,   -63.0),
                 }
     remoteChannels = {
                     }
