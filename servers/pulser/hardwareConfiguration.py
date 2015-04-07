@@ -41,7 +41,7 @@ class hardwareConfiguration(object):
     timeResolution = '40.0e-9' #seconds
     timeResolvedResolution = 10.0e-9
     maxSwitches = 1022
-    resetstepDuration = 2 #duration of advanceDDS and resetDDS TTL pulses in units of timesteps
+    resetstepDuration = 3 #duration of advanceDDS and resetDDS TTL pulses in units of timesteps
     collectionTimeRange = (0.010, 5.0) #range for normal pmt counting
     sequenceTimeRange = (0.0, 85.0) #range for duration of pulse sequence    
     isProgrammed = False
@@ -67,8 +67,8 @@ class hardwareConfiguration(object):
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
-                'DDS_0':ddsConfiguration(        0,  (1.0,400.0),    (-63.0,-5.0),   70.0,   -63.0),
-                'DDS_1':ddsConfiguration(    1,  (1.0,400.0),   (-63.0,-12.0),  70.0,   -63.0),
+                'DDS_0':ddsConfiguration(        0,  (0.01,400.0),    (-63.0,-5.0),   70.0,   -63.0),
+                'DDS_1':ddsConfiguration(    1,  (0.01,400.0),   (-63.0,-12.0),  70.0,   -63.0),
                 }
     remoteChannels = {
                     }

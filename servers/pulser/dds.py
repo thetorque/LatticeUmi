@@ -255,11 +255,26 @@ class DDS(LabradServer):
         '''
         ans = 0
         ## changed the precision from 32 to 64 to handle super fine frequency tuning
-        for val,r,m, precision in [(freq,channel.boardfreqrange, 1, 64), (ampl,channel.boardamplrange, 2 ** 64,  16), (phase,channel.boardphaserange, 2**80, 16), (ramp_rate, channel.boardramprange, 2**96, 16)]:
+        for val,r,m, precision in [(freq,channel.boardfreqrange, 1, 64), (ampl,channel.boardamplrange, 2 ** 64,  16), (phase,channel.boardphaserange, 2**80, 16)]:
             minim, maxim = r
+            #print r
             resolution = (maxim - minim) / float(2**precision - 1)
+            #print resolution
             seq = int((val - minim)/resolution) #sequential representation
+            #print seq
             ans += m*seq
+            
+        ### add ramp rate 
+        minim, maxim = channel.boardramprange
+        resolution = (maxim - minim) / float(2**16 - 1)
+        if ramp_rate < minim: ### if the ramp rate is smaller than the minim, thenn treat it as no rampp
+            seq = 0
+        elif ramp_rate > maxim:
+            seq = 2**16-1
+        else:
+            seq = int((ramp_rate-minim)/resolution)  
+        ans += 2**96*seq 
+        
         return ans
     
 #         ans = 0
