@@ -22,6 +22,7 @@ class ddsConfiguration(object):
         self.state = True
         self.boardfreqrange = args.get('boardfreqrange', (0.0, 2000.0))
         self.boardramprange = args.get('boardramprange', (0.000113687, 7.4505806))
+        self.board_amp_ramp_range = args.get('board_amp_ramp_range', (0.00174623, 22.8896))
         self.boardamplrange = args.get('boardamplrange', (-63.0, -3.0))
         self.boardphaserange = args.get('boardphaserange', (0.0, 360.0))
         self.off_parameters = args.get('off_parameters', (0.0, -63.0))

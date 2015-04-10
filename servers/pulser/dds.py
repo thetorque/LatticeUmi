@@ -4,6 +4,7 @@ from twisted.internet.threads import deferToThread
 import array
 from labrad.units import WithUnit
 from errors import dds_access_locked
+import numpy as np
 
 class DDS(LabradServer):
     
@@ -65,10 +66,10 @@ class DDS(LabradServer):
         frequency = WithUnit(channel.frequency, 'MHz')
         returnValue(frequency)
     
-    @setting(45, 'Add DDS Pulses',  values = ['*(sv[s]v[s]v[MHz]v[dBm]v[deg]v[MHz])'])
+    @setting(45, 'Add DDS Pulses',  values = ['*(sv[s]v[s]v[MHz]v[dBm]v[deg]v[MHz]v[dB])'])
     def addDDSPulses(self, c, values):
         '''
-        input in the form of a list [(name, start, duration, frequency, amplitude, phase, ramp_rate)]
+        input in the form of a list [(name, start, duration, frequency, amplitude, phase, ramp_rate, amp_ramp_rate)]
         '''
         #print "add DDS"
         sequence = c.get('sequence')
@@ -79,7 +80,7 @@ class DDS(LabradServer):
                 phase  = 0.0
                 ramp_rate = 0.0
             except ValueError:
-                name,start,dur,freq,ampl,phase, ramp_rate = value
+                name,start,dur,freq,ampl,phase, ramp_rate, amp_ramp_rate = value
             try:
                 channel = self.ddsDict[name]
             except KeyError:
@@ -90,18 +91,19 @@ class DDS(LabradServer):
             ampl = ampl['dBm']
             phase = phase['deg']
             ramp_rate = ramp_rate['MHz']
+            amp_ramp_rate = amp_ramp_rate['dB']
             freq_off, ampl_off = channel.off_parameters
             if freq == 0 or ampl == 0: #off state
                 freq, ampl = freq_off,ampl_off
             else:
                 self._checkRange('frequency', channel, freq)
                 self._checkRange('amplitude', channel, ampl)
-            num = self.settings_to_num(channel, freq, ampl, phase, ramp_rate)
+            num = self.settings_to_num(channel, freq, ampl, phase, ramp_rate, amp_ramp_rate)
             if not channel.phase_coherent_model:
                 num_off = self.settings_to_num(channel, freq_off, ampl_off)
             else:
                 #note that keeping the frequency the same when switching off to preserve phase coherence
-                num_off = self.settings_to_num(channel, freq, ampl_off, phase, ramp_rate) 
+                num_off = self.settings_to_num(channel, freq, ampl_off, phase, ramp_rate, amp_ramp_rate) 
             #note < sign, because start can not be 0. 
             #this would overwrite the 0 position of the ram, and cause the dds to change before pulse sequence is launched
             if not self.sequenceTimeRange[0] < start <= self.sequenceTimeRange[1]: 
@@ -197,11 +199,11 @@ class DDS(LabradServer):
         #print buf
         return buf
     
-    def settings_to_num(self, channel, freq, ampl, phase = 0.0, ramp_rate = 0.0):
+    def settings_to_num(self, channel, freq, ampl, phase = 0.0, ramp_rate = 0.0, amp_ramp_rate = 0.0):
         if not channel.phase_coherent_model:
             num = self._valToInt(channel, freq, ampl)
         else:
-            num = self._valToInt_coherent(channel, freq, ampl, phase, ramp_rate)
+            num = self._valToInt_coherent(channel, freq, ampl, phase, ramp_rate, amp_ramp_rate)
         return num
     
     @inlineCallbacks
@@ -247,7 +249,7 @@ class DDS(LabradServer):
         num = self.settings_to_num(channel, freq, ampl)
         return num
     
-    def _valToInt_coherent(self, channel, freq, ampl, phase = 0, ramp_rate = 0): ### add ramp for ramping functionality
+    def _valToInt_coherent(self, channel, freq, ampl, phase = 0, ramp_rate = 0, amp_ramp_rate = 0): ### add ramp for ramping functionality
         '''
         takes the frequency and amplitude values for the specific channel and returns integer representation of the dds setting
         freq is in MHz
@@ -273,7 +275,24 @@ class DDS(LabradServer):
             seq = 2**16-1
         else:
             seq = int((ramp_rate-minim)/resolution)  
+        
         ans += 2**96*seq 
+        
+        ### add amp ramp rate
+        
+        minim, maxim = channel.board_amp_ramp_range
+        minim_slope = 1/maxim
+        maxim_slope = 1/minim
+        resolution = (maxim_slope - minim_slope) / float(2**16 - 1)
+        if (amp_ramp_rate < minim):
+            seq_amp_ramp = 0
+        elif (amp_ramp_rate>maxim):
+            seq_amp_ramp = 1
+        else:
+            slope = 1/amp_ramp_rate
+            seq_amp_ramp = int(np.ceil((slope - minim_slope)/resolution))  # return ceiling of the number
+            
+        ans += 2**112*seq_amp_ramp
         
         return ans
     
@@ -311,8 +330,15 @@ class DDS(LabradServer):
         ramp[0] = ramp_rate%256
         ramp[1] = (ramp_rate//256)%256
         
+        ##  amplitude ramp rate
+        amp_ramp_rate = (num // 2**112)%(2**16)
+        #print "amp_ramp is" , amp_ramp_rate
+        amp_ramp = bytearray(2)
+        amp_ramp[0] = amp_ramp_rate%256
+        amp_ramp[1] = (amp_ramp_rate//256)%256
+        
         ##a = bytearray.fromhex(u'0000') + amp + bytearray.fromhex(u'0000 0000')
-        a = bytearray.fromhex(u'0000') + amp + bytearray.fromhex(u'0000') + ramp
+        a = bytearray.fromhex(u'0000') + amp + amp_ramp + ramp
         
         ans = a + b
         return ans
