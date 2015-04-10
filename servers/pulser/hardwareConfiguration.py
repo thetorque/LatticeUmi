@@ -69,7 +69,7 @@ class hardwareConfiguration(object):
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
                 'DDS_0':ddsConfiguration(        0,  (0.01,400.0),    (-63.0,-5.0),   70.0,   -63.0),
-                'DDS_1':ddsConfiguration(    1,  (0.01,400.0),   (-63.0,-12.0),  70.0,   -63.0),
+                'DDS_1':ddsConfiguration(    1,  (0.01,400.0),   (-63.0,-5.0),  70.0,   -63.0),
                 }
     remoteChannels = {
                     }
