@@ -37,9 +37,9 @@ p.add_dds_pulses(DDS)
 p.program_sequence()
 
 ##start once
-for i in range(100000):
+for i in range(1):
     #print i
-    p.start_number(5)
+    p.start_number(2)
 
 # ##wait until sequence is done
     p.wait_sequence_done()
