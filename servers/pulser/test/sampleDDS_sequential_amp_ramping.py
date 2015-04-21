@@ -34,7 +34,6 @@ DDS = [('DDS_0', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(88.0, 'MHz
 p.add_dds_pulses(DDS)
 
 ##program sequence##
-##program sequecne##
 p.program_sequence()
 
 ##start once
