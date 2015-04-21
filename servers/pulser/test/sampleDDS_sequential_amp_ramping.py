@@ -15,7 +15,7 @@ p.add_ttl_pulse('ttl_0',WithUnit(0,'ms'),WithUnit(100,'ms'))
 p.add_ttl_pulse('ttl_0',WithUnit(200,'ms'),WithUnit(100,'ms'))
 p.add_ttl_pulse('ttl_0',WithUnit(400,'ms'),WithUnit(100,'ms'))
 
-## add a list of DDS #
+## add a list of DDS ##
 
 amp1 = WithUnit(-30,'dBm')
 amp2 = WithUnit(-40,'dBm')
