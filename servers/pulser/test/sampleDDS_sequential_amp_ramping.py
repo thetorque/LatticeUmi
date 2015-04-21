@@ -15,7 +15,7 @@ p.add_ttl_pulse('ttl_0',WithUnit(0,'ms'),WithUnit(100,'ms'))
 p.add_ttl_pulse('ttl_0',WithUnit(200,'ms'),WithUnit(100,'ms'))
 p.add_ttl_pulse('ttl_0',WithUnit(400,'ms'),WithUnit(100,'ms'))
 
-## add a list of DDS
+## add a list of DDS ##
 
 amp1 = WithUnit(-30,'dBm')
 amp2 = WithUnit(-40,'dBm')
@@ -33,13 +33,14 @@ DDS = [('DDS_0', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(88.0, 'MHz
 ## program DDS
 p.add_dds_pulses(DDS)
 
-##program sequence
+##program sequence##
+##program sequecne##
 p.program_sequence()
 
 ##start once
-for i in range(100000):
+for i in range(1):
     #print i
-    p.start_number(5)
+    p.start_number(2)
 
 # ##wait until sequence is done
     p.wait_sequence_done()
