@@ -31,6 +31,7 @@ class api(object):
     
     def programOKBoard(self):
         prog = self.xem.ConfigureFPGA(self.okDeviceFile)
+        #print prog
         if prog: raise Exception ("Not able to program FPGA")
         # this configure the PLL for the XEM6010. Probably need to change for other OK module
         pll = ok.PLL22150()

@@ -315,14 +315,18 @@ class DDS(LabradServer):
             b[i]=(freq_num//(2**(i*8)))%256
             #print i, "=", (freq_num//(2**(i*8)))%256
          
-        #phase_ampl_num = (num // 2**32)%(2**16)
-        phase_ampl_num = (num // 2**64)%(2**16)
-        #print phase_ampl_num
+        #phase
+        phase_num = (num // 2**80)%(2**16)
+        phase = bytearray(2)
+        phase[0] = phase_num%256
+        phase[1] = (phase_num//256)%256
+        
         
         ### amplitude
+        ampl_num = (num // 2**64)%(2**16)
         amp = bytearray(2)
-        amp[0] = phase_ampl_num%256
-        amp[1] = (phase_ampl_num//256)%256
+        amp[0] = ampl_num%256
+        amp[1] = (ampl_num//256)%256
         
         ### ramp rate. 16 bit tunability from roughly 116 Hz/ms to 7.5 MHz/ms 
         ramp_rate = (num // 2**96)%(2**16)
@@ -338,7 +342,7 @@ class DDS(LabradServer):
         amp_ramp[1] = (amp_ramp_rate//256)%256
         
         ##a = bytearray.fromhex(u'0000') + amp + bytearray.fromhex(u'0000 0000')
-        a = bytearray.fromhex(u'0000') + amp + amp_ramp + ramp
+        a = phase + amp + amp_ramp + ramp
         
         ans = a + b
         return ans
