@@ -63,6 +63,7 @@ class AO_plotter(QtGui.QWidget):
                 plot = self.fig.add_subplot(gs[i,0],sharex=plot) ## scale the x-axis to be the same as the first plot for subsequent plots
                 
             plot.set_ylabel('V')
+            plot.grid(True)
             ## show x label only for the lowest channel
             plot.tick_params(axis='x',which='both',labelbottom='off')
             if i == (self.channel-1):

@@ -214,7 +214,7 @@ class api_dac():
                  time_location = np.where((time_array>t[i])*(time_array<=t[i+1]))### look for the location of the time span we are interested in
                  slope = (v[i+1]-v[i])/(t[i+1]-t[i])  # calculate the voltage slope in this region
                  volt_array[j][time_location] = v[i]+slope*(time_array[time_location]-t[i])  # simply a linear equation to calculate the voltage at each time stamp
-            print volt_array[j]
+            #print volt_array[j]
         
         data = np.vstack((time_array,volt_array)) # stack the time array and voltage array together
         mythread = WaveformThread(data, trigger)  #
