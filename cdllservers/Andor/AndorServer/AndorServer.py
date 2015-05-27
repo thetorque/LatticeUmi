@@ -380,6 +380,20 @@ class AndorServer(LabradServer):
                 returnValue(True)
             yield self.wait(0.050)
         returnValue(False)
+        
+    ### turn on shutter
+    @setting(32, "Set Shutter", shutter_state = 'i',shutter_mode='i', returns='')
+    def setShutter(self, c, shutter_state, shutter_mode):
+        """Sets the status of the shutter"""
+        print 'acquiring: {}'.format(self.setShutter.__name__)
+        yield self.lock.acquire()
+        try:
+            print 'acquired : {}'.format(self.setShutter.__name__)
+            yield deferToThread(self.camera.set_shutter, shutter_state, shutter_mode)
+        finally:
+            print 'releasing: {}'.format(self.setShutter.__name__)
+            self.lock.release()
+        
     
     @setting(31, "Get Detector Dimensions", returns = 'ww')
     def get_detector_dimensions(self, c):

@@ -169,7 +169,11 @@ class AndorCamera(object):
     def get_temperature(self):
         temperature = c.c_int()
         error = self.dll.GetTemperature(c.byref(temperature))
-        if (ERROR_CODE[error] == 'DRV_TEMP_STABILIZED' or ERROR_CODE[error] == 'DRV_TEMP_NOT_REACHED' or ERROR_CODE[error] == 'DRV_TEMP_DRIFT' or ERROR_CODE[error] == 'DRV_TEMP_NOT_STABILIZED'):
+        if (ERROR_CODE[error] == 'DRV_TEMP_STABILIZED' or 
+            ERROR_CODE[error] == 'DRV_TEMP_NOT_REACHED' or 
+            ERROR_CODE[error] == 'DRV_TEMP_DRIFT' or 
+            ERROR_CODE[error] == 'DRV_TEMP_NOT_STABILIZED' or 
+            ERROR_CODE[error] == 'DRV_TEMP_OFF'):  ## add this one to allow the reading of temperature even when the cooler is off
             self.info.temperature = temperature.value
             return temperature.value
         else:
@@ -182,6 +186,14 @@ class AndorCamera(object):
             self.info.temperature_setpoint = temperature.value
         else:
             raise Exception(ERROR_CODE[error])
+        
+    ### add shutter control ###
+    
+    def set_shutter(self,shutter_state, shutter_mode):
+        error = self.dll.SetShutter(shutter_state,shutter_mode,0,0)
+        if not (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            raise Exception(ERROR_CODE[error])
+        return None
         
     def acquire_camera_serial_number(self):
         serial_number = c.c_int()
