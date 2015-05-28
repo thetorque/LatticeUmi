@@ -12,7 +12,6 @@ import ctypes
 import numpy as np
 import threading
 import sys
-import ok
 # load any DLLs
 nidaq = ctypes.windll.nicaiu # load the DLL
 ##############################
