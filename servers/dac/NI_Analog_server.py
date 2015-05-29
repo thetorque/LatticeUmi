@@ -62,10 +62,12 @@ class NI_Analog_Server(LabradServer):
         '''creates dictionary for information storage''' 
         d = {}
         for name,channel_number in [        # make a dictionary of the channel name and ID. Should be somewhere less obscure.
-                             ('comp1', 0),
-                             ('comp2', 1),
-                             ('endcap1', 2),
-                             ('endcap2', 3),
+                             ('B_x', 0),
+                             ('B_y', 1),
+                             ('B_z', 2),
+                             ('MOT', 3),
+                             ('lattice',4),
+                             ('clock',5),
                              ]: 
             chan = dac_channel(name, channel_number)
             chan.voltage = yield self.getRegValue(name)   # get value of each channel from the registry
