@@ -13,19 +13,25 @@ with labrad.connect() as cxn:
 #         start = i * duration
 #         pulser.add_ttl_pulse((channel_names[i],  start , duration))
 
-    pulser.add_ttl_pulse('channel_0',WithUnit(0,'ms'),WithUnit(100,'ms'))
-    pulser.add_ttl_pulse('channel_0',WithUnit(200,'ms'),WithUnit(100,'ms'))
-    pulser.add_ttl_pulse('channel_0',WithUnit(400,'ms'),WithUnit(100,'ms'))
+    pulser.add_ttl_pulse('ttl_0',WithUnit(0,'ms'),WithUnit(250,'ms'))
+    pulser.add_ttl_pulse('ttl_0',WithUnit(500,'ms'),WithUnit(250,'ms'))
+    pulser.add_ttl_pulse('ttl_0',WithUnit(1000,'ms'),WithUnit(250,'ms'))
+    pulser.add_ttl_pulse('ttl_0',WithUnit(1500,'ms'),WithUnit(250,'ms'))
     
-    pulser.add_ttl_pulse('AdvanceDDS',WithUnit(10,'ms'),WithUnit(1,'ms'))
-    pulser.add_ttl_pulse('AdvanceDDS',WithUnit(20,'ms'),WithUnit(1,'ms'))
-    pulser.add_ttl_pulse('AdvanceDDS',WithUnit(100,'ms'),WithUnit(1,'ms'))
+    pulser.add_ttl_pulse('ttl_1',WithUnit(0,'ms'),WithUnit(250,'ms'))
+    pulser.add_ttl_pulse('ttl_1',WithUnit(500,'ms'),WithUnit(250,'ms'))
+    pulser.add_ttl_pulse('ttl_1',WithUnit(1000,'ms'),WithUnit(250,'ms'))
+    pulser.add_ttl_pulse('ttl_1',WithUnit(1500,'ms'),WithUnit(250,'ms'))
     
-    pulser.add_ttl_pulse('channel_1',WithUnit(0,'ms'),WithUnit(100,'ms'))
-    pulser.add_ttl_pulse('channel_2',WithUnit(200,'ms'),WithUnit(100,'ms'))
-    pulser.add_ttl_pulse('channel_3',WithUnit(400,'ms'),WithUnit(100,'ms'))
+    #pulser.add_ttl_pulse('AdvanceDDS',WithUnit(10,'ms'),WithUnit(1,'ms'))
+    #pulser.add_ttl_pulse('AdvanceDDS',WithUnit(20,'ms'),WithUnit(1,'ms'))
+    #pulser.add_ttl_pulse('AdvanceDDS',WithUnit(100,'ms'),WithUnit(1,'ms'))
     
-    pulser.add_ttl_pulse('ResetDDS',WithUnit(500,'ms'),WithUnit(1,'ms'))
+    #pulser.add_ttl_pulse('ttl_1',WithUnit(0,'ms'),WithUnit(100,'ms'))
+    #pulser.add_ttl_pulse('channel_2',WithUnit(200,'ms'),WithUnit(100,'ms'))
+    #pulser.add_ttl_pulse('channel_3',WithUnit(400,'ms'),WithUnit(100,'ms'))
+    
+    #pulser.add_ttl_pulse('ResetDDS',WithUnit(500,'ms'),WithUnit(1,'ms'))
     
     
 #     pulser.program_sequence()
@@ -35,6 +41,6 @@ with labrad.connect() as cxn:
 #     sp.makePlot()
         
     pulser.program_sequence()
-    pulser.start_number(10)
+    pulser.start_number(3)
     pulser.wait_sequence_done()
     pulser.stop_sequence()

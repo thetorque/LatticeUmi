@@ -57,19 +57,25 @@ class hardwareConfiguration(object):
     
     #name: (channelNumber, ismanual, manualstate,  manualinversion, autoinversion)
     channelDict = {
-                   'ttl_0':channelConfiguration(0, True, False, False, False),
-                   'ttl_1':channelConfiguration(1, True, False, False, False),
-                   'channel_2':channelConfiguration(2, True, False, False, False),
-                   'channel_3':channelConfiguration(3, True, False, False, False),
-                   'channel_4':channelConfiguration(4, True, False, False, False),
+                   'ttl_0':channelConfiguration(0, False, False, False, False),
+                   'ttl_1':channelConfiguration(1, False, False, False, False),
+                   'ttl_2':channelConfiguration(2, False, False, False, False),
+                   'ttl_3':channelConfiguration(3, False, False, False, False),
+                   'ttl_4':channelConfiguration(4, False, False, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
                    
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
-                'DDS_0':ddsConfiguration(        0,  (0.01,800.0),    (-63.0,-3.0),   70.0,   -63.0),
-                'DDS_1':ddsConfiguration(    1,  (0.01,800.0),   (-63.0,-3.0),  70.0,   -63.0),
+                'DDS_0':ddsConfiguration(    0,  (0.01,800.0),   (-63.0,-3.0),  70.0,   -63.0),
+                'DDS_1':ddsConfiguration(    1,  (0.01,800.0),   (-63.0,-3.0),  75.0,   -63.0),
+                'DDS_2':ddsConfiguration(    2,  (0.01,800.0),   (-63.0,-3.0),  80.0,   -63.0),
+                'DDS_3':ddsConfiguration(    3,  (0.01,800.0),   (-63.0,-3.0),  85.0,   -63.0),
+                'DDS_4':ddsConfiguration(    4,  (0.01,800.0),   (-63.0,-3.0),  90.0,   -63.0),
+                'DDS_5':ddsConfiguration(    5,  (0.01,800.0),   (-63.0,-3.0),  95.0,   -63.0),
+                'DDS_6':ddsConfiguration(    6,  (0.01,800.0),   (-63.0,-3.0), 100.0,   -63.0),
+                'DDS_7':ddsConfiguration(    7,  (0.01,800.0),   (-63.0,-3.0), 105.0,   -63.0),
                 }
     remoteChannels = {
                     }
