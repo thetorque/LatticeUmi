@@ -37,6 +37,7 @@ class AndorServer(LabradServer):
     def initServer(self):
         self.listeners = set()
         self.camera = AndorCamera()
+        self.camera.set_shutter(0, 1)
         self.lock = DeferredLock()
         self.gui = AndorVideo(self)
     
