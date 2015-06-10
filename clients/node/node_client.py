@@ -12,11 +12,12 @@ except:
     raise()
 
 nodeDict = {
-            'node UMI':
+            'node ELI':
                 ['Data Vault',
-                'NI Analog Server',
-                'NormalPMTFlow',
-                'SD Tracker',
+                 'Andor Server',
+                #'NI Analog Server',
+                #'NormalPMTFlow',
+                #'SD Tracker',
                 'ScriptScanner',
                 'ParameterVault',
                 'Pulser'],

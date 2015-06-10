@@ -13,6 +13,7 @@ class config(object):
 #                ('lattice.scripts.experiments.Experiments729.excitations', 'excitation_729'), 
                ('experiment.experiment_scripts.spectrum', 'spectrum'), 
                ('experiment.experiment_scripts.spectrum2', 'spectrum'), 
+               ('experiment.experiment_scripts.MOT_loading', 'MOT_loading'),
                ]
 
     allowed_concurrent = {

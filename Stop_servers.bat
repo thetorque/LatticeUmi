@@ -1,1 +1,1 @@
-python C:\Users\Thaned\Desktop\LatticeUmi\clients\node\node_stop_client.py
+python C:\Users\Hg-team\Desktop\LatticeUmi\clients\node\node_stop_client.py
