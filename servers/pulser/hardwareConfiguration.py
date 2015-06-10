@@ -50,7 +50,7 @@ class hardwareConfiguration(object):
     collectionMode = 'Normal' #default PMT mode
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
     okDeviceID = 'Pulser2'
-    okDeviceFile = 'pulser_riken_2015_03_17.bit'
+    okDeviceFile = 'photon_2015_06_10.bit'
     lineTriggerLimits = (0, 15000)#values in microseconds 
     secondPMT = False
     DAC = False
@@ -64,6 +64,8 @@ class hardwareConfiguration(object):
                    'ttl_4':channelConfiguration(4, False, False, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
+                   'AO1':channelConfiguration(20, False, False, False, False), ### triggering for analog board
+                   'AO2':channelConfiguration(21, False, False, False, False), ### triggering for analog board
                    
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
