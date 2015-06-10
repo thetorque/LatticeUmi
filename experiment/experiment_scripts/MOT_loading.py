@@ -1,6 +1,4 @@
 from servers.script_scanner.scan_methods import experiment
-from experiment.misc_scripts.common_methods_729 import common_methods_729 as cm
-from experiment.misc_scripts.Camera.ion_state_detector import ion_state_detector
 from experiment.pulser_sequences.MOT_loading_test import MOT_loading
 from labrad.units import WithUnit
 import labrad
@@ -23,22 +21,22 @@ class MOT_loading(experiment):
         self.pulser = cxn.pulser
 #         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
-        self.total_readouts = []
-        self.readout_save_context = cxn.context()
-        self.histogram_save_context = cxn.context()
-        self.readout_save_iteration = 0
+#        self.total_readouts = []
+#        self.readout_save_context = cxn.context()
+#        self.histogram_save_context = cxn.context()
+#        self.readout_save_iteration = 0
 #         self.setup_sequence_parameters()
 #         self.setup_initial_switches()
 #         self.setup_data_vault()
 #         self.use_camera = self.parameters.StateReadout.use_camera_for_readout
-        self.use_camera = True
-        if self.use_camera:
-            self.initialize_camera(cxn)
+#        self.use_camera = True
+#        if self.use_camera:
+        self.initialize_camera(cxn)
             
     def initialize_camera(self, cxn):
         self.total_camera_confidences = []
-        p = self.parameters.IonsOnCamera
-        from lmfit import Parameters as lmfit_Parameters
+#        p = self.parameters.IonsOnCamera
+#        from lmfit import Parameters as lmfit_Parameters
         self.camera = cxn.andor_server
 #         self.fitter = ion_state_detector(int(p.ion_number))
         self.camera_initially_live_display = self.camera.is_live_display_running()
@@ -119,14 +117,14 @@ class MOT_loading(experiment):
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
 #         self.plot_current_sequence(cxn)
-        if self.use_camera:
+        #if self.use_camera:
             #print 'starting acquisition'
-            self.camera.set_number_kinetics(repetitions)
-            self.camera.start_acquisition()
+        self.camera.set_number_kinetics(repetitions)
+        self.camera.start_acquisition()
         self.pulser.start_number(1)
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
-        if not self.use_camera:
+#        if not self.use_camera:
             #get percentage of the excitation using the PMT threshold
 #             readouts = self.pulser.get_readout_counts().asarray
 #             self.save_data(readouts)            
@@ -137,17 +135,17 @@ class MOT_loading(experiment):
 #                 perc_excited = -1.0
 #             ion_state = [perc_excited]
 # #             print readouts
-            pass
-        else:
+#            pass
+#        else:
             #get the percentage of excitation using the camera state readout
-            proceed = self.camera.wait_for_kinetic()
-            if not proceed:
-                self.camera.abort_acquisition()
-                
-                self.finalize(cxn, context)
-                raise Exception ("Did not get all kinetic images from camera")
-            images = self.camera.get_acquired_data(repetitions).asarray
+        proceed = self.camera.wait_for_kinetic()
+        if not proceed:
             self.camera.abort_acquisition()
+                
+            self.finalize(cxn, context)
+            raise Exception ("Did not get all kinetic images from camera")
+        images = self.camera.get_acquired_data(repetitions).asarray
+        self.camera.abort_acquisition()
             #x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
             #y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
             #images = numpy.reshape(images, (repetitions, y_pixels, x_pixels))
