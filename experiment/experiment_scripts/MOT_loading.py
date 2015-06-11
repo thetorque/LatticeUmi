@@ -4,7 +4,7 @@ from labrad.units import WithUnit
 import labrad
 import numpy
 import time
-
+from datetime import datetime
 import matplotlib.pyplot as plt
        
 class MOT_loading(experiment):
@@ -15,7 +15,7 @@ class MOT_loading(experiment):
     @classmethod
     def all_required_parameters(cls):
         params = set(cls.excitation_required_parameters)
-        #params = params.union(set(cls.pulse_sequence.all_required_parameters()))
+        params = params.union(set(cls.pulse_sequence.all_required_parameters()))
         params = list(params)
         return params
     
@@ -90,7 +90,10 @@ class MOT_loading(experiment):
         self.save_directory.extend([self.name])
         self.save_directory.extend(dirappend)
         self.dv.cd(self.save_directory ,True, context = self.readout_save_context)
-        self.dv.new('MOT {}'.format(self.datasetNameAppend),[('Time', 'Sec')],[('S_state','S_state.','No.'),('P_state','P_state.','No.'),('BG','BG','No.')], context = self.readout_save_context)        
+        self.dv.new('MOT {}'.format(self.datasetNameAppend),[('Time', 'Sec')],[('S_state','S_state.','No.'),('P_state','P_state.','No.'),('BG','BG','No.')], context = self.readout_save_context)   
+        self.dv.add_parameter('Window', ['MOT population'], context = self.readout_save_context)     
+        self.dv.add_parameter('plotLive', True, context = self.readout_save_context)     
+        
     
 #     def setup_sequence_parameters(self):
 #         op = self.parameters.OpticalPumping
@@ -133,7 +136,10 @@ class MOT_loading(experiment):
         self.camera.set_number_kinetics(3)
         self.camera.start_acquisition()
         
-        start_time = time.time()
+        
+        ### get no. of second of today
+        now = datetime.now()
+        start_time = (now-now.replace(hour=0,minute=0,second=0,microsecond=0)).total_seconds()
         
         self.pulser.start_number(1)
         self.pulser.wait_sequence_done()
@@ -155,7 +161,6 @@ class MOT_loading(experiment):
         proceed = self.camera.wait_for_kinetic()
         if not proceed:
             self.camera.abort_acquisition()
-                
             self.finalize(cxn, context)
             raise Exception ("Did not get all kinetic images from camera")
         images = self.camera.get_acquired_data(repetitions).asarray

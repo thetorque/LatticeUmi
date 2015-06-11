@@ -11,11 +11,9 @@ from treedict import TreeDict
 
 class MOT_loading(pulse_sequence):
     
-#     required_parameters = [ 
-#                            ('Heating', 'background_heating_time'),
-#                            ('OpticalPumping','optical_pumping_enable'), 
-#                            ('SidebandCooling','sideband_cooling_enable'),
-#                            ]
+    required_parameters = [ 
+                           ('MOT_loading', 'loading_time'),
+                           ]
 #     
 #     required_subsequences = [doppler_cooling_after_repump_d, empty_sequence, optical_pumping, 
 #                              rabi_excitation, tomography_readout, turn_off_all, sideband_cooling]
@@ -36,11 +34,14 @@ class MOT_loading(pulse_sequence):
         #self.addDDS('DDS_0',WithUnit(1.01,'s'),WithUnit(200.0,'ms'),WithUnit(60.0,'MHz'),WithUnit(-20,'dBm'))
         
         #Big MOT light on
-        self.addTTL('BIG_MOT',WithUnit(10,'us'),WithUnit(1.5,'s'))
+        self.addTTL('BIG_MOT_SH',WithUnit(10,'us'),WithUnit(1.5,'s'))
         self.addDDS('BIG_MOT',WithUnit(10,'us'),WithUnit(1.5,'s'),MOT_freq,WithUnit(-5,'dBm'))
         
         #254 comb
-        self.addDDS('254_COMB',WithUnit(10.0,'us'),WithUnit(699.990,'ms'),WithUnit(10.5,'MHz'),comb_amp,no_phase,WithUnit(0.01,'MHz'),no_amp_ramp)
+        
+        far_red_detuned_time = p.MOT_loading.loading_time-WithUnit(300.0,'ms')-WithUnit(10.0,'us')
+        
+        self.addDDS('254_COMB',WithUnit(10.0,'us'),far_red_detuned_time, WithUnit(10.5,'MHz'),comb_amp,no_phase,WithUnit(0.01,'MHz'),no_amp_ramp)
         self.addDDS('254_COMB',WithUnit(700.0,'ms'),WithUnit(300.0,'ms'),WithUnit(9.0,'MHz'),comb_amp,no_phase,WithUnit(0.01,'MHz'),no_amp_ramp)
         ### detection ###
         self.addDDS('254_COMB',WithUnit(1.000,'s'),WithUnit(25,'ms'),WithUnit(9.0,'MHz'),comb_amp)
