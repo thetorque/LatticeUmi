@@ -4,6 +4,8 @@ from labrad.units import WithUnit
 import labrad
 import numpy
 import time
+
+import matplotlib.pyplot as plt
        
 class MOT_loading(experiment):
     name = 'MOT loading'  
@@ -22,12 +24,12 @@ class MOT_loading(experiment):
 #         self.drift_tracker = cxn.sd_tracker
         self.dv = cxn.data_vault
 #        self.total_readouts = []
-#        self.readout_save_context = cxn.context()
+        self.readout_save_context = cxn.context()
 #        self.histogram_save_context = cxn.context()
 #        self.readout_save_iteration = 0
 #         self.setup_sequence_parameters()
 #         self.setup_initial_switches()
-#         self.setup_data_vault()
+        self.setup_data_vault()
 #         self.use_camera = self.parameters.StateReadout.use_camera_for_readout
 #        self.use_camera = True
 #        if self.use_camera:
@@ -53,6 +55,15 @@ class MOT_loading(experiment):
 #                              int(p.vertical_min),
 #                              int(p.vertical_max),
 #                              ]
+        self.image_region = [
+                             2,
+                             2,
+                             326,
+                             359,
+                             240,
+                             271,
+                             ]
+
 #         self.fit_parameters = lmfit_Parameters()
 #         self.fit_parameters.add('ion_number', value = int(p.ion_number))
 #         self.fit_parameters.add('background_level', value = p.fit_background_level)
@@ -66,20 +77,20 @@ class MOT_loading(experiment):
 #         y_axis = numpy.arange(self.image_region[4], self.image_region[5] + 1, self.image_region[1])
 #         xx,yy = numpy.meshgrid(x_axis, y_axis)
 #         self.fitter.set_fitted_parameters(self.fit_parameters, xx, yy)
-#         self.camera.set_image_region(*self.image_region)
+        self.camera.set_image_region(*self.image_region)
         self.camera.set_acquisition_mode('Kinetics')
         self.initial_trigger_mode = self.camera.get_trigger_mode()
         self.camera.set_trigger_mode('External')
         
-#     def setup_data_vault(self):
-#         localtime = time.localtime()
-#         self.datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-#         dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
-#         self.save_directory = ['','Experiments']
-#         self.save_directory.extend([self.name])
-#         self.save_directory.extend(dirappend)
-#         self.dv.cd(self.save_directory ,True, context = self.readout_save_context)
-#         self.dv.new('Readout {}'.format(self.datasetNameAppend),[('Iteration', 'Arb')],[('Readout Counts','Arb','Arb')], context = self.readout_save_context)        
+    def setup_data_vault(self):
+        localtime = time.localtime()
+        self.datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
+        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
+        self.save_directory = ['','Experiments']
+        self.save_directory.extend([self.name])
+        self.save_directory.extend(dirappend)
+        self.dv.cd(self.save_directory ,True, context = self.readout_save_context)
+        self.dv.new('MOT {}'.format(self.datasetNameAppend),[('Time', 'Sec')],[('S_state','S_state.','No.'),('P_state','P_state.','No.'),('BG','BG','No.')], context = self.readout_save_context)        
     
 #     def setup_sequence_parameters(self):
 #         op = self.parameters.OpticalPumping
@@ -119,8 +130,11 @@ class MOT_loading(experiment):
 #         self.plot_current_sequence(cxn)
         #if self.use_camera:
             #print 'starting acquisition'
-        self.camera.set_number_kinetics(repetitions)
+        self.camera.set_number_kinetics(3)
         self.camera.start_acquisition()
+        
+        start_time = time.time()
+        
         self.pulser.start_number(1)
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
@@ -145,10 +159,23 @@ class MOT_loading(experiment):
             self.finalize(cxn, context)
             raise Exception ("Did not get all kinetic images from camera")
         images = self.camera.get_acquired_data(repetitions).asarray
+        #print images
         self.camera.abort_acquisition()
-            #x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
-            #y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
-            #images = numpy.reshape(images, (repetitions, y_pixels, x_pixels))
+        x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
+        y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
+        images = numpy.reshape(images, (repetitions, y_pixels, x_pixels))
+        
+        S_state = numpy.sum(images[0])
+        P_state = numpy.sum(images[1])
+        Background = numpy.sum(images[2])
+        
+        Atom_number_data = numpy.array([start_time,S_state,P_state,Background])
+        print Atom_number_data
+        
+        self.dv.add(Atom_number_data, context = self.readout_save_context)
+#         print images
+#         plt.imshow(images[2])
+#         plt.show()
 #             readouts, confidences = self.fitter.state_detection(images)
             #ion_state = 1 - readouts.mean(axis = 0)
             #useful for debugging, saving the images

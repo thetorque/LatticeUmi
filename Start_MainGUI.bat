@@ -1,1 +1,0 @@
-python C:\Users\Thaned\Desktop\LatticeUmi\clients\MainGUI.py

@@ -1,0 +1,1 @@
+python C:\Users\Hg-team\Desktop\LatticeUmi\clients\script_scanner_gui\script_scanner_gui.py

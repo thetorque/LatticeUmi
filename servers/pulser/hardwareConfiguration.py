@@ -23,7 +23,7 @@ class ddsConfiguration(object):
         self.boardfreqrange = args.get('boardfreqrange', (0.0, 2000.0))
         self.boardramprange = args.get('boardramprange', (0.000113687, 7.4505806))
         self.board_amp_ramp_range = args.get('board_amp_ramp_range', (0.00174623, 22.8896))
-        self.boardamplrange = args.get('boardamplrange', (-63.0, -3.0))
+        self.boardamplrange = args.get('boardamplrange', (-48.0, 6.0))
         self.boardphaserange = args.get('boardphaserange', (0.0, 360.0))
         self.off_parameters = args.get('off_parameters', (0.0, -63.0))
         self.phase_coherent_model = args.get('phase_coherent_model', True)        
@@ -57,10 +57,10 @@ class hardwareConfiguration(object):
     
     #name: (channelNumber, ismanual, manualstate,  manualinversion, autoinversion)
     channelDict = {
-                   'ttl_0':channelConfiguration(0, False, False, False, False), ## camera
+                   'CAMERA':channelConfiguration(0, False, False, False, False), ## camera
                    'ttl_1':channelConfiguration(1, False, False, False, False),
                    'ttl_2':channelConfiguration(2, False, False, False, False),
-                   'ttl_3':channelConfiguration(3, False, False, False, False),
+                   'BIG_MOT_SH':channelConfiguration(3, False, False, False, False),
                    'ttl_4':channelConfiguration(4, False, False, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
@@ -70,10 +70,10 @@ class hardwareConfiguration(object):
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
-                'DDS_0':ddsConfiguration(    0,  (0.0,800.0),   (-63.0,-3.0),  70.0,   -63.0),
-#                 'DDS_1':ddsConfiguration(    1,  (0.0,800.0),   (-63.0,-3.0),  70.0,   -63.0),
-#                 'DDS_2':ddsConfiguration(    2,  (0.0,800.0),   (-63.0,-3.0),  70.0,   -63.0),
-#                 'DDS_3':ddsConfiguration(    3,  (0.0,800.0),   (-63.0,-3.0),  85.0,   -63.0),
+                'DDS_0':ddsConfiguration(    0,  (0.0,800.0),   (-48.0,6.0),  70.0,   -48.0),
+                'BIG_MOT':ddsConfiguration(    1,  (145.0,155.0),   (-48.0,-5.0),  150.0,   -48.0),
+                '254_COMB':ddsConfiguration(    2,  (6.5,11.0),   (-48.0,5.0),  9.0,   4.5),
+                'SMALL_MOT':ddsConfiguration(    3,  (145.0,155.0),   (-48.0,6.0),  150.0,   -48.0),
 #                 'DDS_4':ddsConfiguration(    4,  (0.0,800.0),   (-63.0,-3.0),  90.0,   -63.0),
 #                 'DDS_5':ddsConfiguration(    5,  (0.0,800.0),   (-63.0,-3.0),  95.0,   -63.0),
 #                 'DDS_6':ddsConfiguration(    6,  (0.0,800.0),   (-63.0,-3.0), 100.0,   -63.0),
