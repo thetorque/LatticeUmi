@@ -7,7 +7,7 @@ class QCustomSpinBox(QtGui.QWidget):
     onNewValues = QtCore.pyqtSignal()
     def __init__(self, title, levelRange, parent=None):
         QtGui.QWidget.__init__(self, parent)
-	basepath = os.path.dirname(__file__)
+        basepath = os.path.dirname(__file__)
         path = os.path.join(basepath,'titlespin.ui')
         uic.loadUi(path,self)
         self.title.setText(title)

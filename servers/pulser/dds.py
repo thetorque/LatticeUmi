@@ -172,8 +172,8 @@ class DDS(LabradServer):
         if state and not channel.state: #if turning on, and is currently off
             yield self.inCommunication.run(self._setParameters, channel, channel.frequency, channel.amplitude)
         elif (channel.state and not state): #if turning off and is currenly on
-            freq,ampl = channel.off_parameters
-            yield self.inCommunication.run(self._setParameters, channel, freq, ampl)
+            freq,off_ampl = channel.off_parameters
+            yield self.inCommunication.run(self._setParameters, channel, channel.frequency, off_ampl)
     
     @inlineCallbacks
     def _programDDSSequence(self, dds):
