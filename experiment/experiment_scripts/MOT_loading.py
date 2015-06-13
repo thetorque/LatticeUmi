@@ -1,5 +1,5 @@
 from servers.script_scanner.scan_methods import experiment
-from experiment.pulser_sequences.MOT_loading_test import MOT_loading
+from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
 from experiment.pulser_sequences.TTL_test import TTL_test
 from labrad.units import WithUnit
 import labrad
@@ -10,32 +10,28 @@ import matplotlib.pyplot as plt
        
 class MOT_loading(experiment):
     name = 'MOT loading'  
-    excitation_required_parameters = []
-    pulse_sequence = MOT_loading
+    experiment_required_parameters = [('CCD_setting','exposure_time'),]
+    pulse_sequence = MOT_loading_seq
     #pulse_sequence = TTL_test
     
     @classmethod
     def all_required_parameters(cls):
-        params = set(cls.excitation_required_parameters)
+        params = set(cls.experiment_required_parameters)
         params = params.union(set(cls.pulse_sequence.all_required_parameters()))
         params = list(params)
         return params
     
     def initialize(self, cxn, context, ident):
         self.pulser = cxn.pulser
-
         self.dv = cxn.data_vault
         self.pv = cxn.parametervault
 
         self.readout_save_context = cxn.context()
 
         self.setup_data_vault()
-
         self.initialize_camera(cxn)
             
     def initialize_camera(self, cxn):
-        self.total_camera_confidences = []
-
         self.camera = cxn.andor_server
 
         self.camera_initially_live_display = self.camera.is_live_display_running()
@@ -80,7 +76,6 @@ class MOT_loading(experiment):
 
         self.camera.set_number_kinetics(3)
         self.camera.start_acquisition()
-        
         
         ### get no. of second of today
         now = datetime.now()

@@ -33,19 +33,19 @@ class MOT_detection(pulse_sequence):
         
         self.end = self.start + WithUnit(225,'ms')
         
-        self.addTTL('sMOT_PROBE',self.start,WithUnit(150,'ms'))
-        self.addTTL('sMOT_PROBE_SPIN',self.start,WithUnit(150,'ms'))
+        self.addTTL('sMOT_PROBE',      self.start, WithUnit(150,'ms'))
+        self.addTTL('sMOT_PROBE_SPIN', self.start, WithUnit(150,'ms'))
         
-        self.addDDS('SMALL_MOT',self.start, WithUnit(40,'ms'),MOT_freq, detection_power)
-        self.addDDS('SMALL_MOT',self.start+WithUnit(50,'ms'), WithUnit(40,'ms'),MOT_freq, detection_power)
-        self.addDDS('SMALL_MOT',self.start+WithUnit(100,'ms'), WithUnit(40,'ms'),MOT_freq, detection_power)
+        self.addDDS('SMALL_MOT',self.start,                    WithUnit(40,'ms'), MOT_freq, detection_power)
+        self.addDDS('SMALL_MOT',self.start+WithUnit(50,'ms'),  WithUnit(40,'ms'), MOT_freq, detection_power)
+        self.addDDS('SMALL_MOT',self.start+WithUnit(100,'ms'), WithUnit(40,'ms'), MOT_freq, detection_power)
         
         #print self.start
         
-        self.addDDS('254_COMB',self.start, WithUnit(25,'ms'), freq_detect, comb_amp)
-        self.addDDS('254_COMB',self.start+WithUnit(25,'ms'), WithUnit(25,'ms'), freq_blue, comb_amp, no_phase, WithUnit(0.1,'MHz'),no_amp_ramp)
-        self.addDDS('254_COMB',self.start+WithUnit(50,'ms'), WithUnit(25,'ms'), freq_detect, comb_amp, no_phase, WithUnit(0.1,'MHz'),no_amp_ramp)
-        self.addDDS('254_COMB',self.start+WithUnit(75,'ms'), WithUnit(25,'ms'), freq_blue, comb_amp, no_phase, WithUnit(0.1,'MHz'),no_amp_ramp)
+        self.addDDS('254_COMB',self.start,                    WithUnit(25,'ms'),  freq_detect, comb_amp)
+        self.addDDS('254_COMB',self.start+WithUnit(25,'ms'),  WithUnit(25,'ms'),  freq_blue,   comb_amp, no_phase, WithUnit(0.1,'MHz'),no_amp_ramp)
+        self.addDDS('254_COMB',self.start+WithUnit(50,'ms'),  WithUnit(25,'ms'),  freq_detect, comb_amp, no_phase, WithUnit(0.1,'MHz'),no_amp_ramp)
+        self.addDDS('254_COMB',self.start+WithUnit(75,'ms'),  WithUnit(25,'ms'),  freq_blue,   comb_amp, no_phase, WithUnit(0.1,'MHz'),no_amp_ramp)
         self.addDDS('254_COMB',self.start+WithUnit(100,'ms'), WithUnit(125,'ms'), freq_detect, comb_amp, no_phase, WithUnit(0.1,'MHz'),no_amp_ramp)
 #         self.addDDS('254_COMB',WithUnit(1.025,'s'),WithUnit(25,'ms'),WithUnit(8.0,'MHz'),comb_amp)
 #         self.addDDS('254_COMB',WithUnit(1.050,'s'),WithUnit(25,'ms'),WithUnit(9.2,'MHz'),comb_amp)
@@ -55,8 +55,8 @@ class MOT_detection(pulse_sequence):
 
         
         #trigger camera
-        self.addTTL('CAMERA',self.start, WithUnit(3,'ms'))
-        self.addTTL('CAMERA',self.start+WithUnit(50,'ms'), WithUnit(3,'ms'))
+        self.addTTL('CAMERA',self.start,                    WithUnit(3,'ms'))
+        self.addTTL('CAMERA',self.start+WithUnit(50,'ms'),  WithUnit(3,'ms'))
         self.addTTL('CAMERA',self.start+WithUnit(100,'ms'), WithUnit(3,'ms'))
         
 #         self.addTTL('ttl_1',WithUnit(10,'ms'),WithUnit(250,'ms'))

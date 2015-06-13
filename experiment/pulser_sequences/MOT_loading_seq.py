@@ -3,7 +3,7 @@ from experiment.pulser_sequences.MOT_detection import MOT_detection
 from labrad.units import WithUnit
 from treedict import TreeDict
 
-class MOT_loading(pulse_sequence):
+class MOT_loading_seq(pulse_sequence):
     
     required_parameters = [ 
                            ('MOT_loading', 'loading_time'),
