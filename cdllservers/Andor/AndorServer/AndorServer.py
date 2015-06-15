@@ -38,7 +38,12 @@ class AndorServer(LabradServer):
         self.listeners = set()
         self.camera = AndorCamera()
         self.camera.set_shutter(0, 1) #turn on shutter
+        self.camera.set_ADchannel(0)
+        self.camera.set_HSspeed()
+        self.camera.set_VSspeed()
         self.camera.set_preamp(2) #set pre amp gain to 2
+        self.camera.set_emccd_gain(1)
+        print self.camera.get_preamp()
         self.lock = DeferredLock()
         self.gui = AndorVideo(self)
     
@@ -395,6 +400,26 @@ class AndorServer(LabradServer):
         finally:
             print 'releasing: {}'.format(self.setShutter.__name__)
             self.lock.release()
+            
+            
+    @setting(33, "Set CCD Images", images = '*3v',returns = '')
+    def setCCDImages(self, c, images):
+        '''
+        Set CCD images on the GUI
+        '''
+        #print images
+        print 'acquiring: {}'.format(self.setCCDImages.__name__)
+        yield self.lock.acquire()
+        try:
+            print 'acquired : {}'.format(self.setCCDImages.__name__)
+            yield deferToThread(self.gui.CCD_image_update, images)
+        finally:
+            print 'releasing: {}'.format(self.setCCDImages.__name__)
+            self.lock.release()
+        #print "array is", vertex_array
+        #self.gui.CCD_image_update(images)  
+            
+            
         
     
     @setting(31, "Get Detector Dimensions", returns = 'ww')

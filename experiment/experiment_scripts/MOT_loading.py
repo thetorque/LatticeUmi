@@ -1,5 +1,6 @@
 from servers.script_scanner.scan_methods import experiment
-from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
+#from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
+from experiment.pulser_sequences.MOT_loading_w_LV import MOT_loading_seq
 from experiment.pulser_sequences.TTL_test import TTL_test
 from labrad.units import WithUnit
 import labrad
@@ -7,10 +8,13 @@ import numpy
 import time
 from datetime import datetime
 import matplotlib.pyplot as plt
+import pyqtgraph as pg
+
        
 class MOT_loading(experiment):
     name = 'MOT loading'  
-    experiment_required_parameters = [('CCD_setting','exposure_time'),]
+    experiment_required_parameters = [('CCD_settings','exposure_time'),]
+    #pulse_sequence = MOT_loading_seq
     pulse_sequence = MOT_loading_seq
     #pulse_sequence = TTL_test
     
@@ -36,14 +40,14 @@ class MOT_loading(experiment):
 
         self.camera_initially_live_display = self.camera.is_live_display_running()
         self.camera.abort_acquisition()
-
+        self.camera.set_exposure_time(WithUnit(0.02,'s'))
         self.image_region = [
                              4,
                              4,
-                             302,
-                             369,
-                             236,
-                             295,
+                             308,
+                             371,
+                             225,
+                             284,
                              ]
 
 
@@ -68,7 +72,7 @@ class MOT_loading(experiment):
         
     def run(self, cxn, context):
 
-        print "running"
+        #print "running"
         repetitions = 3;
         
         pulse_sequence = self.pulse_sequence(self.parameters)
@@ -91,25 +95,35 @@ class MOT_loading(experiment):
             self.finalize(cxn, context)
             raise Exception ("Did not get all kinetic images from camera")
         images = self.camera.get_acquired_data(repetitions).asarray
-        #print images
+
         self.camera.abort_acquisition()
         x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
 
         y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
 
         images = numpy.reshape(images, (repetitions, y_pixels, x_pixels))
-        S_image = images[0]/(0.11547*20)
-        #print S_image
-#         plt.imshow(S_image)
-#         plt.show()
-        S_state = (numpy.sum(images[0])-numpy.sum(images[2]))/(0.11547*20)
-        P_state = (numpy.sum(images[1])-numpy.sum(images[2]))/(0.11547*20)
+        #print images[0]
+        
+        #S_image = images[0]/(0.11547*20)
+        self.camera.set_ccd_images(images)
+        
+        
+#         self.plt = pg.PlotItem()
+#         self.img_view = pg.ImageView(view = self.plt)
+#         pg.ImageView.setImage(images[0])
+#         pg.show()
+        
+        #plt.imshow(S_image)
+        #plt.show(block=False)
+        S_state = (numpy.sum(images[0]-images[2]))/(0.11547*20)
+        P_state = (numpy.sum(images[1]-images[2]))/(0.11547*20)
         
          
         Atom_number_data = numpy.array([start_time,S_state,P_state,S_state+P_state])
-        #print Atom_number_data
+        print Atom_number_data
          
         self.dv.add(Atom_number_data, context = self.readout_save_context)
+        #plt.close()
         
         return S_state+P_state
 
@@ -117,6 +131,7 @@ class MOT_loading(experiment):
         #pass
         self.pv.save_parameters_to_registry()
         self.camera.start_live_display()
+        #plt.show()
 
 if __name__ == '__main__':
     cxn = labrad.connect()

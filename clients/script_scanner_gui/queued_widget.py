@@ -68,6 +68,7 @@ class queued_list(QtGui.QTableWidget):
         self.setRowCount(1)
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
+        self.verticalHeader().setDefaultSectionSize(45)
         self.setShowGrid(False)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
     

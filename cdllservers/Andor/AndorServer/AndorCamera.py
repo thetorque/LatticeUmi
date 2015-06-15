@@ -200,6 +200,31 @@ class AndorCamera(object):
         if not (ERROR_CODE[error] == 'DRV_SUCCESS'):
             raise Exception(ERROR_CODE[error])
         return None
+    
+    def set_ADchannel(self,channel):
+        error = self.dll.SetADChannel(channel)
+        if not (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            raise Exception(ERROR_CODE[error])
+        return None
+
+    def set_HSspeed(self):
+        error = self.dll.SetHSSpeed(0,2)
+        if not (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            raise Exception(ERROR_CODE[error])
+
+    def set_VSspeed(self):
+        error = self.dll.SetVSSpeed(2)
+        if not (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            raise Exception(ERROR_CODE[error])
+
+    def get_preamp(self):
+        gain = c.c_float()
+        #gain_number = c.c_int()
+        error = self.dll.GetPreAmpGain(2,c.byref(gain))
+        if (ERROR_CODE[error] == 'DRV_SUCCESS'):
+            return gain.value
+        else:
+            raise Exception(ERROR_CODE[error])
         
     def acquire_camera_serial_number(self):
         serial_number = c.c_int()

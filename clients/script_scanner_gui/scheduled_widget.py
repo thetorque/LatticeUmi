@@ -82,6 +82,7 @@ class scheduled_list(QtGui.QTableWidget):
         self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
+        self.verticalHeader().setDefaultSectionSize(45)
         self.setColumnCount(1)
         self.setShowGrid(False)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)

@@ -9,7 +9,7 @@ class progress_bar(QtGui.QProgressBar):
     
     def set_status(self, status_name, percentage):
         self.setValue(percentage)
-        self.setFormat('{0} %p%'.format(status_name))
+        self.setFormat('%p%'.format(status_name))
 
     def closeEvent(self, x):
         self.reactor.stop()
@@ -56,7 +56,9 @@ class script_status_widget(QtGui.QWidget):
         self.name_label.setMinimumWidth(150)
         self.progress_bar = progress_bar(self.reactor, self.parent)
         self.pause_button = fixed_width_button("Pause", (75,23))
+        #self.pause_button.setStyleSheet('QPushButton {font-size: 12pt;}')
         self.stop_button = fixed_width_button("Stop", (75,23))
+        #self.stop_button.setStyleSheet('QPushButton {font-size: 12pt;}')
         layout.addWidget(self.id_label)
         layout.addWidget(self.name_label)
         layout.addWidget(self.progress_bar)
@@ -100,7 +102,7 @@ class running_scans_list(QtGui.QTableWidget):
         self.parent = parent
         self.font = font
         if self.font is None:
-            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=10)
         self.setupLayout()
         self.d = {}
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
@@ -121,7 +123,7 @@ class running_scans_list(QtGui.QTableWidget):
         self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.setColumnCount(1)
         self.horizontalHeader().hide()
-        self.verticalHeader().hide()
+        self.verticalHeader().setDefaultSectionSize(45)
         self.setShowGrid(False)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
     

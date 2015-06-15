@@ -25,6 +25,23 @@ class AndorVideo(QtGui.QWidget):
         plt.setAspectLocked(True)
         layout.addWidget(self.img_view, 0, 0, 1, 6)
         self.img_view.getHistogramWidget().setHistogramRange(0, 1000)
+        
+        ### add aux display for CCD images
+        self.plt_ccd_0 = pg.PlotItem()
+        self.ccd_view_0 = pg.ImageView(view = self.plt_ccd_0)
+        layout.addWidget(self.ccd_view_0, 1, 0,1,2)
+        
+        self.plt_ccd_1 = pg.PlotItem()
+        self.ccd_view_1 = pg.ImageView(view = self.plt_ccd_1)
+        layout.addWidget(self.ccd_view_1, 1, 2,1,2)
+        
+        self.plt_ccd_2 = pg.PlotItem()
+        self.ccd_view_2 = pg.ImageView(view = self.plt_ccd_2)
+        layout.addWidget(self.ccd_view_2, 1, 4,1,2)
+        
+        
+        ####
+        
         exposure_label = QtGui.QLabel("Exposure")
         exposure_label.setAlignment(QtCore.Qt.AlignRight| QtCore.Qt.AlignVCenter)
         self.exposureSpinBox = QtGui.QDoubleSpinBox()
@@ -34,8 +51,8 @@ class AndorVideo(QtGui.QWidget):
         self.exposureSpinBox.setMaximum(10000.0)
         self.exposureSpinBox.setKeyboardTracking(False)
         self.exposureSpinBox.setSuffix(' s')      
-        layout.addWidget(exposure_label, 1, 4,)
-        layout.addWidget(self.exposureSpinBox, 1, 5)
+        layout.addWidget(exposure_label, 2, 4,)
+        layout.addWidget(self.exposureSpinBox, 2, 5)
         #EMCCD Gain
         emccd_label = QtGui.QLabel("EMCCD Gain")
         emccd_label.setAlignment(QtCore.Qt.AlignRight| QtCore.Qt.AlignVCenter)
@@ -44,20 +61,20 @@ class AndorVideo(QtGui.QWidget):
         self.emccdSpinBox.setMinimum(0)
         self.emccdSpinBox.setMaximum(255)
         self.emccdSpinBox.setKeyboardTracking(False)
-        layout.addWidget(emccd_label, 2, 4,)
-        layout.addWidget(self.emccdSpinBox, 2, 5)
+        layout.addWidget(emccd_label, 3, 4,)
+        layout.addWidget(self.emccdSpinBox, 3, 5)
         #Live Video Button
         self.live_button = QtGui.QPushButton("Live Video")
         self.live_button.setCheckable(True)
-        layout.addWidget(self.live_button, 1, 0)
+        layout.addWidget(self.live_button, 2, 0)
         #set image region button
         self.set_image_region_button = QtGui.QPushButton("Set Image Region")
-        layout.addWidget(self.set_image_region_button, 2, 0)
+        layout.addWidget(self.set_image_region_button, 3, 0)
         #controlling the display buttons
         self.view_all_button = QtGui.QPushButton("View All")
-        layout.addWidget(self.view_all_button, 1, 1)
+        layout.addWidget(self.view_all_button, 2, 1)
         self.auto_levels_button = QtGui.QPushButton("Auto Levels")
-        layout.addWidget(self.auto_levels_button, 2, 1)
+        layout.addWidget(self.auto_levels_button, 3, 1)
         #display mode buttons
         self.trigger_mode = QtGui.QLineEdit()
         self.acquisition_mode = QtGui.QLineEdit()
@@ -67,12 +84,12 @@ class AndorVideo(QtGui.QWidget):
         self.acquisition_mode.setReadOnly(True)
         label = QtGui.QLabel("Trigger Mode")
         label.setAlignment(QtCore.Qt.AlignRight| QtCore.Qt.AlignVCenter)
-        layout.addWidget(label, 1, 2)
+        layout.addWidget(label, 2, 2)
         label = QtGui.QLabel("Acquisition Mode")
         label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        layout.addWidget(label, 2, 2)
-        layout.addWidget(self.trigger_mode, 1, 3)
-        layout.addWidget(self.acquisition_mode, 2, 3)
+        layout.addWidget(label, 3, 2)
+        layout.addWidget(self.trigger_mode, 2, 3)
+        layout.addWidget(self.acquisition_mode, 3, 3)
         #add lines for the cross
         self.vLine = pg.InfiniteLine(angle=90, movable=False)
         self.hLine = pg.InfiniteLine(angle=0, movable=False)
@@ -173,6 +190,12 @@ class AndorVideo(QtGui.QWidget):
         data = yield self.server.getMostRecentImage(None)
         image_data = np.reshape(data, (self.pixels_y, self.pixels_x))
         self.img_view.setImage(image_data.transpose(), autoRange = False, autoLevels = False, pos = [self.startx, self.starty], scale = [self.binx,self.biny], autoHistogramRange = False)
+        
+    def CCD_image_update(self, images):
+        print images[0]
+        self.ccd_view_0.setImage(np.array(images[0]))
+        self.ccd_view_1.setImage(np.array(images[1]))
+        self.ccd_view_2.setImage(np.array(images[2]))
      
     @inlineCallbacks
     def start_live_display(self):
