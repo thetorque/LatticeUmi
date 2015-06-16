@@ -9,7 +9,7 @@ start_time = time.time()
 
 ## sample vertices array
 t = np.array([0,0.1,0.2,0.4,0.5,0.6,1.5])
-v = np.array([0,2,4,4,2,0,0])
+v = np.array([5,2,4,4,2,0,5])
 
 sampling_rate = 10000 ## set sampling rate
 duration = t[-1]  ## set duration of the whole sequence
@@ -60,8 +60,8 @@ print now
 conv = conv/np.sum(conv)
 
 
-
-volt_smooth = np.convolve(volt_array, conv, 'same')
+## there is a problem is the start voltage is not zero then there is a slow response
+volt_smooth = np.convolve(volt_array-volt_array[0], conv, 'same')+volt_array[0]
 
 now = time.time()-start_time
 print now
