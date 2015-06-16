@@ -63,4 +63,4 @@ for channel, data in [(0, channel_0),
 #print total_data
 
 pattern = total_data
-ni.set_voltage_pattern(pattern,True,100000)
+ni.set_voltage_pattern(pattern,False,100000)
