@@ -12,6 +12,7 @@ import ctypes
 import numpy as np
 import threading
 import sys
+import time
 # load any DLLs
 nidaq = ctypes.windll.nicaiu # load the DLL
 ##############################
@@ -207,12 +208,24 @@ class api_dac():
         volt_array = np.ones((channel,np.size(time_array))) ## create voltage array which in the end will get sent to the NI card
         volt_array[:,0] = vertex_array[:,0][1:]             # initialize first points
         #print volt_array[:,0]
+        
+        ### create time array for low pass convolution
+        
+        band = 0.0003
+        time_filter = np.arange(-3*band,3*band,1/sampling_rate) ##plus-minus time
+        conv = np.exp(-0.5*time_filter**2/band**2) ## gaussian
+        #conv = np.delete(conv,np.where(conv<0.10))
+        conv = conv/np.sum(conv) ## normalization
+        ###
+        
         for j in range(channel):               # loop through all the channels
             v = vertex_array[j+1]              # v extract the voltage information for the current channel
             for i in range(t.size-1):          # loop through the vertex
-                 time_location = np.where((time_array>t[i])*(time_array<=t[i+1]))### look for the location of the time span we are interested in
-                 slope = (v[i+1]-v[i])/(t[i+1]-t[i])  # calculate the voltage slope in this region
-                 volt_array[j][time_location] = v[i]+slope*(time_array[time_location]-t[i])  # simply a linear equation to calculate the voltage at each time stamp
+                time_location = np.where((time_array>t[i])*(time_array<=t[i+1]))### look for the location of the time span we are interested in
+                slope = (v[i+1]-v[i])/(t[i+1]-t[i])  # calculate the voltage slope in this region
+                volt_array[j][time_location] = v[i]+slope*(time_array[time_location]-t[i])  # simply a linear equation to calculate the voltage at each time stamp
+            if j == 0:
+                volt_array[j] = np.convolve(volt_array[j], conv, 'same') ### perform low-pass by convolution
             #print volt_array[j]
         
         data = np.vstack((time_array,volt_array)) # stack the time array and voltage array together

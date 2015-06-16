@@ -49,10 +49,10 @@ class dac_widget(QtGui.QFrame, widget_ui):
         
         # get values from the registry and set the value of each spin box
         
-        value1 = yield self.server.get_voltage('comp1')
-        value2 = yield self.server.get_voltage('comp2')
-        value3 = yield self.server.get_voltage('endcap1')
-        value4 = yield self.server.get_voltage('endcap2')
+        value1 = yield self.server.get_voltage('B_x')
+        value2 = yield self.server.get_voltage('B_y')
+        value3 = yield self.server.get_voltage('B_z')
+        value4 = yield self.server.get_voltage('MOT')
 
         self.doubleSpinBox0.blockSignals(True)
         self.doubleSpinBox0.setValue(value1['V'])
@@ -76,14 +76,14 @@ class dac_widget(QtGui.QFrame, widget_ui):
     
     def connect_layout(self):
         # set the layout to display the name of the channel
-        self.doubleSpinBox0.valueChanged.connect(lambda: self.setVoltage('comp1'))
-        self.doubleSpinBox1.valueChanged.connect(lambda: self.setVoltage('comp2'))
-        self.doubleSpinBox2.valueChanged.connect(lambda: self.setVoltage('endcap1'))
-        self.doubleSpinBox3.valueChanged.connect(lambda: self.setVoltage('endcap2'))
-        self.label0.setText('comp1')
-        self.label1.setText('comp2')
-        self.label2.setText('endcap1')
-        self.label3.setText('endcap2')
+        self.doubleSpinBox0.valueChanged.connect(lambda: self.setVoltage('B_x'))
+        self.doubleSpinBox1.valueChanged.connect(lambda: self.setVoltage('B_y'))
+        self.doubleSpinBox2.valueChanged.connect(lambda: self.setVoltage('B_z'))
+        self.doubleSpinBox3.valueChanged.connect(lambda: self.setVoltage('MOT'))
+        self.label0.setText('B_x')
+        self.label1.setText('B_y')
+        self.label2.setText('B_z')
+        self.label3.setText('MOT')
         
     @inlineCallbacks
     def setVoltage(self, chan_name):
@@ -91,22 +91,22 @@ class dac_widget(QtGui.QFrame, widget_ui):
         Set the voltage according to the given channel name
         '''
         try:
-            if chan_name == 'comp1':
+            if chan_name == 'B_x':
                 voltage = self.doubleSpinBox0.value()
                 val = self.types.Value(voltage, 'V')
-                yield self.server.set_voltage('comp1', val, context = self.context)
-            elif chan_name == 'comp2':
+                yield self.server.set_voltage('B_x', val, context = self.context)
+            elif chan_name == 'B_y':
                 voltage = self.doubleSpinBox1.value()
                 val = self.types.Value(voltage, 'V')
-                yield self.server.set_voltage('comp2', val, context = self.context)
-            elif chan_name == 'endcap1':
+                yield self.server.set_voltage('B_y', val, context = self.context)
+            elif chan_name == 'B_z':
                 voltage = self.doubleSpinBox2.value()
                 val = self.types.Value(voltage, 'V')
-                yield self.server.set_voltage('endcap1', val, context = self.context)
-            elif chan_name == 'endcap2':
+                yield self.server.set_voltage('B_z', val, context = self.context)
+            elif chan_name == 'MOT':
                 voltage = self.doubleSpinBox3.value()
                 val = self.types.Value(voltage, 'V')
-                yield self.server.set_voltage('endcap2', val, context = self.context)
+                yield self.server.set_voltage('MOT', val, context = self.context)
             
         except self.Error as e:
             #old_value =  yield self.server.frequency(self.chan, context = self.context)
@@ -119,23 +119,23 @@ class dac_widget(QtGui.QFrame, widget_ui):
         Use to update the display of the channel once the signal is received from the server that the new values are there
         '''
         chan, param = y
-        if chan == 'comp1':
-            print "comp1 just got updated"
+        if chan == 'B_x':
+            print "B_x just got updated"
             self.doubleSpinBox0.blockSignals(True)
             self.doubleSpinBox0.setValue(param['V'])
             self.doubleSpinBox0.blockSignals(False)
-        elif chan == "comp2":
-            print "comp2 just got updated"
+        elif chan == "B_y":
+            print "B_y just got updated"
             self.doubleSpinBox1.blockSignals(True)
             self.doubleSpinBox1.setValue(param['V'])
             self.doubleSpinBox1.blockSignals(False)
-        elif chan == "endcap1":
-            print "endcap1 just got updated"
+        elif chan == "B_z":
+            print "B_z just got updated"
             self.doubleSpinBox2.blockSignals(True)
             self.doubleSpinBox2.setValue(param['V'])
             self.doubleSpinBox2.blockSignals(False)
-        elif chan == "endcap2":
-            print "endcap2 just got updated"
+        elif chan == "MOT":
+            print "MOT just got updated"
             self.doubleSpinBox3.blockSignals(True)
             self.doubleSpinBox3.setValue(param['V'])
             self.doubleSpinBox3.blockSignals(False)
