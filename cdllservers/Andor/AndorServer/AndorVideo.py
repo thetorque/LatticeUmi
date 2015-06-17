@@ -20,23 +20,44 @@ class AndorVideo(QtGui.QWidget):
         layout = QtGui.QGridLayout()
         self.plt = plt = pg.PlotItem()
         self.img_view = pg.ImageView(view = self.plt)
+        self.img_view.ui.menuBtn.hide()
         plt.showAxis('top')
         plt.hideAxis('bottom')
         plt.setAspectLocked(True)
         layout.addWidget(self.img_view, 0, 0, 1, 6)
         self.img_view.getHistogramWidget().setHistogramRange(0, 1000)
         
+#         ### add aux display for CCD images
+#         self.plt_ccd_0 = pg.PlotItem()
+#         self.ccd_view_0 = pg.ImageView(view = self.plt_ccd_0)
+#         layout.addWidget(self.ccd_view_0, 1, 0,1,2)
+#         
+#         self.plt_ccd_1 = pg.PlotItem()
+#         self.ccd_view_1 = pg.ImageView(view = self.plt_ccd_1)
+#         layout.addWidget(self.ccd_view_1, 1, 2,1,2)
+#         
+#         self.plt_ccd_2 = pg.PlotItem()
+#         self.ccd_view_2 = pg.ImageView(view = self.plt_ccd_2)
+#         layout.addWidget(self.ccd_view_2, 1, 4,1,2)
+
+
         ### add aux display for CCD images
         self.plt_ccd_0 = pg.PlotItem()
         self.ccd_view_0 = pg.ImageView(view = self.plt_ccd_0)
+        self.ccd_view_0.ui.roiBtn.hide()
+        self.ccd_view_0.ui.menuBtn.hide()
         layout.addWidget(self.ccd_view_0, 1, 0,1,2)
-        
+         
         self.plt_ccd_1 = pg.PlotItem()
         self.ccd_view_1 = pg.ImageView(view = self.plt_ccd_1)
+        self.ccd_view_1.ui.roiBtn.hide()
+        self.ccd_view_1.ui.menuBtn.hide()
         layout.addWidget(self.ccd_view_1, 1, 2,1,2)
-        
+         
         self.plt_ccd_2 = pg.PlotItem()
         self.ccd_view_2 = pg.ImageView(view = self.plt_ccd_2)
+        self.ccd_view_2.ui.roiBtn.hide()
+        self.ccd_view_2.ui.menuBtn.hide()        
         layout.addWidget(self.ccd_view_2, 1, 4,1,2)
         
         
@@ -192,7 +213,7 @@ class AndorVideo(QtGui.QWidget):
         self.img_view.setImage(image_data.transpose(), autoRange = False, autoLevels = False, pos = [self.startx, self.starty], scale = [self.binx,self.biny], autoHistogramRange = False)
         
     def CCD_image_update(self, images):
-        print images[0]
+        #print images[0]
         self.ccd_view_0.setImage(np.array(images[0]))
         self.ccd_view_1.setImage(np.array(images[1]))
         self.ccd_view_2.setImage(np.array(images[2]))
