@@ -85,7 +85,8 @@ class analog_sequence(object):
 	def programAnalog(self, analog_server):
 		pattern = self.convert_sequence(self._analog_pulses)
 		print "program Analog"
-		analog_server.set_voltage_pattern(pattern,False,100000)
+		waveform = analog_server.set_voltage_pattern(pattern,True,100000)
+		return waveform
 		
 	def convert_sequence(self, sequence_data):
 		'''

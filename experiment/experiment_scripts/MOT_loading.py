@@ -1,6 +1,7 @@
 from servers.script_scanner.scan_methods import experiment
 #from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
 from experiment.pulser_sequences.MOT_loading_w_LV import MOT_loading_seq
+from experiment.analog_sequences.MOT_loading_analog import MOT_loading_analog
 from experiment.pulser_sequences.TTL_test import TTL_test
 from labrad.units import WithUnit
 import labrad
@@ -16,17 +17,20 @@ class MOT_loading(experiment):
     experiment_required_parameters = [('CCD_settings','exposure_time'),]
     #pulse_sequence = MOT_loading_seq
     pulse_sequence = MOT_loading_seq
+    analog_sequence = MOT_loading_analog
     #pulse_sequence = TTL_test
     
     @classmethod
     def all_required_parameters(cls):
         params = set(cls.experiment_required_parameters)
         params = params.union(set(cls.pulse_sequence.all_required_parameters()))
+        params = params.union(set(cls.analog_sequence.all_required_parameters()))
         params = list(params)
         return params
     
     def initialize(self, cxn, context, ident):
         self.pulser = cxn.pulser
+        self.NI_analog = cxn.ni_analog_server
         self.dv = cxn.data_vault
         self.pv = cxn.parametervault
 
@@ -44,10 +48,10 @@ class MOT_loading(experiment):
         self.image_region = [
                              4,
                              4,
-                             308,
-                             371,
-                             225,
-                             284,
+                             308-20,
+                             371+20,
+                             225-20,
+                             284+20,
                              ]
 
 
@@ -77,6 +81,10 @@ class MOT_loading(experiment):
         
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
+        
+        ###
+        analog_sequence = self.analog_sequence(self.parameters)
+        analog_sequence.programAnalog(self.NI_analog)
 
         self.camera.set_number_kinetics(3)
         self.camera.start_acquisition()
@@ -88,6 +96,9 @@ class MOT_loading(experiment):
         self.pulser.start_number(1)
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
+        
+        #####
+        self.NI_analog.stop_voltage_pattern()
 
         proceed = self.camera.wait_for_kinetic()
         if not proceed:

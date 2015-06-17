@@ -36,13 +36,15 @@ class MOT_loading_seq(pulse_sequence):
         self.addTTL('AO1',WithUnit(10,'us'),WithUnit(1,'ms'))
         self.addTTL('AO2',WithUnit(10,'us'),WithUnit(1,'ms'))
         
-        x = WithUnit(700,'ms')
+        loading_time = p.MOT_loading.loading_time
         
-        self.addTTL('BIG_MOT_AO',x,WithUnit(1045,'ms')-x)
-        self.addTTL('BIG_MOT_AO',WithUnit(1055,'ms'),WithUnit(40,'ms'))
-        self.addTTL('BIG_MOT_AO',WithUnit(1105,'ms'),WithUnit(40,'ms'))
+        self.addTTL('BIG_MOT_AO',self.end,loading_time-WithUnit(40.0,'ms'))
         
-        self.addTTL('BIG_MOT_SH',x,WithUnit(1300,'ms'))
+        self.addTTL('BIG_MOT_AO',loading_time,WithUnit(40,'ms'))
+        self.addTTL('BIG_MOT_AO',loading_time+WithUnit(50,'ms'),WithUnit(40,'ms'))
+        self.addTTL('BIG_MOT_AO',loading_time+WithUnit(100,'ms'),WithUnit(40,'ms'))
+        
+        self.addTTL('BIG_MOT_SH',self.end,loading_time+WithUnit(150,'ms'))
         
 #         self.addTTL('sMOT_AO',WithUnit(1005,'ms'),WithUnit(40,'ms'))
 #         self.addTTL('sMOT_AO',WithUnit(1055,'ms'),WithUnit(40,'ms'))
@@ -51,9 +53,9 @@ class MOT_loading_seq(pulse_sequence):
 #         self.addTTL('sMOT_PROBE',WithUnit(1000,'ms'),WithUnit(500,'ms'))
 #         self.addTTL('sMOT_PROBE_SPIN',WithUnit(1000,'ms'),WithUnit(500,'ms'))
         
-        self.addTTL('CAMERA',WithUnit(1004.5,'ms'),WithUnit(3,'ms'))
-        self.addTTL('CAMERA',WithUnit(1054.5,'ms'),WithUnit(3,'ms'))
-        self.addTTL('CAMERA',WithUnit(1104.5,'ms'),WithUnit(3,'ms'))
+        self.addTTL('CAMERA',loading_time-WithUnit(0.5,'ms'),WithUnit(3,'ms'))
+        self.addTTL('CAMERA',loading_time-WithUnit(0.5,'ms')+WithUnit(50,'ms'),WithUnit(3,'ms'))
+        self.addTTL('CAMERA',loading_time-WithUnit(0.5,'ms')+WithUnit(100,'ms'),WithUnit(3,'ms'))
         
 
 

@@ -3,9 +3,15 @@ from experiment.analog_sequences.MOT_detection_analog import MOT_detection_analo
 from labrad.units import WithUnit
 from treedict import TreeDict
 
-class MOT_loading_seq(analog_sequence):
+class MOT_loading_analog(analog_sequence):
     
-    required_parameters = []
+    required_parameters = [('MOT_loading', 'loading_time'),
+                           ('MOT_loading', 'compress_time'),
+                           ('MOT_loading', 'B_x'),
+                           ('MOT_loading', 'B_y'),
+                           ('MOT_loading', 'B_z'),
+                           ('MOT_loading', 'MOT_intensity'),
+                           ]
 #     
     required_subsequences = [MOT_detection_analog]
 #     
@@ -13,7 +19,7 @@ class MOT_loading_seq(analog_sequence):
 #                            }
 
     def sequence(self):
-        #p = self.parameters
+        p = self.parameters
         #self.end = WithUnit(10, 'us')
         
         '''
@@ -24,32 +30,50 @@ class MOT_loading_seq(analog_sequence):
         3.) cleverly initiate points with loading configuration. Look up in parameter vault
         
         '''
+        
+        print p.MOT_loading.loading_time
+        
+        ###B_field###
+        B_x = p.MOT_loading.B_x
+        B_y = p.MOT_loading.B_y
+        B_z = p.MOT_loading.B_z
+        
+        
+        
+        self.addAnalog(2, WithUnit(0.0,'ms'), B_x)
+        self.addAnalog(2, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), B_x)
+        self.addAnalog(3, WithUnit(0.0,'ms'), B_y)
+        self.addAnalog(3, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), B_y)
+        self.addAnalog(4, WithUnit(0.0,'ms'), B_z)
+        self.addAnalog(4, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), B_z)
+        
+        #### MOT intensity
+        
+        MOT_intensity = p.MOT_loading.MOT_intensity
+        
+        self.addAnalog(1, WithUnit(0.0,'ms'), MOT_intensity)
+        self.addAnalog(1, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), MOT_intensity)
+        
 
-        self.end = WithUnit(3.2,'ms')
         
-        #trigger analog out
-        self.addAnalog(0, WithUnit(0.0,'ms'), 1.0)
-        self.addAnalog(1, WithUnit(0.0,'ms'), 2.0)
-        self.addAnalog(2, WithUnit(0.0,'ms'), 2.0)
-        self.addAnalog(3, WithUnit(0.0,'ms'), 2.0)
-        self.addAnalog(4, WithUnit(0.0,'ms'), 2.0)
-        self.addAnalog(5, WithUnit(0.0,'ms'), 2.0)
-        self.addAnalog(6, WithUnit(0.0,'ms'), 2.0)
-        self.addAnalog(7, WithUnit(0.0,'ms'), 2.0)
+
+        self.addAnalog(5, WithUnit(0.0,'ms'), 0.0)
+        self.addAnalog(6, WithUnit(0.0,'ms'), 0.0)
+        self.addAnalog(7, WithUnit(0.0,'ms'), 0.0)
         
-        self.addAnalog(0, WithUnit(0.5,'s'), 1.5)
         
-        #self.addSequence(MOT_detection_analog)
+        ### MOT frequency
         
-        self.addAnalog(0, WithUnit(1.5,'s'), 2.0)
-        self.addAnalog(1, WithUnit(1.5,'s'), 2.0)
-        self.addAnalog(1, WithUnit(1.5,'s'), 2.0)
-        self.addAnalog(2, WithUnit(1.5,'s'), 2.0)
-        self.addAnalog(3, WithUnit(1.5,'s'), 2.0)
-        self.addAnalog(4, WithUnit(1.5,'s'), 2.0)
-        self.addAnalog(5, WithUnit(1.5,'s'), 2.0)
-        self.addAnalog(6, WithUnit(1.5,'s'), 2.0)
-        self.addAnalog(7, WithUnit(1.5,'s'), 2.0)
+        self.addAnalog(0, WithUnit(0.0,'ms'), -0.2)
+        self.addAnalog(0, WithUnit(3.0,'ms'), -0.2)
+        self.addAnalog(0, WithUnit(4.0,'ms'), 0.8)
+        self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(60.0,'ms'), 0.8)
+        self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(60.0,'ms')+WithUnit(3.0,'ms'), -0.2)
+        self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), -0.2)
+        
+        self.end = p.MOT_loading.loading_time
+        
+        self.addSequence(MOT_detection_analog)
         
 
 if __name__ == '__main__':
@@ -57,7 +81,7 @@ if __name__ == '__main__':
     import labrad
     cxn = labrad.connect()
     ni = cxn.ni_analog_server
-    M = MOT_loading_seq(TreeDict())
+    M = MOT_loading_analog(TreeDict())
     #M.sequence()
     #M.convert_sequence()
     M.programAnalog(ni)

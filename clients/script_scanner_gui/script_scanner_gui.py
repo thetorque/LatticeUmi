@@ -327,6 +327,7 @@ class script_scanner_gui(QtGui.QWidget):
         self.scripting_widget = scripting_widget(self.reactor, self)
         self.ParametersEditor = ParametersEditor(self.reactor)
         layout = QtGui.QHBoxLayout()
+        #layout = QtGui.QGridLayout()
         layout.addWidget(self.scripting_widget)
         layout.addWidget(self.ParametersEditor)
         self.setLayout(layout)

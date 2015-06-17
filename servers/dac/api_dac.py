@@ -13,6 +13,9 @@ import numpy as np
 import threading
 import sys
 import time
+
+from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock
+from twisted.internet.threads import deferToThread
 # load any DLLs
 nidaq = ctypes.windll.nicaiu # load the DLL
 ##############################
@@ -191,7 +194,8 @@ class api_dac():
 #         mythread.wait()
 #         print "done waiting"
 #         mythread.stop()
-        
+
+
     def setVoltagePattern(self, vertex_array, trigger, sampling_rate):
         '''
         Set the voltage pattern according to the input vertex_array. Also the trigger indicated if the pattern will wait for
@@ -230,11 +234,14 @@ class api_dac():
         
         data = np.vstack((time_array,volt_array)) # stack the time array and voltage array together
         mythread = WaveformThread(data, trigger)  #
-        mythread.run()
-        print "waiting for the sequence to be done"
-        mythread.wait()
-        print "done waiting"
-        mythread.stop()
+        return mythread
+    
+#         print "run waveform"
+#         mythread.run()
+#         print "waiting for the sequence to be done"
+#         mythread.wait()
+#         print "done waiting"
+#         mythread.stop()
         
         
         
