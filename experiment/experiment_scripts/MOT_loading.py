@@ -45,7 +45,7 @@ class MOT_loading(experiment):
         self.camera_initially_live_display = self.camera.is_live_display_running()
         self.camera.abort_acquisition()
         self.camera.set_exposure_time(self.parameters['CCD_settings.exposure_time'])
-        self.camera.set_emccd_gain(1)
+        self.camera.set_emccd_gain(int(self.parameters['CCD_settings.EMCCD_gain']))
         self.image_region = [
                              4,
                              4,
@@ -104,9 +104,17 @@ class MOT_loading(experiment):
         now = datetime.now()
         start_time = (now-now.replace(hour=0,minute=0,second=0,microsecond=0)).total_seconds()
         
+        #### switching ###
+        self.pulser.switch_auto('BIG_MOT_SH', False)
+        self.pulser.switch_auto('BIG_MOT_AO', False)
+        
         self.pulser.start_number(1)
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
+        
+        #### switching ###
+        self.pulser.switch_manual('BIG_MOT_SH', True)
+        self.pulser.switch_manual('BIG_MOT_AO', True)
         
         #####
         self.NI_analog.stop_voltage_pattern()

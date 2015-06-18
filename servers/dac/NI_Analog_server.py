@@ -67,7 +67,7 @@ class NI_Analog_Server(LabradServer):
                              ('B_x', 2),
                              ('B_y', 3),
                              ('B_z',4),
-                             ('unused_0',5),
+                             ('MOT',5),
                              ('unused_1',6),
                              ('unused_2',7),
                              ]: 

@@ -58,8 +58,14 @@ class MOT_detection_analog(analog_sequence):
         self.addAnalog(1, self.start+WithUnit(0.1,'ms'), MOT_intensity)
         self.addAnalog(1, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), MOT_intensity)
         
-        ## other unused channel
-        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 0.0)
+        ## MOT coil
+        self.addAnalog(5, self.start+WithUnit(0.1,'ms'), 8.0)
+        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(130,'ms'), 8.0)
+        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(133,'ms'), 4.5)
+        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 4.5)
+        
+        
+        
         self.addAnalog(6, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 0.0)
         self.addAnalog(7, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 0.0)
         

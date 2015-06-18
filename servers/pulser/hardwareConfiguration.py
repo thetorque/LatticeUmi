@@ -60,9 +60,9 @@ class hardwareConfiguration(object):
                    'CAMERA':channelConfiguration(0, False, False, False, False), ## camera
                    'sMOT_PROBE':channelConfiguration(1, False, False, False, False),
                    'sMOT_PROBE_SPIN':channelConfiguration(2, False, False, False, False),
-                   'BIG_MOT_SH':channelConfiguration(3, False, False, False, False),
+                   'BIG_MOT_SH':channelConfiguration(3, False, True, False, False),
                    'sMOT_AO':channelConfiguration(4, False, False, False, False),
-                   'BIG_MOT_AO':channelConfiguration(5, False, False, False, False),
+                   'BIG_MOT_AO':channelConfiguration(5, False, True, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
                    'AO1':channelConfiguration(20, False, False, False, False), ### triggering for analog board

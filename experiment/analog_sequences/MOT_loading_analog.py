@@ -54,10 +54,16 @@ class MOT_loading_analog(analog_sequence):
         self.addAnalog(1, WithUnit(0.0,'ms'), MOT_intensity)
         self.addAnalog(1, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), MOT_intensity)
         
-
+        ### MOT coil
         
 
-        self.addAnalog(5, WithUnit(0.0,'ms'), 0.0)
+        self.addAnalog(5, WithUnit(0.0,'ms'), 4.5)
+        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(150,'ms'), 4.5)
+        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(147,'ms'), 8.0)
+        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), 8.0)
+        
+        
+        
         self.addAnalog(6, WithUnit(0.0,'ms'), 0.0)
         self.addAnalog(7, WithUnit(0.0,'ms'), 0.0)
         

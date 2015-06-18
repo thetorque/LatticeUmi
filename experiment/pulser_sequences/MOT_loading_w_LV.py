@@ -12,6 +12,7 @@ class MOT_loading_seq(pulse_sequence):
                            ('MOT_loading', 'compress_MOT_power'),
                            ('MOT_loading', 'big_MOT_loading_freq'),
                            ('MOT_loading', 'compress_MOT_freq'),
+                           ('MOT_loading', 'test_lattice'),
                            ]
 #     
     required_subsequences = [MOT_detection]
@@ -38,9 +39,14 @@ class MOT_loading_seq(pulse_sequence):
         
         loading_time = p.MOT_loading.loading_time
         
-        self.addTTL('BIG_MOT_AO',self.end,loading_time-WithUnit(40.0,'ms'))
+
         
-        self.addTTL('BIG_MOT_AO',loading_time,WithUnit(40,'ms'))
+        if p.MOT_loading.test_lattice:
+            self.addTTL('BIG_MOT_AO',self.end,loading_time-WithUnit(60.0,'ms'))
+            self.addTTL('BIG_MOT_AO',loading_time,WithUnit(40,'ms'))    
+        else:
+            self.addTTL('BIG_MOT_AO',self.end,loading_time+WithUnit(40.0,'ms'))
+        
         self.addTTL('BIG_MOT_AO',loading_time+WithUnit(50,'ms'),WithUnit(40,'ms'))
         self.addTTL('BIG_MOT_AO',loading_time+WithUnit(100,'ms'),WithUnit(40,'ms'))
         
@@ -53,9 +59,9 @@ class MOT_loading_seq(pulse_sequence):
 #         self.addTTL('sMOT_PROBE',WithUnit(1000,'ms'),WithUnit(500,'ms'))
 #         self.addTTL('sMOT_PROBE_SPIN',WithUnit(1000,'ms'),WithUnit(500,'ms'))
         
-        self.addTTL('CAMERA',loading_time-WithUnit(0.5,'ms'),WithUnit(3,'ms'))
-        self.addTTL('CAMERA',loading_time-WithUnit(0.5,'ms')+WithUnit(50,'ms'),WithUnit(3,'ms'))
-        self.addTTL('CAMERA',loading_time-WithUnit(0.5,'ms')+WithUnit(100,'ms'),WithUnit(3,'ms'))
+        self.addTTL('CAMERA',loading_time,WithUnit(3,'ms'))
+        self.addTTL('CAMERA',loading_time+WithUnit(50,'ms'),WithUnit(3,'ms'))
+        self.addTTL('CAMERA',loading_time+WithUnit(100,'ms'),WithUnit(3,'ms'))
         
 
 
