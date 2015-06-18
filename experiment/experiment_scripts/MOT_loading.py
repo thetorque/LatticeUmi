@@ -8,13 +8,13 @@ import labrad
 import numpy
 import time
 from datetime import datetime
-import matplotlib.pyplot as plt
-import pyqtgraph as pg
 
        
 class MOT_loading(experiment):
     name = 'MOT loading'  
-    experiment_required_parameters = [('CCD_settings','exposure_time'),]
+    experiment_required_parameters = [('CCD_settings','exposure_time'),
+                                      ('CCD_settings','EMCCD_gain'),
+                                      ]
     #pulse_sequence = MOT_loading_seq
     pulse_sequence = MOT_loading_seq
     analog_sequence = MOT_loading_analog
@@ -44,7 +44,8 @@ class MOT_loading(experiment):
 
         self.camera_initially_live_display = self.camera.is_live_display_running()
         self.camera.abort_acquisition()
-        self.camera.set_exposure_time(WithUnit(0.02,'s'))
+        self.camera.set_exposure_time(self.parameters['CCD_settings.exposure_time'])
+        self.camera.set_emccd_gain(1)
         self.image_region = [
                              4,
                              4,
