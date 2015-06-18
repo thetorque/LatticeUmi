@@ -214,8 +214,10 @@ class AndorVideo(QtGui.QWidget):
         
     def CCD_image_update(self, images):
         #print images[0]
-        self.ccd_view_0.setImage(np.array(images[0])-np.array(images[2]))
-        self.ccd_view_1.setImage(np.array(images[0]))
+        ## set main window for S state - back ground
+        self.img_view.setImage(np.array(images[0])-np.array(images[2]))
+        self.ccd_view_0.setImage(np.array(images[0]))
+        self.ccd_view_1.setImage(np.array(images[1]))
         self.ccd_view_2.setImage(np.array(images[2]))
      
     @inlineCallbacks

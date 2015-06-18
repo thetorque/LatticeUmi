@@ -15,7 +15,7 @@ nodeDict = {
             'node ELI':
                 ['Data Vault',
                  'Andor Server',
-                #'NI Analog Server',
+                'NI Analog Server',
                 #'NormalPMTFlow',
                 #'SD Tracker',
                 'ScriptScanner',
