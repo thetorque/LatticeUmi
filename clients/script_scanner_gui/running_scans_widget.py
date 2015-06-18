@@ -120,7 +120,8 @@ class running_scans_list(QtGui.QTableWidget):
         self.on_pause.emit(ident, False)
     
     def setupLayout(self):
-        self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        #self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        self.horizontalHeader().setDefaultSectionSize(400)
         self.setColumnCount(1)
         self.horizontalHeader().hide()
         self.verticalHeader().setDefaultSectionSize(45)

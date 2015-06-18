@@ -42,7 +42,7 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>800</width>
+       <width>400</width>
        <height>500</height>
       </size>
      </property>

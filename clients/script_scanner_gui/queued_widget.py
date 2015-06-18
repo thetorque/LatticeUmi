@@ -52,7 +52,7 @@ class queued_list(QtGui.QTableWidget):
         self.parent = parent
         self.font = font
         if self.font is None:
-            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=10)
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.setupLayout()
         self.d = {}#stores identification: corresponding widget
@@ -63,7 +63,8 @@ class queued_list(QtGui.QTableWidget):
         self.on_cancel.emit(ident)
     
     def setupLayout(self):
-        self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        #self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        self.horizontalHeader().setDefaultSectionSize(400)
         self.setColumnCount(1)
         self.setRowCount(1)
         self.horizontalHeader().hide()

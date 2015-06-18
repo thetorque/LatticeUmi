@@ -61,7 +61,7 @@ class scheduled_list(QtGui.QTableWidget):
         self.parent = parent
         self.font = font
         if self.font is None:
-            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=12)
+            self.font = QtGui.QFont('MS Shell Dlg 2',pointSize=10)
         self.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.setupLayout()
         self.d = {}#stores identification: corresponding widget
@@ -79,7 +79,8 @@ class scheduled_list(QtGui.QTableWidget):
         self.on_new_duration.emit(ident, duration)
     
     def setupLayout(self):
-        self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        #self.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        self.horizontalHeader().setDefaultSectionSize(400)
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
         self.verticalHeader().setDefaultSectionSize(45)

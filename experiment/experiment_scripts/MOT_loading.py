@@ -2,7 +2,7 @@ from servers.script_scanner.scan_methods import experiment
 #from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
 from experiment.pulser_sequences.MOT_loading_w_LV import MOT_loading_seq
 from experiment.analog_sequences.MOT_loading_analog import MOT_loading_analog
-from experiment.pulser_sequences.TTL_test import TTL_test
+
 from labrad.units import WithUnit
 import labrad
 import numpy
@@ -62,15 +62,25 @@ class MOT_loading(experiment):
         
     def setup_data_vault(self):
         localtime = time.localtime()
-        self.datasetNameAppend = time.strftime("%Y%b%d_%H%M_%S",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
+        self.datasetNameAppend = time.strftime("%Y%b%d_%H",localtime)
+        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H", localtime)]
         self.save_directory = ['','Experiments']
         self.save_directory.extend([self.name])
         self.save_directory.extend(dirappend)
         self.dv.cd(self.save_directory ,True, context = self.readout_save_context)
-        self.dv.new('MOT {}'.format(self.datasetNameAppend),[('Time', 'Sec')],[('S_state','S_state.','No.'),('P_state','P_state.','No.'),('BG','BG','No.')], context = self.readout_save_context)   
-        self.dv.add_parameter('Window', ['MOT population'], context = self.readout_save_context)     
-        self.dv.add_parameter('plotLive', True, context = self.readout_save_context)     
+        
+        data_in_folder = self.dv.dir(context=self.readout_save_context)[1]
+        
+        names = sorted([name for name in data_in_folder if self.datasetNameAppend in name])
+        print names
+        
+        if names:
+            print "yes"
+            self.dv.open_appendable(names[0], context=self.readout_save_context)
+        else:
+            self.dv.new('MOT {}'.format(self.datasetNameAppend),[('Time', 'Sec')],[('S_state','S_state.','No.'),('P_state','P_state.','No.'),('BG','BG','No.')], context = self.readout_save_context)   
+            self.dv.add_parameter('Window', ['MOT population'], context = self.readout_save_context)     
+            self.dv.add_parameter('plotLive', True, context = self.readout_save_context)     
         
     
         
@@ -141,7 +151,7 @@ class MOT_loading(experiment):
     def finalize(self, cxn, context):
         #pass
         self.pv.save_parameters_to_registry()
-        self.camera.start_live_display()
+        #self.camera.start_live_display()
         #plt.show()
 
 if __name__ == '__main__':
