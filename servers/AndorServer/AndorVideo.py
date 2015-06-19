@@ -210,7 +210,8 @@ class AndorVideo(QtGui.QWidget):
     def live_update(self):
         data = yield self.server.getMostRecentImage(None)
         image_data = np.reshape(data, (self.pixels_y, self.pixels_x))
-        self.img_view.setImage(image_data.transpose(), autoRange = False, autoLevels = False, pos = [self.startx, self.starty], scale = [self.binx,self.biny], autoHistogramRange = False)
+        ### was transpose before
+        self.img_view.setImage(image_data, autoRange = False, autoLevels = False, pos = [self.startx, self.starty], scale = [self.binx,self.biny], autoHistogramRange = False)
         
     def CCD_image_update(self, images):
         #print images[0]
