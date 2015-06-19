@@ -17,8 +17,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
     
     def create_layout(self, cxn):
         contrl_widget = self.makeControlWidget(reactor, cxn)
-        histogram = self.make_histogram_widget(reactor, cxn)
-        drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
+        #histogram = self.make_histogram_widget(reactor, cxn)
+        #drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
         layout = QtGui.QHBoxLayout()
         from clients.script_scanner_gui.script_scanner_gui import script_scanner_gui
@@ -26,8 +26,8 @@ class LATTICE_GUI(QtGui.QMainWindow):
         script_scanner.show()
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(contrl_widget,'&Control')
-        self.tabWidget.addTab(histogram, '&Readout Histogram')
-        self.tabWidget.addTab(drift_tracker, '&SD Drift Tracker')
+        #self.tabWidget.addTab(histogram, '&Readout Histogram')
+        #self.tabWidget.addTab(drift_tracker, '&SD Drift Tracker')
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
@@ -59,25 +59,25 @@ class LATTICE_GUI(QtGui.QMainWindow):
         from dev.gui.Simple_DAC_control import dac_widget
         #from common.clients.CAVITY_CONTROL import cavityWidget
         #from common.clients.multiplexer.MULTIPLEXER_CONTROL import multiplexerWidget
-        from PMT_CONTROL import pmtWidget
+        #from PMT_CONTROL import pmtWidget
         from SWITCH_CONTROL import switchWidget
-        from DDS_CONTROL import DDS_CONTROL
+        #from DDS_CONTROL import DDS_CONTROL
         #from common.clients.LINETRIGGER_CONTROL import linetriggerWidget
-        from quick_actions.quick_actions import actions_widget
-        from indicator.indicator import indicator_widget
+        #from quick_actions.quick_actions import actions_widget
+        #from indicator.indicator import indicator_widget
         #from agilent_E3633A.agilent_E3633A import magnet_Control, oven_Control
         gridLayout = QtGui.QGridLayout()
         gridLayout.addWidget(dac_widget(reactor, cxn),    0,0,1,1)
         #gridLayout.addWidget(actions_widget(reactor, cxn),      1,0,1,2)
-        gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,2)
+        #gridLayout.addWidget(indicator_widget(reactor, cxn),    2,0,1,2)
         #gridLayout.addWidget(magnet_Control(reactor, cxn),      3,0,1,1)
         #gridLayout.addWidget(oven_Control(reactor, cxn),        3,1,1,1)
         #gridLayout.addWidget(cavityWidget(reactor),             0,2,3,2)
         #gridLayout.addWidget(multiplexerWidget(reactor),        0,4,3,1)
         gridLayout.addWidget(switchWidget(reactor, cxn),        4,0,1,2)
-        gridLayout.addWidget(pmtWidget(reactor),                3,2,1,1)
+        #gridLayout.addWidget(pmtWidget(reactor),                3,2,1,1)
         #gridLayout.addWidget(linetriggerWidget(reactor, cxn),   3,3,1,1)
-        gridLayout.addWidget(DDS_CONTROL(reactor, cxn),         3,4,1,1)
+        #gridLayout.addWidget(DDS_CONTROL(reactor, cxn),         3,4,1,1)
         widget.setLayout(gridLayout)
         return widget
 

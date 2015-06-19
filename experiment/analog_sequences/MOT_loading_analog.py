@@ -11,6 +11,7 @@ class MOT_loading_analog(analog_sequence):
                            ('MOT_loading', 'B_y'),
                            ('MOT_loading', 'B_z'),
                            ('MOT_loading', 'MOT_intensity'),
+                           ('MOT_loading', 'wait_time'),
                            ]
 #     
     required_subsequences = [MOT_detection_analog]
@@ -77,7 +78,7 @@ class MOT_loading_analog(analog_sequence):
         self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(60.0,'ms')+WithUnit(3.0,'ms'), -0.2)
         self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), -0.2)
         
-        self.end = p.MOT_loading.loading_time
+        self.end = p.MOT_loading.loading_time + p.MOT_loading.wait_time
         
         self.addSequence(MOT_detection_analog)
         

@@ -63,10 +63,16 @@ class hardwareConfiguration(object):
                    'BIG_MOT_SH':channelConfiguration(3, False, True, False, False),
                    'sMOT_AO':channelConfiguration(4, False, False, False, False),
                    'BIG_MOT_AO':channelConfiguration(5, False, True, False, False),
+                   '405_ECDL':channelConfiguration(6, False, False, False, False),
+                   '405_Raman':channelConfiguration(7, False, False, False, False),
+                   '435_Raman':channelConfiguration(8, False, False, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
                    'AO1':channelConfiguration(20, False, False, False, False), ### triggering for analog board
                    'AO2':channelConfiguration(21, False, False, False, False), ### triggering for analog board
+                   'B_x_sign':channelConfiguration(21, True, False, False, False), 
+                   'B_y_sign':channelConfiguration(22, True, True, False, False),
+                   'B_z_sign':channelConfiguration(23, True, True, False, False), 
                    
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
