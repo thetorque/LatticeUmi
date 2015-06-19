@@ -186,6 +186,7 @@ class script_scanner_gui(QtGui.QWidget):
         self.scripting_widget.on_run.connect(self.run_script)
         self.scripting_widget.on_cancel_queued.connect(self.on_cancel_queued)
         self.scripting_widget.on_repeat.connect(self.repeat_script)
+        self.scripting_widget.on_loop.connect(self.repeat_script)
         self.scripting_widget.on_schedule.connect(self.schedule_script)
         self.scripting_widget.on_cancel_scheduled.connect(self.scheduled_cancel)
         self.scripting_widget.on_schedule_duration.connect(self.scheduled_duration)
