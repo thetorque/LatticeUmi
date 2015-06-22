@@ -10,6 +10,7 @@ from fitgaussian import FitGaussian
 from fitline import FitLine
 from fitlorentzian import FitLorentzian
 from fitparabola import FitParabola
+from fitexpo import FitExpo
 
 class AnalysisWidget(QtGui.QWidget):
     """Creates the window for the new plot"""
@@ -24,10 +25,12 @@ class AnalysisWidget(QtGui.QWidget):
         self.fitGaussian = FitGaussian(self)
         self.fitLorentzian = FitLorentzian(self)
         self.fitParabola = FitParabola(self)
+        self.fitExpo = FitExpo(self)
         self.fitCurveDictionary = {self.fitLine.curveName: self.fitLine,
                                    self.fitGaussian.curveName: self.fitGaussian,
                                    self.fitLorentzian.curveName: self.fitLorentzian,
-                                   self.fitParabola.curveName: self.fitParabola
+                                   self.fitParabola.curveName: self.fitParabola,
+                                   self.fitExpo.curveName: self.fitExpo
                                    }           
 
         self.parameterWindow = ParameterWindow(self)

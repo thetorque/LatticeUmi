@@ -60,7 +60,7 @@ class hardwareConfiguration(object):
                    'CAMERA':channelConfiguration(0, False, False, False, False), ## camera
                    'sMOT_PROBE':channelConfiguration(1, False, False, False, False),
                    'sMOT_PROBE_SPIN':channelConfiguration(2, False, False, False, False),
-                   'BIG_MOT_SH':channelConfiguration(3, False, True, False, False),
+                   'BIG_MOT_SH':channelConfiguration(3, False, False, True, True),
                    'sMOT_AO':channelConfiguration(4, False, False, False, False),
                    'BIG_MOT_AO':channelConfiguration(5, False, True, False, False),
                    '405_ECDL':channelConfiguration(6, False, False, False, False),
@@ -78,7 +78,7 @@ class hardwareConfiguration(object):
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
                 'DDS_0':ddsConfiguration(    0,  (0.0,800.0),   (-48.0,6.0),  70.0,   -48.0),
-                'BIG_MOT':ddsConfiguration(    1,  (145.0,155.0),   (-48.0,-5.0),  150.0,   -48.0),
+                'BIG_MOT':ddsConfiguration(    1,  (145.0,155.0),   (-48.0,-5.0),  150.0,   -6.0),
                 '254_COMB':ddsConfiguration(    2,  (6.5,11.0),   (-48.0,5.0),  9.0,   -48.0),
                 'SMALL_MOT':ddsConfiguration(    3,  (145.0,155.0),   (-48.0,-8.0),  150.0,   -48.0),
                 'LATTICE':ddsConfiguration(    4,  (199.0,201.0),   (-48.0,-5.0),  200.0,   -48.0),

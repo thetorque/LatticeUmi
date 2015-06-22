@@ -60,13 +60,15 @@ class MOT_loading(experiment):
         self.camera.abort_acquisition()
         self.camera.set_exposure_time(self.parameters['CCD_settings.exposure_time'])
         self.camera.set_emccd_gain(int(self.parameters['CCD_settings.EMCCD_gain']))
+        temp = 8
+        
         self.image_region = [
                              4, ## binning
                              4, ## binning
-                             316, ### vertical ##up
-                             343, ### vertical ## down
-                             225, ### hor left
-                             252, ### hor right
+                             320-temp, ### vertical ##up
+                             331+temp, ### vertical ## down
+                             237-temp, ### hor left
+                             248+temp, ### hor right
                              ]
 
 
@@ -96,7 +98,7 @@ class MOT_loading(experiment):
         ### if there's no matched name, then create the data set
         else:
             ## this line defines the structure of the data. "name", horizontal axis, vertical axis (this case, there are multiple lines)
-            self.dv.new('MOT {}'.format(self.datasetNameAppend),[('Time', 'Sec')],[('S_state','S_state.','No.'),('P_state','P_state.','No.'),('BG','BG','No.')], context = self.readout_save_context)   
+            self.dv.new('MOT {}'.format(self.datasetNameAppend),[('Time', 'Sec')],[('S_state','S_state.','No.'),('P_state','P_state.','No.'),('Total','Total','No.')], context = self.readout_save_context)   
             self.dv.add_parameter('Window', ['MOT population'], context = self.readout_save_context)     
             ## open the graph once the data set is created
             self.dv.add_parameter('plotLive', True, context = self.readout_save_context)     
@@ -125,8 +127,8 @@ class MOT_loading(experiment):
         start_time = (now-now.replace(hour=0,minute=0,second=0,microsecond=0)).total_seconds()
         
         #### configure TTL switching from manual to auto ###
-        self.pulser.switch_auto('BIG_MOT_SH', False)
-        self.pulser.switch_auto('BIG_MOT_AO', False)
+        self.pulser.switch_auto('BIG_MOT_SH', True)
+        self.pulser.switch_auto('BIG_MOT_AO', True)
         
         #### start pulse sequence
         
@@ -135,8 +137,8 @@ class MOT_loading(experiment):
         self.pulser.stop_sequence()
         
         #### configure TTL switching back to manual###
-        self.pulser.switch_manual('BIG_MOT_SH', True)
-        self.pulser.switch_manual('BIG_MOT_AO', True)
+        self.pulser.switch_manual('BIG_MOT_SH', False)
+        self.pulser.switch_manual('BIG_MOT_AO', False)
         
         #### stop analog pattern
         self.NI_analog.stop_voltage_pattern()

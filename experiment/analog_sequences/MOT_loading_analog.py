@@ -10,7 +10,6 @@ class MOT_loading_analog(analog_sequence):
                            ('MOT_loading', 'B_x'),
                            ('MOT_loading', 'B_y'),
                            ('MOT_loading', 'B_z'),
-                           ('MOT_loading', 'MOT_intensity'),
                            ('MOT_loading', 'wait_time'),
                            ]
 #     
@@ -50,7 +49,7 @@ class MOT_loading_analog(analog_sequence):
         
         #### MOT intensity
         
-        MOT_intensity = p.MOT_loading.MOT_intensity
+        MOT_intensity = 1.2
         
         self.addAnalog(1, WithUnit(0.0,'ms'), MOT_intensity)
         self.addAnalog(1, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), MOT_intensity)
@@ -58,8 +57,8 @@ class MOT_loading_analog(analog_sequence):
         ### MOT coil
         
 
-        self.addAnalog(5, WithUnit(0.0,'ms'), 4.5)
-        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(150,'ms'), 4.5)
+        self.addAnalog(5, WithUnit(0.0,'ms'), 3.5)
+        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(150,'ms'), 3.5)
         self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(147,'ms'), 8.0)
         self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), 8.0)
         

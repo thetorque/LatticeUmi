@@ -15,6 +15,7 @@ from fitparabola import FitParabola
 from fitcosine import FitCosine
 from fitramseyfringe import FitRamseyFringe
 from fitrabiflop import FitRabiflop
+from fitexpo import FitExpo
 
 class AnalysisWindow(QtGui.QWidget):
     
@@ -37,6 +38,7 @@ class AnalysisWindow(QtGui.QWidget):
         self.fitCosine = FitCosine(self)
         self.fitRamseyFringe = FitRamseyFringe(self)
         self.fitRabiflop = FitRabiflop(self)
+        self.fitExpo = FitExpo(self)
         self.fitCurveDictionary = {
                                    self.fitLorentzian.curveName: self.fitLorentzian,
                                    self.fitGaussian.curveName: self.fitGaussian,
@@ -44,7 +46,8 @@ class AnalysisWindow(QtGui.QWidget):
                                    self.fitLine.curveName: self.fitLine,
                                    self.fitParabola.curveName: self.fitParabola,
                                    self.fitCosine.curveName: self.fitCosine,
-                                   self.fitRabiflop.curveName: self.fitRabiflop                    
+                                   self.fitRabiflop.curveName: self.fitRabiflop,    
+                                   self.fitExpo.curveName: self.fitExpo                 
                                   }
         self.initUI()
         

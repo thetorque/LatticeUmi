@@ -4,10 +4,12 @@ from treedict import TreeDict
 
 class MOT_detection_analog(analog_sequence):
     
-    required_parameters = [('MOT_loading', 'B_x'),
+    required_parameters = [('MOT_loading', 'B_x_det'),
+                           ('MOT_loading', 'B_x'),
+                           ('MOT_loading', 'B_y_det'),
                            ('MOT_loading', 'B_y'),
+                           ('MOT_loading', 'B_z_det'),
                            ('MOT_loading', 'B_z'),
-                           ('MOT_loading', 'MOT_intensity'),
                            ]
 #     
     required_subsequences = []
@@ -23,7 +25,11 @@ class MOT_detection_analog(analog_sequence):
         
         detect_freq = -0.2
         blue_freq = -0.9
-        MOT_intensity = p.MOT_loading.MOT_intensity
+        MOT_intensity = 1.2
+        B_x_det = p.MOT_loading.B_x_det
+        B_y_det = p.MOT_loading.B_y_det
+        B_z_det = p.MOT_loading.B_z_det
+        
         B_x = p.MOT_loading.B_x
         B_y = p.MOT_loading.B_y
         B_z = p.MOT_loading.B_z
@@ -46,11 +52,17 @@ class MOT_detection_analog(analog_sequence):
         
         ### B field
         
-        self.addAnalog(2, self.start+WithUnit(0.1,'ms'), B_x)
+        self.addAnalog(2, self.start+WithUnit(0.1,'ms'), B_x_det)
+        self.addAnalog(2, self.start+WithUnit(0.1,'ms')+WithUnit(133,'ms'), B_x_det)
+        self.addAnalog(2, self.start+WithUnit(0.1,'ms')+WithUnit(136,'ms'), B_x)
         self.addAnalog(2, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), B_x)
-        self.addAnalog(3, self.start+WithUnit(0.1,'ms'), B_y)
+        self.addAnalog(3, self.start+WithUnit(0.1,'ms'), B_y_det)
+        self.addAnalog(3, self.start+WithUnit(0.1,'ms')+WithUnit(133,'ms'), B_y_det)
+        self.addAnalog(3, self.start+WithUnit(0.1,'ms')+WithUnit(136,'ms'), B_y)
         self.addAnalog(3, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), B_y)
-        self.addAnalog(4, self.start+WithUnit(0.1,'ms'), B_z)
+        self.addAnalog(4, self.start+WithUnit(0.1,'ms'), B_z_det)
+        self.addAnalog(4, self.start+WithUnit(0.1,'ms')+WithUnit(133,'ms'), B_z_det)
+        self.addAnalog(4, self.start+WithUnit(0.1,'ms')+WithUnit(136,'ms'), B_z)
         self.addAnalog(4, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), B_z)
         
         ### MOT_AO intensity
