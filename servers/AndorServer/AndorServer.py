@@ -418,6 +418,21 @@ class AndorServer(LabradServer):
             self.lock.release()
         #print "array is", vertex_array
         #self.gui.CCD_image_update(images)  
+        
+    @setting(34, "Set Main CCD Images", images = '*2v', pos = '*v', binning = 'v', returns = '')
+    def setMainCCDImages(self, c, images, pos, binning):
+        '''
+        Set CCD images on the GUI
+        '''
+        #print images
+        print 'acquiring: {}'.format(self.setMainCCDImages.__name__)
+        yield self.lock.acquire()
+        try:
+            print 'acquired : {}'.format(self.setMainCCDImages.__name__)
+            yield deferToThread(self.gui.mainCCD_image_update, images, pos, binning)
+        finally:
+            print 'releasing: {}'.format(self.setMainCCDImages.__name__)
+            self.lock.release()
             
             
         

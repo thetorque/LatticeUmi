@@ -4,6 +4,7 @@ from twisted.internet.task import LoopingCall
 import numpy as np
 import pyqtgraph as pg
 
+
 class AndorVideo(QtGui.QWidget):
     def __init__(self, server):
         super(AndorVideo, self).__init__()
@@ -18,14 +19,34 @@ class AndorVideo(QtGui.QWidget):
         self.setWindowTitle("Andor")
         #layout
         layout = QtGui.QGridLayout()
-        self.plt = plt = pg.PlotItem()
-        self.img_view = pg.ImageView(view = self.plt)
-        self.img_view.ui.menuBtn.hide()
-        plt.showAxis('top')
-        plt.hideAxis('bottom')
-        plt.setAspectLocked(True)
-        layout.addWidget(self.img_view, 0, 0, 1, 6)
-        self.img_view.getHistogramWidget().setHistogramRange(0, 1000)
+        
+        pg.mkQApp()
+        main_win = pg.GraphicsLayoutWidget()
+        self.p1 = main_win.addPlot()
+        self.img_view = pg.ImageItem()
+        self.p1.addItem(self.img_view)
+        
+        ### add ROI
+        
+        self.roi = pg.RectROI([8, 14], [6, 5])
+        #roi.addScaleHandle([0.5, 1], [0.5, 0.5])
+        #roi.addScaleHandle([0, 0.5], [0.5, 0.5])
+        self.p1.addItem(self.roi)
+        self.roi.setZValue(10)
+        
+        
+        #self.plt = plt = pg.PlotItem()
+        #self.img_view = pg.ImageView(view = self.plt)
+        #self.img_view.ui.menuBtn.hide()
+        #plt.showAxis('top')
+        #plt.hideAxis('bottom')
+        #plt.setAspectLocked(True)
+        #layout.addWidget(self.img_view, 0, 0, 1, 6)
+        #self.img_view.getHistogramWidget().setHistogramRange(0, 1000)
+
+        #self.img_view = pg.ImageItem()
+        
+        layout.addWidget(main_win,0,0,1,6)
         
 #         ### add aux display for CCD images
 #         self.plt_ccd_0 = pg.PlotItem()
@@ -42,23 +63,36 @@ class AndorVideo(QtGui.QWidget):
 
 
         ### add aux display for CCD images
-        self.plt_ccd_0 = pg.PlotItem()
-        self.ccd_view_0 = pg.ImageView(view = self.plt_ccd_0)
-        self.ccd_view_0.ui.roiBtn.hide()
-        self.ccd_view_0.ui.menuBtn.hide()
-        layout.addWidget(self.ccd_view_0, 1, 0,1,2)
+        win_0 = pg.GraphicsLayoutWidget()
+        self.p_sub_0 = win_0.addPlot()
+        self.ccd_view_0 = pg.ImageItem()
+        self.p_sub_0.addItem(self.ccd_view_0)
+        layout.addWidget(win_0, 1, 0,1,2)
+        
+        
+        win_1 = pg.GraphicsLayoutWidget()
+        self.p_sub_1 = win_1.addPlot()
+        self.ccd_view_1 = pg.ImageItem()
+        self.p_sub_1.addItem(self.ccd_view_1)
+        layout.addWidget(win_1, 1, 2,1,2)
+        
+        win_2 = pg.GraphicsLayoutWidget()
+        self.p_sub_2 = win_2.addPlot()
+        self.ccd_view_2 = pg.ImageItem()
+        self.p_sub_2.addItem(self.ccd_view_2)
+        layout.addWidget(win_2, 1, 4,1,2)
          
-        self.plt_ccd_1 = pg.PlotItem()
-        self.ccd_view_1 = pg.ImageView(view = self.plt_ccd_1)
-        self.ccd_view_1.ui.roiBtn.hide()
-        self.ccd_view_1.ui.menuBtn.hide()
-        layout.addWidget(self.ccd_view_1, 1, 2,1,2)
-         
-        self.plt_ccd_2 = pg.PlotItem()
-        self.ccd_view_2 = pg.ImageView(view = self.plt_ccd_2)
-        self.ccd_view_2.ui.roiBtn.hide()
-        self.ccd_view_2.ui.menuBtn.hide()        
-        layout.addWidget(self.ccd_view_2, 1, 4,1,2)
+#         self.plt_ccd_1 = pg.PlotItem()
+#         self.ccd_view_1 = pg.ImageView(view = self.plt_ccd_1)
+#         self.ccd_view_1.ui.roiBtn.hide()
+#         self.ccd_view_1.ui.menuBtn.hide()
+#         layout.addWidget(self.ccd_view_1, 1, 2,1,2)
+#          
+#         self.plt_ccd_2 = pg.PlotItem()
+#         self.ccd_view_2 = pg.ImageView(view = self.plt_ccd_2)
+#         self.ccd_view_2.ui.roiBtn.hide()
+#         self.ccd_view_2.ui.menuBtn.hide()        
+#         layout.addWidget(self.ccd_view_2, 1, 4,1,2)
         
         
         ####
@@ -72,8 +106,8 @@ class AndorVideo(QtGui.QWidget):
         self.exposureSpinBox.setMaximum(10000.0)
         self.exposureSpinBox.setKeyboardTracking(False)
         self.exposureSpinBox.setSuffix(' s')      
-        layout.addWidget(exposure_label, 2, 4,)
-        layout.addWidget(self.exposureSpinBox, 2, 5)
+        #layout.addWidget(exposure_label, 2, 4,)
+        #layout.addWidget(self.exposureSpinBox, 2, 5)
         #EMCCD Gain
         emccd_label = QtGui.QLabel("EMCCD Gain")
         emccd_label.setAlignment(QtCore.Qt.AlignRight| QtCore.Qt.AlignVCenter)
@@ -82,20 +116,20 @@ class AndorVideo(QtGui.QWidget):
         self.emccdSpinBox.setMinimum(0)
         self.emccdSpinBox.setMaximum(255)
         self.emccdSpinBox.setKeyboardTracking(False)
-        layout.addWidget(emccd_label, 3, 4,)
-        layout.addWidget(self.emccdSpinBox, 3, 5)
+        #layout.addWidget(emccd_label, 3, 4,)
+        #layout.addWidget(self.emccdSpinBox, 3, 5)
         #Live Video Button
         self.live_button = QtGui.QPushButton("Live Video")
         self.live_button.setCheckable(True)
         layout.addWidget(self.live_button, 2, 0)
         #set image region button
         self.set_image_region_button = QtGui.QPushButton("Set Image Region")
-        layout.addWidget(self.set_image_region_button, 3, 0)
+        #layout.addWidget(self.set_image_region_button, 3, 0)
         #controlling the display buttons
         self.view_all_button = QtGui.QPushButton("View All")
-        layout.addWidget(self.view_all_button, 2, 1)
+        #layout.addWidget(self.view_all_button, 2, 1)
         self.auto_levels_button = QtGui.QPushButton("Auto Levels")
-        layout.addWidget(self.auto_levels_button, 3, 1)
+        #layout.addWidget(self.auto_levels_button, 3, 1)
         #display mode buttons
         self.trigger_mode = QtGui.QLineEdit()
         self.acquisition_mode = QtGui.QLineEdit()
@@ -105,36 +139,65 @@ class AndorVideo(QtGui.QWidget):
         self.acquisition_mode.setReadOnly(True)
         label = QtGui.QLabel("Trigger Mode")
         label.setAlignment(QtCore.Qt.AlignRight| QtCore.Qt.AlignVCenter)
-        layout.addWidget(label, 2, 2)
+        #layout.addWidget(label, 2, 2)
         label = QtGui.QLabel("Acquisition Mode")
         label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        layout.addWidget(label, 3, 2)
-        layout.addWidget(self.trigger_mode, 2, 3)
-        layout.addWidget(self.acquisition_mode, 3, 3)
+        #layout.addWidget(label, 3, 2)
+        #layout.addWidget(self.trigger_mode, 2, 3)
+        #layout.addWidget(self.acquisition_mode, 3, 3)
         #add lines for the cross
         self.vLine = pg.InfiniteLine(angle=90, movable=False)
         self.hLine = pg.InfiniteLine(angle=0, movable=False)
-        plt.addItem(self.vLine, ignoreBounds=True)
-        plt.addItem(self.hLine, ignoreBounds=True)
+        self.vLine.setZValue(11)
+        self.hLine.setZValue(11)
+        self.p1.addItem(self.vLine, ignoreBounds=True)
+        self.p1.addItem(self.hLine, ignoreBounds=True)
         #set the layout and show
         self.setLayout(layout)
         self.show()
+        #self.roi.sigRegionChanged.connect(self.updateROI)
+        self.roi.sigRegionChangeFinished.connect(self.updateROI)
+        #self.label = main_win.addLabel('')
+        #self.label.setText('hdoo')
+    
+
+    def updateROI(self):
+        position = self.roi.pos()
+        size = self.roi.size()
+        position =np.rint(np.array(position))
+        size = np.floor(np.array(size))
+        print position
+        print size
+        self.update_ROI_parameter_vault(position, size)
+        
+    @inlineCallbacks
+    def update_ROI_parameter_vault(self, position, size):
+        
+        pv = self.server.client.parametervault
+        yield pv.set_parameter('CCD_settings','x_min_cropped',position[0])
+        yield pv.set_parameter('CCD_settings','x_max_cropped',position[0]+size[0])
+        yield pv.set_parameter('CCD_settings','y_min_cropped',position[1])
+        yield pv.set_parameter('CCD_settings','y_max_cropped',position[1]+size[1])
+
+        #self.label.setText(position)
+
+
      
     def mouse_clicked(self, event):
         '''
         draws the cross at the position of a double click
         '''
         pos = event.pos()
-        if self.plt.sceneBoundingRect().contains(pos) and event.double():
+        if self.p1.sceneBoundingRect().contains(pos) and event.double():
             #only on double clicks within bounds
-            mousePoint = self.plt.vb.mapToView(pos)
+            mousePoint = self.p1.vb.mapToView(pos)
             self.vLine.setPos(mousePoint.x())
             self.hLine.setPos(mousePoint.y())
      
     @inlineCallbacks
     def connect_layout(self):
         self.set_image_region_button.clicked.connect(self.on_set_image_region)
-        self.plt.scene().sigMouseClicked.connect(self.mouse_clicked)
+        self.p1.scene().sigMouseClicked.connect(self.mouse_clicked)
         exposure = yield self.server.getExposureTime(None)
         self.exposureSpinBox.setValue(exposure['s'])     
         self.exposureSpinBox.valueChanged.connect(self.on_new_exposure)
@@ -216,10 +279,18 @@ class AndorVideo(QtGui.QWidget):
     def CCD_image_update(self, images):
         #print images[0]
         ## set main window for S state - back ground
-        self.img_view.setImage(np.array(images[0])-np.array(images[2]))
+        #self.img_view.setImage(np.array(images[0])-np.array(images[2]))
+        #self.img_view.translate(50.0,50.0)
+        #self.img_view.setPos(50.0,50.0)
+        #self.img_view.setScale(3.0)
         self.ccd_view_0.setImage(np.array(images[0]))
         self.ccd_view_1.setImage(np.array(images[1]))
         self.ccd_view_2.setImage(np.array(images[2]))
+        
+    def mainCCD_image_update(self, image, pos, binning):
+        self.img_view.setImage(np.array(image))
+        self.img_view.setPos(pos[0],pos[1])
+        self.img_view.setScale(binning)
      
     @inlineCallbacks
     def start_live_display(self):

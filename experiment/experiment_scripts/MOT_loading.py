@@ -20,6 +20,15 @@ class MOT_loading(experiment):
     ## list required parameters for this experiment
     experiment_required_parameters = [('CCD_settings','exposure_time'),
                                       ('CCD_settings','EMCCD_gain'),
+                                      ('CCD_settings','binning'),
+                                      ('CCD_settings','x_min'),
+                                      ('CCD_settings','x_max'),
+                                      ('CCD_settings','y_min'),
+                                      ('CCD_settings','y_max'),
+                                      ('CCD_settings','x_min_cropped'),
+                                      ('CCD_settings','x_max_cropped'),
+                                      ('CCD_settings','y_min_cropped'),
+                                      ('CCD_settings','y_max_cropped'),
                                       ]
     ## define which pulse sequence to use
     pulse_sequence = MOT_loading_seq
@@ -60,15 +69,15 @@ class MOT_loading(experiment):
         self.camera.abort_acquisition()
         self.camera.set_exposure_time(self.parameters['CCD_settings.exposure_time'])
         self.camera.set_emccd_gain(int(self.parameters['CCD_settings.EMCCD_gain']))
-        temp = 8
         
+        self.binning = int(self.parameters['CCD_settings.binning'])
         self.image_region = [
-                             4, ## binning
-                             4, ## binning
-                             320-temp, ### vertical ##up
-                             331+temp, ### vertical ## down
-                             237-temp, ### hor left
-                             248+temp, ### hor right
+                             self.binning, ## binning
+                             self.binning, ## binning
+                             int(self.parameters['CCD_settings.y_min']), ### vertical ##down
+                             int(self.parameters['CCD_settings.y_max']), ### vertical ## up
+                             int(self.parameters['CCD_settings.x_min']), ### hor left
+                             int(self.parameters['CCD_settings.x_max']), ### hor right
                              ]
 
 
@@ -156,22 +165,39 @@ class MOT_loading(experiment):
         self.camera.abort_acquisition()
         
         ### create number of pixel in x and y direction for array of data
-        x_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
-        y_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
+        y_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
+        x_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
         
         ### reshape array into three x-y images
-        images = numpy.reshape(images, (3, y_pixels, x_pixels))
+        images = numpy.reshape(images, (3, x_pixels, y_pixels))
+        
+        ### crop image
+        
+        x_min_index = numpy.floor((self.parameters['CCD_settings.x_min_cropped'] - self.parameters['CCD_settings.x_min'])/self.parameters['CCD_settings.binning'])
+        x_max_index = numpy.floor((self.parameters['CCD_settings.x_max_cropped'] - self.parameters['CCD_settings.x_min'])/self.parameters['CCD_settings.binning'])
+        y_min_index = numpy.floor((self.parameters['CCD_settings.y_min_cropped'] - self.parameters['CCD_settings.y_min'])/self.parameters['CCD_settings.binning'])
+        y_max_index = numpy.floor((self.parameters['CCD_settings.y_max_cropped'] - self.parameters['CCD_settings.y_min'])/self.parameters['CCD_settings.binning'])
+        
+        if (x_min_index < 0) or (y_min_index < 0) or (x_max_index > (x_pixels-1)) or (y_max_index > (y_pixels-1)):
+            x_min_index = 0
+            y_min_index = 0
+            x_max_index = x_pixels-1
+            y_max_index = y_pixels-1
+        
+        images_cropped = images[:,x_min_index:x_max_index,y_min_index:y_max_index]
 
         ### send data to the camera server for displaying the picture
-        self.camera.set_ccd_images(images)
+        self.camera.set_ccd_images(images_cropped)
+        ### set the main camera display
+        self.camera.set_main_ccd_images(images[0]-images[2],numpy.array([self.parameters['CCD_settings.x_min'],self.parameters['CCD_settings.y_min']]), self.parameters['CCD_settings.binning'])
         
         ### calculate the no. of atoms
         
         expose_time_ms = self.parameters['CCD_settings.exposure_time']['ms']
         ccd_gain = self.parameters['CCD_settings.EMCCD_gain']
         
-        S_state = (numpy.sum(images[0]-images[2]))/(0.11547*expose_time_ms*ccd_gain)
-        P_state = (numpy.sum(images[1]-images[2]))/(0.11547*expose_time_ms*ccd_gain)
+        S_state = (numpy.sum(images_cropped[0]-images_cropped[2]))/(0.11547*expose_time_ms*ccd_gain)
+        P_state = (numpy.sum(images_cropped[1]-images_cropped[2]))/(0.11547*expose_time_ms*ccd_gain)
         
         ### create array of data 
         Atom_number_data = numpy.array([start_time,S_state,P_state,S_state+P_state])
