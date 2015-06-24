@@ -172,6 +172,9 @@ class AndorVideo(QtGui.QWidget):
         
     @inlineCallbacks
     def update_ROI_parameter_vault(self, position, size):
+        '''
+        send the ROI region to parameter vault for cropping the image
+        '''
         
         pv = self.server.client.parametervault
         yield pv.set_parameter('CCD_settings','x_min_cropped',position[0])

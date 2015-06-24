@@ -165,31 +165,19 @@ class MOT_loading(experiment):
         self.camera.abort_acquisition()
         
         ### create number of pixel in x and y direction for array of data
-        y_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
-        x_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
+        self.y_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
+        self.x_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
         
         ### reshape array into three x-y images
-        images = numpy.reshape(images, (3, x_pixels, y_pixels))
+        images = numpy.reshape(images, (3, self.x_pixels, self.y_pixels))
         
-        ### crop image
-        
-        x_min_index = numpy.floor((self.parameters['CCD_settings.x_min_cropped'] - self.parameters['CCD_settings.x_min'])/self.parameters['CCD_settings.binning'])
-        x_max_index = numpy.floor((self.parameters['CCD_settings.x_max_cropped'] - self.parameters['CCD_settings.x_min'])/self.parameters['CCD_settings.binning'])
-        y_min_index = numpy.floor((self.parameters['CCD_settings.y_min_cropped'] - self.parameters['CCD_settings.y_min'])/self.parameters['CCD_settings.binning'])
-        y_max_index = numpy.floor((self.parameters['CCD_settings.y_max_cropped'] - self.parameters['CCD_settings.y_min'])/self.parameters['CCD_settings.binning'])
-        
-        if (x_min_index < 0) or (y_min_index < 0) or (x_max_index > (x_pixels-1)) or (y_max_index > (y_pixels-1)):
-            x_min_index = 0
-            y_min_index = 0
-            x_max_index = x_pixels-1
-            y_max_index = y_pixels-1
-        
-        images_cropped = images[:,x_min_index:x_max_index,y_min_index:y_max_index]
+        images_cropped = self.cropImage(images)
 
         ### send data to the camera server for displaying the picture
         self.camera.set_ccd_images(images_cropped)
         ### set the main camera display
-        self.camera.set_main_ccd_images(images[0]-images[2],numpy.array([self.parameters['CCD_settings.x_min'],self.parameters['CCD_settings.y_min']]), self.parameters['CCD_settings.binning'])
+        image_offset = numpy.array([self.parameters['CCD_settings.x_min'],self.parameters['CCD_settings.y_min']])
+        self.camera.set_main_ccd_images(images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
         
         ### calculate the no. of atoms
         
@@ -208,7 +196,23 @@ class MOT_loading(experiment):
 
         ### return value for this experiment. Used for scanning this script.
         return S_state+P_state
-
+    
+    def cropImage(self, images):
+        ### crop image
+        
+        x_min_index = numpy.floor((self.parameters['CCD_settings.x_min_cropped'] - self.parameters['CCD_settings.x_min'])/self.parameters['CCD_settings.binning'])
+        x_max_index = numpy.floor((self.parameters['CCD_settings.x_max_cropped'] - self.parameters['CCD_settings.x_min'])/self.parameters['CCD_settings.binning'])
+        y_min_index = numpy.floor((self.parameters['CCD_settings.y_min_cropped'] - self.parameters['CCD_settings.y_min'])/self.parameters['CCD_settings.binning'])
+        y_max_index = numpy.floor((self.parameters['CCD_settings.y_max_cropped'] - self.parameters['CCD_settings.y_min'])/self.parameters['CCD_settings.binning'])
+        
+        if (x_min_index < 0) or (y_min_index < 0) or (x_max_index > (self.x_pixels-1)) or (y_max_index > (self.y_pixels-1)):
+            x_min_index = 0
+            y_min_index = 0
+            x_max_index = self.x_pixels-1
+            y_max_index = self.y_pixels-1
+        
+        return images[:,x_min_index:x_max_index,y_min_index:y_max_index]
+    
     def finalize(self, cxn, context):
 
         self.pv.save_parameters_to_registry()
