@@ -28,7 +28,7 @@ class AndorVideo(QtGui.QWidget):
         
         ### add ROI
         
-        self.roi = pg.RectROI([8, 14], [6, 5])
+        self.roi = pg.RectROI([268, 224], [6, 5])
         #roi.addScaleHandle([0.5, 1], [0.5, 0.5])
         #roi.addScaleHandle([0, 0.5], [0.5, 0.5])
         self.p1.addItem(self.roi)
@@ -121,7 +121,7 @@ class AndorVideo(QtGui.QWidget):
         #Live Video Button
         self.live_button = QtGui.QPushButton("Live Video")
         self.live_button.setCheckable(True)
-        layout.addWidget(self.live_button, 2, 0)
+        #layout.addWidget(self.live_button, 2, 0)
         #set image region button
         self.set_image_region_button = QtGui.QPushButton("Set Image Region")
         #layout.addWidget(self.set_image_region_button, 3, 0)
@@ -286,6 +286,7 @@ class AndorVideo(QtGui.QWidget):
         #self.img_view.translate(50.0,50.0)
         #self.img_view.setPos(50.0,50.0)
         #self.img_view.setScale(3.0)
+
         self.ccd_view_0.setImage(np.array(images[0]))
         self.ccd_view_1.setImage(np.array(images[1]))
         self.ccd_view_2.setImage(np.array(images[2]))
