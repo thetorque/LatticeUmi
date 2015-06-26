@@ -34,7 +34,7 @@ class MOT_detection_analog(analog_sequence):
         B_y = p.MOT_loading.B_y
         B_z = p.MOT_loading.B_z
         
-        ## MOT AO frequency is channel 3
+        ## MOT AO frequency is channel 0
         
         self.addAnalog(0, self.start+WithUnit(0.1,'ms'), detect_freq)
         self.addAnalog(0, self.start+WithUnit(0.1,'ms')+WithUnit(30,'ms'), detect_freq)
@@ -79,5 +79,5 @@ class MOT_detection_analog(analog_sequence):
         
         
         self.addAnalog(6, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 0.0)
-        self.addAnalog(7, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 0.0)
+        self.addAnalog(7, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 10.0)
         

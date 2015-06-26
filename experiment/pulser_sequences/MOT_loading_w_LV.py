@@ -12,7 +12,7 @@ class MOT_loading_seq(pulse_sequence):
                            ('MOT_loading', 'compress_MOT_power'),
                            ('MOT_loading', 'detection_power'),
                            ('MOT_loading', 'wait_time'),
-                           ('MOT_loading', 'detect_bigMOT')
+                           ('MOT_loading', 'detect_bigMOT'),
                            ]
 #     
     required_subsequences = []
@@ -51,6 +51,15 @@ class MOT_loading_seq(pulse_sequence):
         
         detect_w_big = p.MOT_loading.detect_bigMOT
         
+        
+        ##clock laser
+        
+        #self.addDDS('Clock', self.end,   wait_time-WithUnit(10, 'ms'), clock_freq, WithUnit(-5.0, 'dBm'))
+        
+        #self.addDDS('Clock', loading_time+wait_time-WithUnit(10,'ms'),   WithUnit(160, 'ms'), WithUnit(198.0, 'MHz'), WithUnit(-5.0, 'dBm'))
+        
+        ##
+        
         if detect_w_big:
             #self.addTTL('BIG_MOT_SH',self.end,loading_time+wait_time+WithUnit(150,'ms'))
             self.addDDS('BIG_MOT',   loading_time+wait_time,                    WithUnit(40,'ms'), MOT_freq, MOT_power)
@@ -63,6 +72,7 @@ class MOT_loading_seq(pulse_sequence):
             self.addTTL('sMOT_PROBE', loading_time+wait_time-WithUnit(5,'ms'), WithUnit(150,'ms'))
             self.addTTL('sMOT_PROBE_SPIN', loading_time+wait_time-WithUnit(5,'ms'), WithUnit(150,'ms'))
             self.addDDS('SMALL_MOT',   loading_time+wait_time,                    WithUnit(40,'ms'), MOT_freq, detection_power)
+            self.addTTL('405_ECDL', loading_time+wait_time+WithUnit(40,'ms'),WithUnit(10,'ms'))
             self.addDDS('SMALL_MOT',   loading_time+wait_time+WithUnit(50,'ms'),  WithUnit(40,'ms'), MOT_freq, detection_power)
             self.addDDS('SMALL_MOT',   loading_time+wait_time+WithUnit(100,'ms'), WithUnit(40,'ms'), MOT_freq, detection_power)
         

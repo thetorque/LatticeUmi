@@ -1,5 +1,6 @@
 from servers.pulser.pulse_sequences.analog_sequence import analog_sequence
 from experiment.analog_sequences.MOT_detection_analog import MOT_detection_analog
+from experiment.analog_sequences.MOT_spectroscopy_analog import MOT_spectroscopy_analog
 from labrad.units import WithUnit
 from treedict import TreeDict
 
@@ -13,7 +14,7 @@ class MOT_loading_analog(analog_sequence):
                            ('MOT_loading', 'wait_time'),
                            ]
 #     
-    required_subsequences = [MOT_detection_analog]
+    required_subsequences = [MOT_detection_analog, MOT_spectroscopy_analog]
 #     
 #     replaced_parameters = {empty_sequence:[('EmptySequence','empty_sequence_duration')]
 #                            }
@@ -65,7 +66,7 @@ class MOT_loading_analog(analog_sequence):
         
         
         self.addAnalog(6, WithUnit(0.0,'ms'), 0.0)
-        self.addAnalog(7, WithUnit(0.0,'ms'), 0.0)
+        self.addAnalog(7, WithUnit(0.0,'ms'), 10.0) ### clock
         
         
         ### MOT frequency
@@ -77,8 +78,9 @@ class MOT_loading_analog(analog_sequence):
         self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(60.0,'ms')+WithUnit(3.0,'ms'), -0.2)
         self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), -0.2)
         
-        self.end = p.MOT_loading.loading_time + p.MOT_loading.wait_time
+        self.end = p.MOT_loading.loading_time
         
+        self.addSequence(MOT_spectroscopy_analog)
         self.addSequence(MOT_detection_analog)
         
 

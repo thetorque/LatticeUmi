@@ -79,7 +79,7 @@ class hardwareConfiguration(object):
     ddsDict =   {
                 'DDS_0':ddsConfiguration(    0,  (0.0,800.0),   (-48.0,6.0),  70.0,   -48.0),
                 'BIG_MOT':ddsConfiguration(    1,  (145.0,155.0),   (-48.0,-5.0),  150.0,   -6.0),
-                '254_COMB':ddsConfiguration(    2,  (6.5,11.0),   (-48.0,5.0),  9.0,   -48.0),
+                'Clock':ddsConfiguration(    2,  (180.0,220.0),   (-48.0,-3.0),  198.0,   -5.0),
                 'SMALL_MOT':ddsConfiguration(    3,  (145.0,155.0),   (-48.0,-8.0),  150.0,   -48.0),
                 'LATTICE':ddsConfiguration(    4,  (199.0,201.0),   (-48.0,-5.0),  200.0,   -48.0),
 #                 'DDS_5':ddsConfiguration(    5,  (0.0,800.0),   (-63.0,-3.0),  95.0,   -63.0),
