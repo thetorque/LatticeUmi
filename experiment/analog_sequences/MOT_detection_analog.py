@@ -10,6 +10,8 @@ class MOT_detection_analog(analog_sequence):
                            ('MOT_loading', 'B_y'),
                            ('MOT_loading', 'B_z_det'),
                            ('MOT_loading', 'B_z'),
+                           ('MOT_loading', 'MOT_current_load'),
+                           ('MOT_loading', 'MOT_current_compress'),
                            ]
 #     
     required_subsequences = []
@@ -71,10 +73,14 @@ class MOT_detection_analog(analog_sequence):
         self.addAnalog(1, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), MOT_intensity)
         
         ## MOT coil
-        self.addAnalog(5, self.start+WithUnit(0.1,'ms'), 8.0)
-        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(130,'ms'), 8.0)
-        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(133,'ms'), 4.5)
-        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 4.5)
+        
+        load_current = p.MOT_loading.MOT_current_load
+        compress_current = p.MOT_loading.MOT_current_compress
+        
+        self.addAnalog(5, self.start+WithUnit(0.1,'ms'), compress_current)
+        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(130,'ms'), compress_current) #8.0
+        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(133,'ms'), load_current)
+        self.addAnalog(5, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), load_current) #4.5
         
         
         

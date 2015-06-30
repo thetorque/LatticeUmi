@@ -12,6 +12,8 @@ class MOT_loading_analog(analog_sequence):
                            ('MOT_loading', 'B_y'),
                            ('MOT_loading', 'B_z'),
                            ('MOT_loading', 'wait_time'),
+                           ('MOT_loading', 'MOT_current_load'),
+                           ('MOT_loading', 'MOT_current_compress'),
                            ]
 #     
     required_subsequences = [MOT_detection_analog, MOT_spectroscopy_analog]
@@ -57,11 +59,13 @@ class MOT_loading_analog(analog_sequence):
         
         ### MOT coil
         
-
-        self.addAnalog(5, WithUnit(0.0,'ms'), 3.5)
-        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(150,'ms'), 3.5)
-        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(147,'ms'), 8.0)
-        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), 8.0)
+        load_current = p.MOT_loading.MOT_current_load
+        compress_current = p.MOT_loading.MOT_current_compress
+        
+        self.addAnalog(5, WithUnit(0.0,'ms'), load_current) #3.5
+        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(150,'ms'), load_current)
+        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(147,'ms'), compress_current) #8.0
+        self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), compress_current)
         
         
         
@@ -78,9 +82,9 @@ class MOT_loading_analog(analog_sequence):
         self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(60.0,'ms')+WithUnit(3.0,'ms'), -0.2)
         self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), -0.2)
         
-        self.end = p.MOT_loading.loading_time
+        self.end = p.MOT_loading.loading_time+p.MOT_loading.wait_time
         
-        self.addSequence(MOT_spectroscopy_analog)
+        #self.addSequence(MOT_spectroscopy_analog)
         self.addSequence(MOT_detection_analog)
         
 
