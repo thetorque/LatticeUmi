@@ -8,7 +8,7 @@ qt4reactor.install()
 from twisted.internet.defer import returnValue, DeferredLock, Deferred, inlineCallbacks
 from twisted.internet.threads import deferToThread
 from twisted.internet import reactor
-from labrad.server import LabradServer, setting
+from labrad.server import LabradServer, setting, Signal
 from AndorCamera import AndorCamera
 from labrad.units import WithUnit
 
@@ -33,6 +33,7 @@ class AndorServer(LabradServer):
     """ Contains methods that interact with the Andor CCD Cameras"""
     
     name = "Andor Server"
+    onNewImage = Signal(123556, 'signal: new image', '(s*3v*2v*vv)')
     
     def initServer(self):
         self.listeners = set()
@@ -45,7 +46,8 @@ class AndorServer(LabradServer):
         self.camera.set_emccd_gain(1)
         print self.camera.get_preamp()
         self.lock = DeferredLock()
-        self.gui = AndorVideo(self)
+
+        #self.gui = AndorVideo(self)
     
     def initContext(self, c):
         """Initialize a new context object."""
@@ -157,8 +159,8 @@ class AndorServer(LabradServer):
         finally:
             print 'releasing: {}'.format(self.setEMCCDGain.__name__)
             self.lock.release()
-        if c is not None:
-            self.gui.set_gain(gain)
+#         if c is not None:
+#             self.gui.set_gain(gain)
     '''
     Read mode
     '''        
@@ -199,7 +201,7 @@ class AndorServer(LabradServer):
         finally:
             print 'releasing: {}'.format(self.setAcquisitionMode.__name__)
             self.lock.release()
-        self.gui.set_acquisition_mode(mode)
+#         self.gui.set_acquisition_mode(mode)
     '''
     Trigger Mode
     '''    
@@ -219,7 +221,7 @@ class AndorServer(LabradServer):
         finally:
             print 'releasing: {}'.format(self.setTriggerMode.__name__)
             self.lock.release()
-        self.gui.set_trigger_mode(mode)
+#         self.gui.set_trigger_mode(mode)
         
     '''
     Exposure Time
@@ -243,8 +245,8 @@ class AndorServer(LabradServer):
             self.lock.release()
         #need to request the actual set value because it may differ from the request when the request is not possible
         time = self.camera.get_exposure_time()
-        if c is not None:
-            self.gui.set_exposure(time)
+#         if c is not None:
+#             self.gui.set_exposure(time)
         returnValue(WithUnit(time, 's'))
     '''
     Image Region
@@ -296,8 +298,8 @@ class AndorServer(LabradServer):
         
     @setting(20, "Abort Acquisition", returns = '')
     def abortAcquisition(self, c):
-        if c is not None and self.gui.live_update_running:
-            yield self.gui.stop_live_display()
+#         if c is not None and self.gui.live_update_running:
+#             yield self.gui.stop_live_display()
         print 'acquiring: {}'.format(self.abortAcquisition.__name__)
         yield self.lock.acquire()
         try:
@@ -341,14 +343,14 @@ class AndorServer(LabradServer):
             self.lock.release()
         returnValue(image)
     
-    @setting(24, "Start Live Display", returns = '')
-    def startLiveDisplay(self, c):
-        """Starts live display of the images on the GUI"""
-        yield self.gui.start_live_display()
-    
-    @setting(25, "Is Live Display Running", returns = 'b')
-    def isLiveDisplayRunning(self, c):
-        return self.gui.live_update_running
+#     @setting(24, "Start Live Display", returns = '')
+#     def startLiveDisplay(self, c):
+#         """Starts live display of the images on the GUI"""
+#         yield self.gui.start_live_display()
+#     
+#     @setting(25, "Is Live Display Running", returns = 'b')
+#     def isLiveDisplayRunning(self, c):
+#         return self.gui.live_update_running
     
     @setting(26, "Get Number Kinetics", returns = 'i')
     def getNumberKinetics(self, c):
@@ -402,37 +404,44 @@ class AndorServer(LabradServer):
             self.lock.release()
             
             
-    @setting(33, "Set CCD Images", images = '*3v',returns = '')
-    def setCCDImages(self, c, images):
+    @setting(33, "Set CCD Images", images = '*3v', image_main = '*2v', pos = '*v', binning = 'v' ,returns = '')
+    def setCCDImages(self, c, images, image_main, pos, binning):
         '''
         Set CCD images on the GUI
         '''
+        #self.sub_image = images
+        self.notifyOtherListeners(c, ("New Image Available", images, image_main, pos, binning), self.onNewImage)
+        
         #print images
-        print 'acquiring: {}'.format(self.setCCDImages.__name__)
-        yield self.lock.acquire()
-        try:
-            print 'acquired : {}'.format(self.setCCDImages.__name__)
-            yield deferToThread(self.gui.CCD_image_update, images)
-        finally:
-            print 'releasing: {}'.format(self.setCCDImages.__name__)
-            self.lock.release()
+#         print 'acquiring: {}'.format(self.setCCDImages.__name__)
+#         yield self.lock.acquire()
+#         try:
+#             print 'acquired : {}'.format(self.setCCDImages.__name__)
+#             yield deferToThread(self.gui.CCD_image_update, images)
+#         finally:
+#             print 'releasing: {}'.format(self.setCCDImages.__name__)
+#             self.lock.release()
         #print "array is", vertex_array
         #self.gui.CCD_image_update(images)  
-        
+         
     @setting(34, "Set Main CCD Images", images = '*2v', pos = '*v', binning = 'v', returns = '')
     def setMainCCDImages(self, c, images, pos, binning):
         '''
         Set CCD images on the GUI
         '''
+        
+        self.main_image = images
+        self.notifyOtherListeners(c, ("New Main Image Available", images), self.onNewMainImage)
+         
         #print images
-        print 'acquiring: {}'.format(self.setMainCCDImages.__name__)
-        yield self.lock.acquire()
-        try:
-            print 'acquired : {}'.format(self.setMainCCDImages.__name__)
-            yield deferToThread(self.gui.mainCCD_image_update, images, pos, binning)
-        finally:
-            print 'releasing: {}'.format(self.setMainCCDImages.__name__)
-            self.lock.release()
+#         print 'acquiring: {}'.format(self.setMainCCDImages.__name__)
+#         yield self.lock.acquire()
+#         try:
+#             print 'acquired : {}'.format(self.setMainCCDImages.__name__)
+#             yield deferToThread(self.gui.mainCCD_image_update, images, pos, binning)
+#         finally:
+#             print 'releasing: {}'.format(self.setMainCCDImages.__name__)
+#             self.lock.release()
             
             
         
@@ -457,13 +466,21 @@ class AndorServer(LabradServer):
 
     def stop(self):
         self._stopServer()
+        
+    def notifyOtherListeners(self, context, message, f):
+        """
+        Notifies all listeners except the one in the given context, executing function f
+        """
+        notified = self.listeners.copy()
+        notified.remove(context.ID)
+        f(message,notified)
     
     @inlineCallbacks
     def stopServer(self):  
         """Shuts down camera before closing"""
         try:
-            if self.gui.live_update_running:
-                yield self.gui.stop_live_display()
+#             if self.gui.live_update_running:
+#                 yield self.gui.stop_live_display()
             print 'acquiring: {}'.format(self.stopServer.__name__)
             yield self.lock.acquire()
             print 'acquired : {}'.format(self.stopServer.__name__)

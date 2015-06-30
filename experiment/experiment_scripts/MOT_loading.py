@@ -65,7 +65,7 @@ class MOT_loading(experiment):
     def initialize_camera(self, cxn):
         self.camera = cxn.andor_server ## connect to andor camera server
 
-        self.camera_initially_live_display = self.camera.is_live_display_running()
+        #self.camera_initially_live_display = self.camera.is_live_display_running()
         self.camera.abort_acquisition()
         self.camera.set_exposure_time(self.parameters['CCD_settings.exposure_time'])
         self.camera.set_emccd_gain(int(self.parameters['CCD_settings.EMCCD_gain']))
@@ -173,11 +173,13 @@ class MOT_loading(experiment):
         
         images_cropped = self.cropImage(images)
 
-        ### send data to the camera server for displaying the picture
-        self.camera.set_ccd_images(images_cropped)
+
         ### set the main camera display
         image_offset = numpy.array([self.parameters['CCD_settings.x_min'],self.parameters['CCD_settings.y_min']])
-        self.camera.set_main_ccd_images(images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
+        #self.camera.set_main_ccd_images(images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
+        
+        ### send data to the camera server for displaying the picture
+        self.camera.set_ccd_images(images_cropped,images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
         
         ### calculate the no. of atoms
         

@@ -66,6 +66,7 @@ class hardwareConfiguration(object):
                    '405_ECDL':channelConfiguration(6, False, False, False, False),
                    '405_Raman':channelConfiguration(7, False, False, False, False),
                    '435_Raman':channelConfiguration(8, False, False, False, False),
+                   '266_SB':channelConfiguration(9, False, False, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
                    'AO1':channelConfiguration(20, False, False, False, False), ### triggering for analog board
@@ -77,11 +78,11 @@ class hardwareConfiguration(object):
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
-                'DDS_0':ddsConfiguration(    0,  (0.0,800.0),   (-48.0,6.0),  70.0,   -48.0),
+   #             'DDS_0':ddsConfiguration(    0,  (0.0,800.0),   (-48.0,6.0),  70.0,   -48.0),
                 'BIG_MOT':ddsConfiguration(    1,  (145.0,155.0),   (-48.0,-5.0),  150.0,   -6.0),
                 'Clock':ddsConfiguration(    2,  (180.0,220.0),   (-48.0,-3.0),  198.0,   -5.0),
                 'SMALL_MOT':ddsConfiguration(    3,  (145.0,155.0),   (-48.0,-8.0),  150.0,   -48.0),
-                'LATTICE':ddsConfiguration(    4,  (199.0,201.0),   (-48.0,-5.0),  200.0,   -48.0),
+                'Clock_SB':ddsConfiguration(    4,  (140.0,200.0),   (-48.0,-5.0),  156.2634,   -7.0),
 #                 'DDS_5':ddsConfiguration(    5,  (0.0,800.0),   (-63.0,-3.0),  95.0,   -63.0),
 #                 'DDS_6':ddsConfiguration(    6,  (0.0,800.0),   (-63.0,-3.0), 100.0,   -63.0),
 #                 'DDS_7':ddsConfiguration(    7,  (0.0,800.0),   (-63.0,-3.0), 105.0,   -63.0),

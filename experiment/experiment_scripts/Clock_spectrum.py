@@ -1,6 +1,6 @@
 from servers.script_scanner.scan_methods import experiment
 #from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
-from experiment.pulser_sequences.MOT_loading_w_LV import MOT_loading_seq
+from experiment.pulser_sequences.Clock_spectrum import Clock_spectrum
 from experiment.analog_sequences.MOT_loading_analog import MOT_loading_analog
 
 from labrad.units import WithUnit
@@ -14,9 +14,9 @@ Template for the experiment. By Hong.
 '''
 
        
-class MOT_loading(experiment):
+class Clock_spectrum(experiment):
     ##name of the experiment to be shown in the scriptscanner
-    name = 'MOT loading'  
+    name = 'Clock spectrum'  
     ## list required parameters for this experiment
     experiment_required_parameters = [('CCD_settings','exposure_time'),
                                       ('CCD_settings','EMCCD_gain'),
@@ -29,9 +29,10 @@ class MOT_loading(experiment):
                                       ('CCD_settings','x_max_cropped'),
                                       ('CCD_settings','y_min_cropped'),
                                       ('CCD_settings','y_max_cropped'),
+                                      ('Clock', 'Clock_SB_freq')
                                       ]
     ## define which pulse sequence to use
-    pulse_sequence = MOT_loading_seq
+    pulse_sequence = Clock_spectrum
     ## define which analog sequence to use
     analog_sequence = MOT_loading_analog
 
@@ -65,7 +66,7 @@ class MOT_loading(experiment):
     def initialize_camera(self, cxn):
         self.camera = cxn.andor_server ## connect to andor camera server
 
-        self.camera_initially_live_display = self.camera.is_live_display_running()
+        #self.camera_initially_live_display = self.camera.is_live_display_running()
         self.camera.abort_acquisition()
         self.camera.set_exposure_time(self.parameters['CCD_settings.exposure_time'])
         self.camera.set_emccd_gain(int(self.parameters['CCD_settings.EMCCD_gain']))
@@ -118,6 +119,9 @@ class MOT_loading(experiment):
         '''
         main experiment running method
         '''
+        ### change clock SB spectrum ###
+        self.pulser.frequency('Clock_SB', self.parameters['Clock.Clock_SB_freq'])
+        
         
         ## setup pulse sequence and program
         pulse_sequence = self.pulse_sequence(self.parameters)
@@ -168,16 +172,18 @@ class MOT_loading(experiment):
         self.y_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
         self.x_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
         
-        ### reshape array into three x-y images
+       ### reshape array into three x-y images
         images = numpy.reshape(images, (3, self.x_pixels, self.y_pixels))
         
         images_cropped = self.cropImage(images)
 
-        ### send data to the camera server for displaying the picture
-        self.camera.set_ccd_images(images_cropped)
+
         ### set the main camera display
         image_offset = numpy.array([self.parameters['CCD_settings.x_min'],self.parameters['CCD_settings.y_min']])
-        self.camera.set_main_ccd_images(images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
+        #self.camera.set_main_ccd_images(images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
+        
+        ### send data to the camera server for displaying the picture
+        self.camera.set_ccd_images(images_cropped,images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
         
         ### calculate the no. of atoms
         
@@ -186,6 +192,8 @@ class MOT_loading(experiment):
         
         S_state = (numpy.sum(images_cropped[0]-images_cropped[2]))/(0.11547*expose_time_ms*ccd_gain)
         P_state = (numpy.sum(images_cropped[1]-images_cropped[2]))/(0.11547*expose_time_ms*ccd_gain)
+        ## compensate for repump efficiency
+        P_state = P_state/0.45
         
         ### create array of data 
         Atom_number_data = numpy.array([start_time,S_state,P_state,S_state+P_state])
@@ -195,7 +203,7 @@ class MOT_loading(experiment):
         self.dv.add(Atom_number_data, context = self.readout_save_context)
 
         ### return value for this experiment. Used for scanning this script.
-        return S_state+P_state
+        return P_state/(S_state+P_state)
     
     def cropImage(self, images):
         ### crop image
@@ -222,6 +230,6 @@ class MOT_loading(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = MOT_loading(cxn = cxn)
+    exprt = Clock_spectrum(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)
