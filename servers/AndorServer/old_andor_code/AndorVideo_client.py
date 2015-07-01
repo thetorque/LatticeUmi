@@ -5,7 +5,7 @@ import numpy as np
 import pyqtgraph as pg
 
 class AndorVideo(QtGui.QWidget):
-    def __init__(self, server):
+    def __init__(self, reactor, cxn = None):
         super(AndorVideo, self).__init__()
         from labrad.units import WithUnit
         self.WithUnit = WithUnit

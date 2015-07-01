@@ -11,7 +11,7 @@ class AndorVideo(QtGui.QWidget):
     SIGNALID = 3925252
     
     
-    def __init__(self, reactor,cxn = None, parent=None):
+    def __init__(self, reactor, cxn = None, parent=None):
         super(AndorVideo, self).__init__()
         self.reactor = reactor
         self.cxn = cxn
@@ -23,6 +23,7 @@ class AndorVideo(QtGui.QWidget):
         
     @inlineCallbacks
     def connect(self):
+        print "here"
         from labrad import types
         self.types = types
         from labrad.units import WithUnit
@@ -33,11 +34,6 @@ class AndorVideo(QtGui.QWidget):
             self.cxn = connection()
             yield self.cxn.connect()
         self.context = yield self.cxn.context()
-        try:
-            self.connect_layout()
-        except Exception, e:
-            print e
-            self.setDisabled(True)
         self.camera_server = yield self.cxn.get_server('Andor Server')
         
         yield self.camera_server.signal__new_image(self.SIGNALID, context = self.context)
@@ -50,17 +46,28 @@ class AndorVideo(QtGui.QWidget):
         #yield self.server.addListener(listener = self.followSignal, source = None, ID = self.SIGNALID, context = self.context)
         
         
-        print "connect"
+        print "Andor video connect"
         
     def followSignal(self, s, i):
         '''
         Use to update the display of the channel once the signal is received from the server that the new values are there
         '''
         message, image, image_main, pos, binning = i
-
-        self.ccd_view_0.setImage(np.array(image[0]))
-        self.ccd_view_1.setImage(np.array(image[1]))
-        self.ccd_view_2.setImage(np.array(image[2]))
+        
+        s_image = np.array(image[0])
+        self.ccd_view_0.setImage(s_image)
+        s_average = np.average(s_image) ## shows only two decimal point
+        self.label_s.setText("Average S: %.2f" % s_average)
+        
+        p_image = np.array(image[1])
+        self.ccd_view_1.setImage(p_image)
+        p_average = np.average(p_image)
+        self.label_p.setText("Average P: %.2f" % p_average)
+        
+        bg_image = np.array(image[2])
+        self.ccd_view_2.setImage(bg_image)
+        bg_average = np.average(bg_image)
+        self.label_bg.setText("Average BG: %.2f" % bg_average)
         
         self.img_view.setImage(np.array(image_main))
         self.img_view.setPos(pos[0],pos[1])
@@ -90,13 +97,13 @@ class AndorVideo(QtGui.QWidget):
         
         layout.addWidget(main_win,0,0,1,6)
         
-
-
         ### add aux display for CCD images
         win_0 = pg.GraphicsLayoutWidget()
         self.p_sub_0 = win_0.addPlot()
         self.ccd_view_0 = pg.ImageItem()
         self.p_sub_0.addItem(self.ccd_view_0)
+        
+        self.label_s = win_0.addLabel('',1,0) # add label below the plot
         layout.addWidget(win_0, 1, 0,1,2)
         
         
@@ -104,12 +111,14 @@ class AndorVideo(QtGui.QWidget):
         self.p_sub_1 = win_1.addPlot()
         self.ccd_view_1 = pg.ImageItem()
         self.p_sub_1.addItem(self.ccd_view_1)
+        self.label_p = win_1.addLabel('',1,0)
         layout.addWidget(win_1, 1, 2,1,2)
         
         win_2 = pg.GraphicsLayoutWidget()
         self.p_sub_2 = win_2.addPlot()
         self.ccd_view_2 = pg.ImageItem()
         self.p_sub_2.addItem(self.ccd_view_2)
+        self.label_bg = win_2.addLabel('',1,0)
         layout.addWidget(win_2, 1, 4,1,2)
          
 

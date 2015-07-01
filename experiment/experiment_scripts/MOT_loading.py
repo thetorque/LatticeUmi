@@ -1,6 +1,6 @@
 from servers.script_scanner.scan_methods import experiment
 #from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
-from experiment.pulser_sequences.MOT_loading_w_LV import MOT_loading_seq
+from experiment.pulser_sequences.MOT_loading import MOT_loading_seq
 from experiment.analog_sequences.MOT_loading_analog import MOT_loading_analog
 
 from labrad.units import WithUnit
@@ -102,7 +102,6 @@ class MOT_loading(experiment):
         
         ### if there's matched name, then don't create a new data set. Simply append to it
         if names:
-            print "yes"
             self.dv.open_appendable(names[0], context=self.readout_save_context)
         ### if there's no matched name, then create the data set
         else:
@@ -218,6 +217,11 @@ class MOT_loading(experiment):
     def finalize(self, cxn, context):
 
         self.pv.save_parameters_to_registry()
+        ### save parameter to also datavault data set
+        d = dict(self.parameters)
+        for name in d.keys():
+            #print name, d[name]
+            self.dv.add_parameter_over_write(name,d[name], context = self.readout_save_context)
         #self.camera.start_live_display()
 
 

@@ -90,7 +90,7 @@ class Clock_spectrum(experiment):
     def setup_data_vault(self):
         localtime = time.localtime()
         self.datasetNameAppend = time.strftime("%Y%b%d_%H",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H", localtime)]
+        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
         self.save_directory = ['','Experiments']
         self.save_directory.extend([self.name])
         self.save_directory.extend(dirappend)
@@ -103,7 +103,6 @@ class Clock_spectrum(experiment):
         
         ### if there's matched name, then don't create a new data set. Simply append to it
         if names:
-            print "yes"
             self.dv.open_appendable(names[0], context=self.readout_save_context)
         ### if there's no matched name, then create the data set
         else:
@@ -224,6 +223,11 @@ class Clock_spectrum(experiment):
     def finalize(self, cxn, context):
 
         self.pv.save_parameters_to_registry()
+        ### save parameter to also datavault data set
+        d = dict(self.parameters)
+        for name in d.keys():
+            #print name, d[name]
+            self.dv.add_parameter_over_write(name,d[name], context = self.readout_save_context)
         #self.camera.start_live_display()
 
 

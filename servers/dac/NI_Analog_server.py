@@ -100,6 +100,7 @@ class NI_Analog_Server(LabradServer):
         '''
         Get the values of the voltage from the registry
         '''
+
         yield self.client.registry.cd(['','Servers', 'DAC'], True)
         try:
             voltage = yield self.client.registry.get(name)
@@ -113,6 +114,7 @@ class NI_Analog_Server(LabradServer):
         '''
         Set voltage for a given channel name
         '''
+        print channel
         try:
             ### check of the name of channel is correct or not
             chan = self.d[channel]
@@ -212,13 +214,19 @@ class NI_Analog_Server(LabradServer):
     @inlineCallbacks
     def stopServer(self):
         '''save the latest voltage information into registry'''
-        try:
-            yield self.client.registry.cd(['','Servers', 'DAC'], True)
-            for name,channel in self.d.iteritems():
-                yield self.client.registry.set(name, channel.voltage)
-        except AttributeError:
-            #if dictionary doesn't exist yet (i.e bad identification error), do nothing
-            pass
+        ## set zero all channels #
+        for name,channel in self.d.iteritems():
+            self.setVoltage(1, name, WithUnit(0.0,'V'))
+
+#         try:
+#             #yield self.client.registry.cd(['','Servers', 'DAC'], True)
+#             print "here"
+#             for name,channel in self.d.iteritems():
+#                 yield self.client.registry.set(name, channel.voltage)
+#             print "lala"
+#         except AttributeError:
+#             #if dictionary doesn't exist yet (i.e bad identification error), do nothing
+#             pass
 
 if __name__ == '__main__':
     from labrad import util

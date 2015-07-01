@@ -229,7 +229,7 @@ class ScriptScanner(LabradServer, Signals):
         self.scheduler.remove_if_external(script_ID)
     
     @setting(34, "Stop Confirmed", script_ID = 'w')
-    def stop_confiromed(self, c, script_ID):
+    def stop_confirmed(self, c, script_ID):
         status = self.scheduler.get_running_status(script_ID)
         if status is None:
             raise Exception ("Trying to confirm Stop of script with ID {0} but it was not running".format(script_ID))
