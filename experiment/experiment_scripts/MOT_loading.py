@@ -119,11 +119,7 @@ class MOT_loading(experiment):
         sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
         sp.makePlot()    
         
-    def run(self, cxn, context):
-        '''
-        main experiment running method
-        '''
-        
+    def initSequence(self):
         ## setup pulse sequence and program
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
@@ -134,7 +130,7 @@ class MOT_loading(experiment):
         ### setup analog sequence and program
         analog_sequence = self.analog_sequence(self.parameters)
         
-        analog_sequence.plotPatternArray(self.NI_analog)
+        #analog_sequence.plotPatternArray(self.NI_analog)
         
         analog_sequence.programAnalog(self.NI_analog)
         
@@ -144,27 +140,51 @@ class MOT_loading(experiment):
         
         ### get no. of second of today
         now = datetime.now()
-        start_time = (now-now.replace(hour=0,minute=0,second=0,microsecond=0)).total_seconds()
+        self.start_time = (now-now.replace(hour=0,minute=0,second=0,microsecond=0)).total_seconds()
+        
+    def execSequence(self):
+        self.pulser.start_number(1)
+        self.pulser.wait_sequence_done()
+        self.pulser.stop_sequence()
+        self.NI_analog.stop_voltage_pattern()
+        
+        
+    def run(self, cxn, context):
+        '''
+        main experiment running method
+        '''
+        
+        self.initSequence()
         
         #### configure TTL switching from manual to auto ###
         self.pulser.switch_auto('BIG_MOT_SH', True)
         self.pulser.switch_auto('BIG_MOT_AO', True)
         
         #### start pulse sequence
-        
-        self.pulser.start_number(1)
-        self.pulser.wait_sequence_done()
-        self.pulser.stop_sequence()
-        
+        self.execSequence()
+ 
         #### configure TTL switching back to manual###
         self.pulser.switch_manual('BIG_MOT_SH', False)
         self.pulser.switch_manual('BIG_MOT_AO', False)
         
         #### stop analog pattern
-        self.NI_analog.stop_voltage_pattern()
         
         
+        Atom_number_data = self.perform_readout(cxn, context)
         ### wait to see if the camera is missing some pictures
+        
+        
+        ## save to DV
+        self.dv.add(Atom_number_data, context = self.readout_save_context)
+
+        ### return value for this experiment. Used for scanning this script.
+        return Atom_number_data[3]
+    
+    def perform_readout(self, cxn, context):
+        '''
+        Take picture from the CCD camera. Send picture to the server for displaying. Calculate and return the atom number data.
+        '''
+        
         proceed = self.camera.wait_for_kinetic()
         if not proceed:
             self.camera.abort_acquisition()
@@ -181,13 +201,10 @@ class MOT_loading(experiment):
         
         ### reshape array into three x-y images
         images = numpy.reshape(images, (3, self.x_pixels, self.y_pixels))
-        
+
         images_cropped = self.cropImage(images)
-
-
         ### set the main camera display
         image_offset = numpy.array([self.parameters['CCD_settings.x_min'],self.parameters['CCD_settings.y_min']])
-        #self.camera.set_main_ccd_images(images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
         
         ### send data to the camera server for displaying the picture
         self.camera.set_ccd_images(images_cropped,images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
@@ -199,18 +216,15 @@ class MOT_loading(experiment):
         
         S_state = (numpy.sum(images_cropped[0]-images_cropped[2]))/(0.11547*expose_time_ms*ccd_gain)
         P_state = (numpy.sum(images_cropped[1]-images_cropped[2]))/(0.11547*expose_time_ms*ccd_gain)
+        P_state = P_state/0.45
         
-        ### create array of data 
-        Atom_number_data = numpy.array([start_time,S_state,P_state,S_state+P_state])
-        ##print Atom_number_data
+        return numpy.array([self.start_time,S_state,P_state,S_state+P_state])
         
-        ## save to DV
-        self.dv.add(Atom_number_data, context = self.readout_save_context)
-
-        ### return value for this experiment. Used for scanning this script.
-        return S_state+P_state
     
     def cropImage(self, images):
+        '''
+        crop image according to the parameter crop. This will reduce noise from the region of the camera picture without meaningful data.
+        '''
         ### crop image
         
         x_min_index = numpy.floor((self.parameters['CCD_settings.x_min_cropped'] - self.parameters['CCD_settings.x_min'])/self.parameters['CCD_settings.binning'])
@@ -219,6 +233,9 @@ class MOT_loading(experiment):
         y_max_index = numpy.floor((self.parameters['CCD_settings.y_max_cropped'] - self.parameters['CCD_settings.y_min'])/self.parameters['CCD_settings.binning'])
         
         if (x_min_index < 0) or (y_min_index < 0) or (x_max_index > (self.x_pixels-1)) or (y_max_index > (self.y_pixels-1)):
+            '''
+            if the cropping region is not good (too big), then just do not do any cropping
+            '''
             x_min_index = 0
             y_min_index = 0
             x_max_index = self.x_pixels-1
@@ -232,9 +249,8 @@ class MOT_loading(experiment):
         ### save parameter to also datavault data set
         d = dict(self.parameters)
         for name in d.keys():
-            #print name, d[name]
             self.dv.add_parameter_over_write(name,d[name], context = self.readout_save_context)
-        #self.camera.start_live_display()
+
 
 
 if __name__ == '__main__':

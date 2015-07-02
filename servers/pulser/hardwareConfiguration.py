@@ -67,6 +67,8 @@ class hardwareConfiguration(object):
                    '405_Raman':channelConfiguration(7, False, False, False, False),
                    '435_Raman':channelConfiguration(8, False, False, False, False),
                    '266_SB':channelConfiguration(9, False, False, False, False),
+                   'SP1':channelConfiguration(10, False, False, False, False),
+                   'SP2':channelConfiguration(11, False, False, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
                    'AO1':channelConfiguration(20, False, False, False, False), ### triggering for analog board
@@ -74,6 +76,7 @@ class hardwareConfiguration(object):
                    'B_x_sign':channelConfiguration(21, True, False, False, False), 
                    'B_y_sign':channelConfiguration(22, True, True, False, False),
                    'B_z_sign':channelConfiguration(23, True, True, False, False), 
+                   'dummy_clock':channelConfiguration(24, False, False, False, False), ## for plotting the clock purpose only 
                    
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
@@ -82,7 +85,7 @@ class hardwareConfiguration(object):
                 'BIG_MOT':ddsConfiguration(    1,  (145.0,155.0),   (-48.0,-5.0),  150.0,   -6.0),
                 'Clock':ddsConfiguration(    2,  (180.0,220.0),   (-48.0,-3.0),  198.0,   -5.0),
                 'SMALL_MOT':ddsConfiguration(    3,  (145.0,155.0),   (-48.0,-8.0),  150.0,   -48.0),
-                'Clock_SB':ddsConfiguration(    4,  (140.0,200.0),   (-48.0,-5.0),  156.2634,   -7.0),
+                'Clock_SB':ddsConfiguration(    4,  (140.0,200.0),   (-48.0,-5.0),  156.2634,   -48.0), ##-7.0
 #                 'DDS_5':ddsConfiguration(    5,  (0.0,800.0),   (-63.0,-3.0),  95.0,   -63.0),
 #                 'DDS_6':ddsConfiguration(    6,  (0.0,800.0),   (-63.0,-3.0), 100.0,   -63.0),
 #                 'DDS_7':ddsConfiguration(    7,  (0.0,800.0),   (-63.0,-3.0), 105.0,   -63.0),

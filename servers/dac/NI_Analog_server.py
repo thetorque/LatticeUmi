@@ -167,32 +167,18 @@ class NI_Analog_Server(LabradServer):
     @setting(3, "Stop Voltage Pattern", returns = '')
     def stopVoltagePattern(self, c):
         '''
-        Generate the voltage pattern given the vertex of the time (first row) and voltages (subsequent rows). Trigger
-        indiciate if the voltage pattern will wait for a trigger or not. Sampling is the sample rate of this voltage pattern.
+        Stop the voltage pattern to release the thread. This will free up the NI analog server for the next pattern.
         '''
-        #print "array is", vertex_array
 
-        #waveform = yield self.do_set_voltagePattern(vertex_array, trigger, sampling)
         
         self.waveform.stop()
         
-        #self.notifyOtherListeners(c, (channel, voltage), self.onNewVoltage)
-            
-    #@inlineCallbacks
+
     def do_set_voltagePattern(self, vertex_array, trigger, sampling):
         '''
         This method takes the input voltage array and program the NI analog card via the api calling
         '''
-#         yield self.inCommunication.acquire()
-#         try:
-#             #yield deferToThread(self.api_dac.setVoltagePattern, vertex_array, trigger,sampling)
-#             #waveform = yield self.api_dac.setVoltagePattern(vertex_array, trigger, sampling)
-#             
-#         except Exception as e:
-#             raise e
-#         finally:
-#             self.inCommunication.release()
-            
+ 
         waveform = self.api_dac.setVoltagePattern(vertex_array, trigger, sampling)    
         return waveform
     

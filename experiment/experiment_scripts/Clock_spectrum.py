@@ -111,8 +111,43 @@ class Clock_spectrum(experiment):
             self.dv.add_parameter('Window', ['MOT population'], context = self.readout_save_context)     
             ## open the graph once the data set is created
             self.dv.add_parameter('plotLive', True, context = self.readout_save_context)     
+            
+    def plot_current_sequence(self, cxn):
+        from servers.pulser.pulse_sequences.plot_sequence import SequencePlotter
+        dds = cxn.pulser.human_readable_dds()
+        ttl = cxn.pulser.human_readable_ttl()
+        channels = cxn.pulser.get_channels().asarray
+        sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
+        sp.makePlot()
+                  
+    def initSequence(self):
+        ## setup pulse sequence and program
+        pulse_sequence = self.pulse_sequence(self.parameters)
+        pulse_sequence.programSequence(self.pulser)
         
-    
+        ##plot sequence to see check visually
+        #self.plot_current_sequence(cxn)
+        
+        ### setup analog sequence and program
+        analog_sequence = self.analog_sequence(self.parameters)
+        
+        #analog_sequence.plotPatternArray(self.NI_analog)
+        
+        analog_sequence.programAnalog(self.NI_analog)
+        
+        ## setup camera and get ready
+        self.camera.set_number_kinetics(3)
+        self.camera.start_acquisition()
+        
+        ### get no. of second of today
+        now = datetime.now()
+        self.start_time = (now-now.replace(hour=0,minute=0,second=0,microsecond=0)).total_seconds()
+        
+    def execSequence(self):
+        self.pulser.start_number(1)
+        self.pulser.wait_sequence_done()
+        self.pulser.stop_sequence()
+        self.NI_analog.stop_voltage_pattern()    
         
     def run(self, cxn, context):
         '''
@@ -122,41 +157,37 @@ class Clock_spectrum(experiment):
         self.pulser.frequency('Clock_SB', self.parameters['Clock.Clock_SB_freq'])
         
         
-        ## setup pulse sequence and program
-        pulse_sequence = self.pulse_sequence(self.parameters)
-        pulse_sequence.programSequence(self.pulser)
-        
-        ### setup analog sequence and program
-        analog_sequence = self.analog_sequence(self.parameters)
-        analog_sequence.programAnalog(self.NI_analog)
-        
-        ## setup camera and get ready
-        self.camera.set_number_kinetics(3)
-        self.camera.start_acquisition()
-        
-        ### get no. of second of today
-        now = datetime.now()
-        start_time = (now-now.replace(hour=0,minute=0,second=0,microsecond=0)).total_seconds()
+        self.initSequence()
         
         #### configure TTL switching from manual to auto ###
         self.pulser.switch_auto('BIG_MOT_SH', True)
         self.pulser.switch_auto('BIG_MOT_AO', True)
         
         #### start pulse sequence
-        
-        self.pulser.start_number(1)
-        self.pulser.wait_sequence_done()
-        self.pulser.stop_sequence()
-        
+        self.execSequence()
+ 
         #### configure TTL switching back to manual###
         self.pulser.switch_manual('BIG_MOT_SH', False)
         self.pulser.switch_manual('BIG_MOT_AO', False)
         
         #### stop analog pattern
-        self.NI_analog.stop_voltage_pattern()
         
-        
+        Atom_number_data = self.perform_readout(cxn, context)
         ### wait to see if the camera is missing some pictures
+        
+        
+        ## save to DV
+        self.dv.add(Atom_number_data, context = self.readout_save_context)
+
+        ### return value for this experiment. Used for scanning this script.
+
+        return Atom_number_data[2]/Atom_number_data[3]
+    
+    def perform_readout(self, cxn, context):
+        '''
+        Take picture from the CCD camera. Send picture to the server for displaying. Calculate and return the atom number data.
+        '''
+        
         proceed = self.camera.wait_for_kinetic()
         if not proceed:
             self.camera.abort_acquisition()
@@ -171,15 +202,12 @@ class Clock_spectrum(experiment):
         self.y_pixels = int( (self.image_region[3] - self.image_region[2] + 1.) / (self.image_region[0]) )
         self.x_pixels = int(self.image_region[5] - self.image_region[4] + 1.) / (self.image_region[1])
         
-       ### reshape array into three x-y images
+        ### reshape array into three x-y images
         images = numpy.reshape(images, (3, self.x_pixels, self.y_pixels))
-        
+
         images_cropped = self.cropImage(images)
-
-
         ### set the main camera display
         image_offset = numpy.array([self.parameters['CCD_settings.x_min'],self.parameters['CCD_settings.y_min']])
-        #self.camera.set_main_ccd_images(images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
         
         ### send data to the camera server for displaying the picture
         self.camera.set_ccd_images(images_cropped,images[0]-images[2],image_offset, self.parameters['CCD_settings.binning'])
@@ -191,18 +219,9 @@ class Clock_spectrum(experiment):
         
         S_state = (numpy.sum(images_cropped[0]-images_cropped[2]))/(0.11547*expose_time_ms*ccd_gain)
         P_state = (numpy.sum(images_cropped[1]-images_cropped[2]))/(0.11547*expose_time_ms*ccd_gain)
-        ## compensate for repump efficiency
         P_state = P_state/0.45
         
-        ### create array of data 
-        Atom_number_data = numpy.array([start_time,S_state,P_state,S_state+P_state])
-        ##print Atom_number_data
-        
-        ## save to DV
-        self.dv.add(Atom_number_data, context = self.readout_save_context)
-
-        ### return value for this experiment. Used for scanning this script.
-        return P_state/(S_state+P_state)
+        return numpy.array([self.start_time,S_state,P_state,S_state+P_state])
     
     def cropImage(self, images):
         ### crop image

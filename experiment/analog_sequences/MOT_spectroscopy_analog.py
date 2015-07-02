@@ -5,10 +5,12 @@ from treedict import TreeDict
 class MOT_spectroscopy_analog(analog_sequence):
     
     required_parameters = [('MOT_loading', 'loading_time'),
-                           ('MOT_loading', 'compress_time'),
                            ('MOT_loading', 'B_x'),
                            ('MOT_loading', 'B_y'),
                            ('MOT_loading', 'B_z'),
+                           ('MOT_loading', 'B_x_det'),
+                           ('MOT_loading', 'B_y_det'),
+                           ('MOT_loading', 'B_z_det'),
                            ('MOT_loading', 'wait_time'),
                            ('Clock', 'B_x_clock'),
                            ('Clock', 'B_y_clock'),
@@ -24,7 +26,9 @@ class MOT_spectroscopy_analog(analog_sequence):
         p = self.parameters
         #self.end = WithUnit(10, 'us')
 
-        self.end = self.start +p.MOT_loading.wait_time
+        self.end = self.start+p.MOT_loading.wait_time
+        #print self.end
+        #print self.start
         
         detect_freq = -0.2
         blue_freq = -0.9
@@ -34,34 +38,43 @@ class MOT_spectroscopy_analog(analog_sequence):
         B_y_clock = p.Clock.B_y_clock
         B_z_clock = p.Clock.B_z_clock
         
+        B_x_det = p.MOT_loading.B_x_det
+        B_y_det = p.MOT_loading.B_y_det
+        B_z_det = p.MOT_loading.B_z_det
+        
         ## MOT AO frequency is channel 0
         
-        self.addAnalog(0, self.start+WithUnit(0.1,'ms'), detect_freq)
-        self.addAnalog(0, self.end-WithUnit(0.1,'ms'), detect_freq)
+        self.addAnalog(0, self.start+WithUnit(2,'ms'), detect_freq)
+        self.addAnalog(0, self.end-WithUnit(2,'ms'), detect_freq)
         
         ### B field
         
-        self.addAnalog(2, self.start+WithUnit(0.1,'ms'), B_x_clock)
-        self.addAnalog(2, self.end-WithUnit(0.1,'ms'), B_x_clock)
-        self.addAnalog(3, self.start+WithUnit(0.1,'ms'), B_y_clock)
-        self.addAnalog(3, self.end-WithUnit(0.1,'ms'), B_y_clock)
-        self.addAnalog(4, self.start+WithUnit(0.1,'ms'), B_z_clock)
-        self.addAnalog(4, self.end-WithUnit(0.1,'ms'), B_z_clock)
+        self.addAnalog(2, self.start+WithUnit(2,'ms'), B_x_clock)
+        self.addAnalog(2, self.end-WithUnit(17,'ms'), B_x_clock)
+        self.addAnalog(2, self.end-WithUnit(15,'ms'), B_x_det)
+        self.addAnalog(3, self.start+WithUnit(2,'ms'), B_y_clock)
+        self.addAnalog(3, self.end-WithUnit(17,'ms'), B_y_clock)
+        self.addAnalog(3, self.end-WithUnit(15,'ms'), B_y_det)
+        self.addAnalog(4, self.start+WithUnit(2,'ms'), B_z_clock)
+        self.addAnalog(4, self.end-WithUnit(17,'ms'), B_z_clock)
+        self.addAnalog(4, self.end-WithUnit(15,'ms'), B_z_det)
         
         ### MOT_AO intensity
         
-        self.addAnalog(1, self.start+WithUnit(0.1,'ms'), MOT_intensity)
-        self.addAnalog(1, self.end-WithUnit(0.1,'ms'), MOT_intensity)
+        self.addAnalog(1, self.start+WithUnit(2,'ms'), MOT_intensity)
+        self.addAnalog(1, self.end-WithUnit(2,'ms'), MOT_intensity)
         
         ## MOT coil
-        self.addAnalog(0, self.start+WithUnit(0.1,'ms'), 0.0)
-        self.addAnalog(0, self.end-WithUnit(0.1,'ms'), 0.0)
+        self.addAnalog(5, self.start+WithUnit(2,'ms'), 0.0)
+        self.addAnalog(5, self.end-WithUnit(17,'ms'), 0.0)
         
         ### Lattice
-        self.addAnalog(6, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 0.0)
+        self.addAnalog(6, self.start+WithUnit(2,'ms'), 0.0)
+        self.addAnalog(6, self.end-WithUnit(2,'ms'), 0.0)
         
         ### clock
-        self.addAnalog(7, self.start+WithUnit(0.1,'ms')+WithUnit(139,'ms'), 10.0)
+        self.addAnalog(7, self.start+WithUnit(2,'ms'), 10.0)
+        self.addAnalog(7, self.end-WithUnit(2,'ms'), 10.0)
         
 
 if __name__ == '__main__':

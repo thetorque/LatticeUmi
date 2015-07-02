@@ -85,15 +85,17 @@ class analog_sequence(object):
 		self.end = max(self.end, seq.end)
 	
 	def programAnalog(self, analog_server):
+		
 		pattern = self.convert_sequence(self._analog_pulses)
 		#print "program Analog"
-		waveform = analog_server.set_voltage_pattern(pattern,True,100000)
+		waveform = analog_server.set_voltage_pattern(pattern,True,100000.0)
 		return waveform
 	
 	
  	def plotPatternArray(self, analog_server):
+ 		#print self._analog_pulses
  		pattern = self.convert_sequence(self._analog_pulses)
- 		waveform = api_dac.calculateVoltagePattern(pattern,True,1000)
+ 		waveform = api_dac.calculateVoltagePattern(pattern,True,100000.0)
  		AO_plotter(waveform)
 		
 	def convert_sequence(self, sequence_data):
@@ -140,6 +142,8 @@ class analog_sequence(object):
 		channel_6 = np.delete(channel_6,0,1)
 		channel_7 = np.delete(channel_7,0,1)
 		
+		#print channel_2
+		
 		#print channel_0
 		
 		
@@ -165,6 +169,7 @@ class analog_sequence(object):
 				i = i+1
 				slope = (voltage_array[index[i]]-voltage_array[index[i]-1])/(time_array[index[i]]-time_array[index[i]-1])
 				ch[i] = ch[i-1]+slope*(time[i]-time[i-1])
+			#print ch
 			total_data = np.vstack((total_data,ch))
 		pattern = total_data
 		return pattern

@@ -39,7 +39,7 @@ class AO_plotter():
             #plot.set_title("Analog "+str(i))
             
             ## look for the name of the analog channel with the corresponding channel number
-            for name in analog_name_dictionary.keys():
+            for name in analog_name_dictionary:
                 if analog_name_dictionary[name] == i:
                     plot.set_title(name)
             #plot.set_title()

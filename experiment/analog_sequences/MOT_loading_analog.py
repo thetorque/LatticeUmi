@@ -7,7 +7,6 @@ from treedict import TreeDict
 class MOT_loading_analog(analog_sequence):
     
     required_parameters = [('MOT_loading', 'loading_time'),
-                           ('MOT_loading', 'compress_time'),
                            ('MOT_loading', 'B_x'),
                            ('MOT_loading', 'B_y'),
                            ('MOT_loading', 'B_z'),

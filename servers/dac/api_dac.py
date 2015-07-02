@@ -165,37 +165,7 @@ class api_dac():
         mythread.wait()
         mythread.stop()
         
-#     def setVoltagePattern(self, time_vertex_array, v_vertex_array, trigger, sampling_rate):
-#         t = time_vertex_array
-#         v = v_vertex_array
-#         duration = t[-1] ## get the last value of the time array. This is the duration of the pulse sequence.
-#         sample_size = sampling_rate*duration
-#         ## make sample size an even number
-#         sample_size = (sample_size//2)*2
-#         time_array = np.linspace(0,duration, sample_size)
-#         volt_array = np.ones_like(time_array)
-#         volt_array[0] = v[0] #initialize first point
-#         
-#         for i in range(t.size-1):
-#             #i = 0
-#             #print i
-#             time_location = np.where((time_array>t[i])*(time_array<=t[i+1])) ### look for the location of the time span we are interested in
-#             slope = (v[i+1]-v[i])/(t[i+1]-t[i]) ### calculate the voltage slope in this region
-#             #print "v is ", v[i]
-#             #print "slope is ", slope
-#             volt_array[time_location] = v[i]+slope*(time_array[time_location]-t[i]) ## compute the voltage value
-#             
-#         data = time_array
-#         channel_0 = volt_array
-#         data = np.vstack((data,channel_0))
-#         
-#         ## write to NI analog ##
-#         mythread = WaveformThread(data, True)
-#         mythread.run()
-#         print "waiting for the sequence to be done"
-#         mythread.wait()
-#         print "done waiting"
-#         mythread.stop()
+
 
 
     def setVoltagePattern(self, vertex_array, trigger, sampling_rate):
@@ -249,14 +219,7 @@ class api_dac():
         data = np.vstack((time_array,volt_array)) # stack the time array and voltage array together
         
         return data
-    
-#         print "run waveform"
-#         mythread.run()
-#         print "waiting for the sequence to be done"
-#         mythread.wait()
-#         print "done waiting"
-#         mythread.stop()
-        
+
         
         
         

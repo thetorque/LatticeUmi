@@ -7,7 +7,6 @@ class MOT_loading_seq(pulse_sequence):
     
     required_parameters = [ 
                            ('MOT_loading', 'loading_time'),
-                           ('MOT_loading', 'compress_time'),
                            ('MOT_loading', 'big_MOT_loading_power'),
                            ('MOT_loading', 'compress_MOT_power'),
                            ('MOT_loading', 'detection_power'),
