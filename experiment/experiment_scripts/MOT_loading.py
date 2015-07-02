@@ -111,7 +111,13 @@ class MOT_loading(experiment):
             ## open the graph once the data set is created
             self.dv.add_parameter('plotLive', True, context = self.readout_save_context)     
         
-    
+    def plot_current_sequence(self, cxn):
+        from servers.pulser.pulse_sequences.plot_sequence import SequencePlotter
+        dds = cxn.pulser.human_readable_dds()
+        ttl = cxn.pulser.human_readable_ttl()
+        channels = cxn.pulser.get_channels().asarray
+        sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
+        sp.makePlot()    
         
     def run(self, cxn, context):
         '''
@@ -122,8 +128,14 @@ class MOT_loading(experiment):
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
         
+        ##plot sequence to see check visually
+        #self.plot_current_sequence(cxn)
+        
         ### setup analog sequence and program
         analog_sequence = self.analog_sequence(self.parameters)
+        
+        analog_sequence.plotPatternArray(self.NI_analog)
+        
         analog_sequence.programAnalog(self.NI_analog)
         
         ## setup camera and get ready

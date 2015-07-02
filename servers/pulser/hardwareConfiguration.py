@@ -78,7 +78,7 @@ class hardwareConfiguration(object):
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
-   #             'DDS_0':ddsConfiguration(    0,  (0.0,800.0),   (-48.0,6.0),  70.0,   -48.0),
+                 'DDS_0':ddsConfiguration(    0,  (0.0,800.0),   (-48.0,6.0),  70.0,   -48.0),
                 'BIG_MOT':ddsConfiguration(    1,  (145.0,155.0),   (-48.0,-5.0),  150.0,   -6.0),
                 'Clock':ddsConfiguration(    2,  (180.0,220.0),   (-48.0,-3.0),  198.0,   -5.0),
                 'SMALL_MOT':ddsConfiguration(    3,  (145.0,155.0),   (-48.0,-8.0),  150.0,   -48.0),

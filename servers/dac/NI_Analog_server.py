@@ -67,9 +67,9 @@ class NI_Analog_Server(LabradServer):
                              ('B_x', 2),
                              ('B_y', 3),
                              ('B_z',4),
-                             ('MOT',5),
-                             ('unused_1',6),
-                             ('unused_2',7),
+                             ('MOT_coil',5),
+                             ('Lattice',6),
+                             ('Clock',7),
                              ]: 
             chan = dac_channel(name, channel_number)
             chan.voltage = yield self.getRegValue(name)   # get value of each channel from the registry

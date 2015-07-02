@@ -12,6 +12,7 @@ class MOT_detection_analog(analog_sequence):
                            ('MOT_loading', 'B_z'),
                            ('MOT_loading', 'MOT_current_load'),
                            ('MOT_loading', 'MOT_current_compress'),
+                           ('MOT_loading', 'MOT_detect_comb_freq'),
                            ]
 #     
     required_subsequences = []
@@ -25,7 +26,7 @@ class MOT_detection_analog(analog_sequence):
 
         self.end = self.start + WithUnit(139,'ms') + WithUnit(0.1,'ms')
         
-        detect_freq = -0.2
+        detect_freq = p.MOT_loading.MOT_detect_comb_freq
         blue_freq = -0.9
         MOT_intensity = 1.2
         B_x_det = p.MOT_loading.B_x_det

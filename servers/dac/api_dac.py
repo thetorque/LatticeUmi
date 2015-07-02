@@ -8,11 +8,13 @@ numpy
 Adapted by Martin Bures [ mbures { @ } zoll { . } com ]
 """
 # import system libraries
+from __future__ import division
 import ctypes
 import numpy as np
 import threading
 import sys
 import time
+
 
 from twisted.internet.defer import inlineCallbacks, returnValue, DeferredLock
 from twisted.internet.threads import deferToThread
@@ -201,6 +203,19 @@ class api_dac():
         Set the voltage pattern according to the input vertex_array. Also the trigger indicated if the pattern will wait for
         the trigger or just go when ready. The sampling_rate is the resolution in time for the voltage pattern.
         '''
+
+        
+        data = self.calculateVoltagePattern(vertex_array, trigger, sampling_rate)
+        #np.save("ao_data",data)
+        mythread = WaveformThread(data, trigger)  #
+        return mythread
+    
+    @staticmethod
+    def calculateVoltagePattern(vertex_array, trigger, sampling_rate):
+        '''
+        Calculate the voltage pattern according to the input vertex_array. Also the trigger indicated if the pattern will wait for
+        the trigger or just go when ready. The sampling_rate is the resolution in time for the voltage pattern.
+        '''
         t = vertex_array[0]                 ## first row of the vertex array is the time array
         channel = vertex_array.shape[0]-1   ## the rest is the channel information
         duration = t[-1]                    ## get the last value of the time array. This is the duration of the pulse sequence.
@@ -212,9 +227,8 @@ class api_dac():
         volt_array = np.ones((channel,np.size(time_array))) ## create voltage array which in the end will get sent to the NI card
         volt_array[:,0] = vertex_array[:,0][1:]             # initialize first points
         #print volt_array[:,0]
-        
+
         ### create time array for low pass convolution
-        
         band = 0.0003
         time_filter = np.arange(-3*band,3*band,1/sampling_rate) ##plus-minus time
         conv = np.exp(-0.5*time_filter**2/band**2) ## gaussian
@@ -233,8 +247,8 @@ class api_dac():
             #print volt_array[j]
         
         data = np.vstack((time_array,volt_array)) # stack the time array and voltage array together
-        mythread = WaveformThread(data, trigger)  #
-        return mythread
+        
+        return data
     
 #         print "run waveform"
 #         mythread.run()

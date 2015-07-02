@@ -14,6 +14,8 @@ class MOT_loading_analog(analog_sequence):
                            ('MOT_loading', 'wait_time'),
                            ('MOT_loading', 'MOT_current_load'),
                            ('MOT_loading', 'MOT_current_compress'),
+                           ('MOT_loading', 'MOT_compress_freq'),
+                           ('MOT_loading', 'MOT_far_red_freq'),
                            ]
 #     
     required_subsequences = [MOT_detection_analog, MOT_spectroscopy_analog]
@@ -34,7 +36,6 @@ class MOT_loading_analog(analog_sequence):
         
         '''
         
-        print p.MOT_loading.loading_time
         
         ###B_field###
         B_x = p.MOT_loading.B_x
@@ -44,11 +45,11 @@ class MOT_loading_analog(analog_sequence):
         
         
         self.addAnalog(2, WithUnit(0.0,'ms'), B_x)
-        self.addAnalog(2, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), B_x)
+        self.addAnalog(2, p.MOT_loading.loading_time+p.MOT_loading.wait_time-WithUnit(0.1,'ms'), B_x)
         self.addAnalog(3, WithUnit(0.0,'ms'), B_y)
-        self.addAnalog(3, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), B_y)
+        self.addAnalog(3, p.MOT_loading.loading_time+p.MOT_loading.wait_time-WithUnit(0.1,'ms'), B_y)
         self.addAnalog(4, WithUnit(0.0,'ms'), B_z)
-        self.addAnalog(4, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), B_z)
+        self.addAnalog(4, p.MOT_loading.loading_time+p.MOT_loading.wait_time-WithUnit(0.1,'ms'), B_z)
         
         #### MOT intensity
         
@@ -75,12 +76,15 @@ class MOT_loading_analog(analog_sequence):
         
         ### MOT frequency
         
-        self.addAnalog(0, WithUnit(0.0,'ms'), -0.2)
-        self.addAnalog(0, WithUnit(3.0,'ms'), -0.2)
-        self.addAnalog(0, WithUnit(4.0,'ms'), 0.8)
-        self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(60.0,'ms'), 0.8)
-        self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(60.0,'ms')+WithUnit(3.0,'ms'), -0.2)
-        self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), -0.2)
+        compress = p.MOT_loading.MOT_compress_freq
+        far_red = p.MOT_loading.MOT_far_red_freq
+        
+        self.addAnalog(0, WithUnit(0.0,'ms'), compress)
+        self.addAnalog(0, WithUnit(3.0,'ms'), compress)
+        self.addAnalog(0, WithUnit(4.0,'ms'), far_red)
+        self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(60.0,'ms'), far_red)
+        self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(60.0,'ms')+WithUnit(3.0,'ms'), compress)
+        self.addAnalog(0, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), compress)
         
         self.end = p.MOT_loading.loading_time+p.MOT_loading.wait_time
         
@@ -95,5 +99,5 @@ if __name__ == '__main__':
     ni = cxn.ni_analog_server
     M = MOT_loading_analog(TreeDict())
     #M.sequence()
-    #M.convert_sequence()
-    M.programAnalog(ni)
+    M.convert_sequence()
+    #M.programAnalog(ni)
