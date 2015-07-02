@@ -155,6 +155,9 @@ class Qt4MplCanvas(FigureCanvas):
         # create plot 
         self.ax = self.fig.add_subplot(111)
         self.ax.grid()
+        
+        self.ax.ticklabel_format(useOffset=False)
+        
         colormap = pyplot.cm.gist_ncar
 #        self.ax.set_color_cycle([colormap(i) for i in np.linspace(0, 0.9, 15)])
         colors = ['b', 'g', 'r', 'm', 'k', colormap(.2), colormap(.9), colormap(.3166), colormap(.7833), colormap(.666)]
