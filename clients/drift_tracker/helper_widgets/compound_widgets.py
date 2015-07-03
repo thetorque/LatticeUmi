@@ -29,6 +29,7 @@ class table_dropdowns_with_entry(QtGui.QTableWidget):
         if names is not None:
             self.names = names
         for i in range(self.entries):
+            #print self.names
             drop = dropdown(self.reactor, names = self.names, font=self.font, favorites = self.favorites)
             self.setCellWidget(i ,0 , drop)
             sample = QtGui.QDoubleSpinBox()

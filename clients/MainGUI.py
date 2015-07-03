@@ -18,7 +18,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
     def create_layout(self, cxn):
         contrl_widget = self.makeControlWidget(reactor, cxn)
         #histogram = self.make_histogram_widget(reactor, cxn)
-        #drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
+        drift_tracker = self.make_drift_tracker_widget(reactor, cxn)
         centralWidget = QtGui.QWidget()
         layout = QtGui.QHBoxLayout()
         
@@ -37,7 +37,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         self.tabWidget.addTab(contrl_widget,'&Control')
         
         #self.tabWidget.addTab(histogram, '&Readout Histogram')
-        #self.tabWidget.addTab(drift_tracker, '&SD Drift Tracker')
+        self.tabWidget.addTab(drift_tracker, '&Clock Drift Tracker')
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)

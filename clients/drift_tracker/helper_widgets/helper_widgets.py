@@ -112,7 +112,7 @@ class saved_frequencies_table(QtGui.QTableWidget):
 
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
-    from common.clients import qt4reactor
+    import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
     widget = saved_frequencies_table(reactor)

@@ -1,5 +1,5 @@
 from fractions import Fraction
-from labrad import units as U
+from labrad import units
 from labrad.units import WithUnit
 import numpy
 from SD_tracker_config import config as conf
@@ -29,9 +29,11 @@ class EnergyLevel(object):
         self.L = L = angular_momentum_l
         J = total_angular_momentum_j
         lande_factor =  self.lande_factor(S, L, J)
+        #print lande_factor
         #sublevels are found, 2* self.J is always an integer, so can use numerator
         self.sublevels_m =  [-J + i for i in xrange( 1 + (2 * J).numerator)]
-        self.energy_scale = (lande_factor * U.bohr_magneton / U.hplanck) #1.4 MHz / gauss
+        #bohr_magneton = WithUnit(9.274009682e-24,"J/T")
+        self.energy_scale = (lande_factor * units.bohr_magneton / units.hplanck) #1.4 MHz / gauss
     
     def lande_factor(self, S, L ,J):
         '''computes the lande g factor'''
@@ -52,31 +54,30 @@ class EnergyLevel(object):
         together = self.spectoscopic_notation_rev[self.L] + sublevel
         return together
 
-class EnergyLevel_CA_ion(EnergyLevel):
+class EnergyLevel_Hg(EnergyLevel):
     '''
     Class for describing the energy levels of Calcium Ions. This is specific to Ca+ because it uses
     precisely measured g factors of the S and D states in the calculations.
     '''
     
     def lande_factor(self, S, L, J):
-        g_factor_S = 2.00225664 #Eur Phys JD 25 113-125
-        g_factor_D = 1.2003340  #PRL 102, 023002 (2009)
-        if S == Fraction('1/2') and L == Fraction('0') and J == Fraction('1/2'):
-            g = g_factor_S
-        elif S == Fraction('1/2') and L == Fraction('2') and J == Fraction('5/2'):
-            g = g_factor_D
+        if L == Fraction('0'):
+            ## g factor for ground state
+            g = -0.54229651e-3
+        elif L == Fraction('1'):
+            g = -0.9504e-3
         return g
 
 class Transitions_SD(object):
     
-    S = EnergyLevel_CA_ion('S', '1/2')
-    D = EnergyLevel_CA_ion('D', '5/2')
-    allowed_transitions = [0,1,2]
+    S = EnergyLevel_Hg('S', '1/2')
+    P = EnergyLevel_Hg('P', '1/2')
+    allowed_transitions = [0,1]
     
     def transitions(self):
         transitions = []
         for m_s,E_s,repr_s in self.S.magnetic_to_energy(WithUnit(0, 'gauss')):
-            for m_d,E_d,repr_d in self.D.magnetic_to_energy(WithUnit(0, 'gauss')):
+            for m_d,E_d,repr_d in self.P.magnetic_to_energy(WithUnit(0, 'gauss')):
                 if abs(m_d-m_s) in self.allowed_transitions:
                     name = repr_s + repr_d
                     transitions.append(name)
@@ -86,7 +87,7 @@ class Transitions_SD(object):
         '''returns the transition enenrgies in MHz where zero_offset is the 0-field transition energy between S and D'''
         ans = []
         for m_s,E_s,repr_s in self.S.magnetic_to_energy(B):
-            for m_d,E_d,repr_d in self.D.magnetic_to_energy(B):
+            for m_d,E_d,repr_d in self.P.magnetic_to_energy(B):
                 if abs(m_d-m_s) in self.allowed_transitions:
                     name = repr_s + repr_d
                     diff = E_d - E_s
@@ -106,10 +107,10 @@ class Transitions_SD(object):
         if abs(md1 - ms1) not in self.allowed_transitions or abs(md2 - ms2) not in self.allowed_transitions:
             raise Exception ("Such transitions are not allowed")
         s_scale = self.S.energy_scale
-        d_scale = self.D.energy_scale
-        B = (en2 - en1) / ( d_scale * ( md2 - md1) - s_scale * (ms2 - ms1) )
+        p_scale = self.P.energy_scale
+        B = (en2 - en1) / ( p_scale * ( md2 - md1) - s_scale * (ms2 - ms1) )
         B = B.inUnitsOf('gauss')
-        offset = en1 - (md1 * d_scale - ms1 * s_scale) * B
+        offset = en1 - (md1 * p_scale - ms1 * s_scale) * B
         return B, offset
         
     def str_to_fractions(self, inp):

@@ -50,6 +50,7 @@ class drift_tracker(QtGui.QWidget):
         self.drift_canvas.setParent(self)  
         gs = gridspec.GridSpec(1, 2, wspace=0.15, left = 0.05, right = 0.95)
         line_drift = self.fig.add_subplot(gs[0, 0])
+        line_drift.ticklabel_format(useOffset=False)
         line_drift.set_xlabel('Time (min)')
         line_drift.set_ylabel('KHz')
         line_drift.set_title("Line Center Drift")
@@ -57,6 +58,7 @@ class drift_tracker(QtGui.QWidget):
         self.line_drift_lines = []
         self.line_drift_fit_line = []
         b_drift = self.fig.add_subplot(gs[0, 1], sharex=line_drift)
+        b_drift.ticklabel_format(useOffset=False)
         b_drift.set_xlabel('Time (min)')
         b_drift.set_ylabel('mgauss')
         b_drift.set_title("B Field Drift")
@@ -78,6 +80,7 @@ class drift_tracker(QtGui.QWidget):
         self.spec_canvas.setParent(self)  
         gs = gridspec.GridSpec(1, 1, wspace=0.15, left = 0.05, right = 0.95)
         spec = self.fig.add_subplot(gs[0, 0])
+        spec.ticklabel_format(useOffset=False)
         spec.set_xlim(left = c.frequency_limit[0], right = c.frequency_limit[1])
         spec.set_ylim(bottom = 0, top = 1)
         spec.set_xlabel('MHz')
@@ -92,8 +95,8 @@ class drift_tracker(QtGui.QWidget):
     
     def create_widget_layout(self):
         layout = QtGui.QGridLayout()
-        self.frequency_table = saved_frequencies_table(self.reactor, suffix = ' MHz', sig_figs = 4)
-        self.entry_table = table_dropdowns_with_entry(self.reactor, limits = c.frequency_limit, suffix = ' MHz', sig_figs = 4, favorites = self.favorites)
+        self.frequency_table = saved_frequencies_table(self.reactor, suffix = ' MHz', sig_figs = 6)
+        self.entry_table = table_dropdowns_with_entry(self.reactor, limits = c.frequency_limit, suffix = ' MHz', sig_figs = 6, favorites = self.favorites)
         self.entry_button = QtGui.QPushButton("Submit")
         self.copy_clipboard_button = QtGui.QPushButton("Copy Info to Clipboard")
         self.remove_B_button = QtGui.QPushButton("Remove B")
@@ -242,13 +245,16 @@ class drift_tracker(QtGui.QWidget):
         self.WithUnit = WithUnit
         self.Error = Error
         if self.cxn is None:
-            from common.clients.connection import connection
+            from clients.connection import connection
             self.cxn = connection()
             yield self.cxn.connect()
         self.context = yield self.cxn.context()
         try:
             yield self.subscribe_tracker()
+            print "yes"
         except Exception as e:
+            print e
+            print 'no'
             self.setDisabled(True)
         self.cxn.add_on_connect('SD Tracker', self.reinitialize_tracker)
         self.cxn.add_on_disconnect('SD Tracker', self.disable)
@@ -405,7 +411,7 @@ class drift_tracker(QtGui.QWidget):
 if __name__=="__main__":
     a = QtGui.QApplication( [] )
     clipboard = a.clipboard()
-    from common.clients import qt4reactor
+    import qt4reactor
     qt4reactor.install()
     from twisted.internet import reactor
     widget = drift_tracker(reactor, clipboard)

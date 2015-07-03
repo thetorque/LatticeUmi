@@ -89,10 +89,15 @@ class SDTracker(LabradServer):
         '''Returns the names of possible transitions'''
         return self.tr.transitions()
         
-    @setting(2, 'Set Measurements', lines = '*(sv[MHz])', returns = '')
-    def set_measurements(self, c, lines):
+    @setting(2, 'Set Measurements', lines = '*(sv[MHz])', time_offset = 'v', returns = '')
+    def set_measurements(self, c, lines, time_offset = 0.0):
         '''takes the names and frequencies of two lines and performs tracking'''
         t_measure = time.time() - self.start_time
+        
+        ### add a possibility of having offset from the measurement
+        t_measure = t_measure + time_offset
+        
+        
         if not len(lines) == 2: raise Exception ("Please provide measurement for two lines")
         name1,f1 = lines[0]
         name2,f2 = lines[1]
@@ -140,11 +145,13 @@ class SDTracker(LabradServer):
         else:
             raise Exception("Fit has not been calculated")
     
-    @setting(5, "Get Current Lines", returns = '*(sv[MHz])')
-    def get_current_lines(self, c):
+    @setting(5, "Get Current Lines", time_offset = 'v', returns = '*(sv[MHz])')
+    def get_current_lines(self, c, time_offset = 0.0):
         '''get the frequency of the current line specified by name. if name is not provided, get all lines'''
         lines = []
         current_time = time.time() - self.start_time
+        ## add additional offset to predict frequency in the future
+        current_time = current_time + time_offset
         try:
             B = self.fitter.evaluate(current_time, self.B_fit)
             center = self.fitter.evaluate(current_time, self.line_center_fit)
@@ -157,26 +164,28 @@ class SDTracker(LabradServer):
             lines.append((name, freq))
         return lines
     
-    @setting(6, "Get Current Line", name = 's', returns = 'v[MHz]')
-    def get_current_line(self, c, name):
-        lines = yield self.get_current_lines(c)
+    @setting(6, "Get Current Line", name = 's', time_offset = 'v', returns = 'v[MHz]')
+    def get_current_line(self, c, name, time_offset = 0.0):
+        lines = yield self.get_current_lines(c, time_offset)
         d = dict(lines)
         try:
             returnValue(d[name])
         except KeyError:
             raise Exception ("Requested line not found")
     
-    @setting(7, "Get Current B", returns = 'v[gauss]')
-    def get_current_b(self, c):
+    @setting(7, "Get Current B", time_offset = 'v', returns = 'v[gauss]')
+    def get_current_b(self, c, time_offset = 0.0):
         current_time = time.time() - self.start_time
+        current_time = current_time + time_offset
         B = self.fitter.evaluate(current_time, self.B_fit)
         B = WithUnit(B, 'gauss')
         return B
         #returnValue(B)
         
-    @setting(13, "Get Current Center", returns = 'v[MHz]')
-    def get_current_center(self, c):
+    @setting(13, "Get Current Center", time_offset = 'v', returns = 'v[MHz]')
+    def get_current_center(self, c, time_offset = 0.0):
         current_time = time.time() - self.start_time
+        current_time = current_time + time_offset
         center = self.fitter.evaluate(current_time, self.line_center_fit)
         center = WithUnit(center, 'MHz')
         return center

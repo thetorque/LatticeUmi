@@ -17,7 +17,7 @@ nodeDict = {
                  'Andor Server',
                 'NI Analog Server',
                 #'NormalPMTFlow',
-                #'SD Tracker',
+                'SD Tracker',
                 'ScriptScanner',
                 'ParameterVault',
                 'Pulser'],
