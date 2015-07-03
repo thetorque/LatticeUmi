@@ -30,7 +30,11 @@ class table_dropdowns_with_entry(QtGui.QTableWidget):
             self.names = names
         for i in range(self.entries):
             #print self.names
-            drop = dropdown(self.reactor, names = self.names, font=self.font, favorites = self.favorites)
+            if i == 0:
+                drop = dropdown(self.reactor, names = self.names, font=self.font, favorites = self.favorites)
+            else:
+                self.names = list(reversed(self.names))
+                drop = dropdown(self.reactor, names = self.names, font=self.font, favorites = self.favorites)
             self.setCellWidget(i ,0 , drop)
             sample = QtGui.QDoubleSpinBox()
             sample.setFont(self.font)

@@ -72,7 +72,7 @@ class Transitions_SD(object):
     
     S = EnergyLevel_Hg('S', '1/2')
     P = EnergyLevel_Hg('P', '1/2')
-    allowed_transitions = [0,1]
+    allowed_transitions = [0]
     
     def transitions(self):
         transitions = []

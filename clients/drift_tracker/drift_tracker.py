@@ -95,7 +95,7 @@ class drift_tracker(QtGui.QWidget):
     
     def create_widget_layout(self):
         layout = QtGui.QGridLayout()
-        self.frequency_table = saved_frequencies_table(self.reactor, suffix = ' MHz', sig_figs = 6)
+        self.frequency_table = saved_frequencies_table(self.reactor, suffix = ' MHz', sig_figs = 7)
         self.entry_table = table_dropdowns_with_entry(self.reactor, limits = c.frequency_limit, suffix = ' MHz', sig_figs = 6, favorites = self.favorites)
         self.entry_button = QtGui.QPushButton("Submit")
         self.copy_clipboard_button = QtGui.QPushButton("Copy Info to Clipboard")
