@@ -12,7 +12,9 @@ from datetime import datetime
 '''
 Template for the experiment. By Hong.
 '''
-
+'''
+This experiment implement a single excitation of the clock laser with the weak laser configuration (includes Doppler noise cancellation)
+'''    
        
 class Clock_weak(experiment):
     ##name of the experiment to be shown in the scriptscanner
@@ -89,7 +91,7 @@ class Clock_weak(experiment):
     def setup_data_vault(self):
         localtime = time.localtime()
         self.datasetNameAppend = time.strftime("%Y%b%d_%H",localtime)
-        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H%M_%S", localtime)]
+        dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H", localtime)]
         self.save_directory = ['','Experiments']
         self.save_directory.extend([self.name])
         self.save_directory.extend(dirappend)

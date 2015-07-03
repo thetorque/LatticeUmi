@@ -12,7 +12,9 @@ from datetime import datetime
 '''
 Template for the experiment. By Hong.
 '''
-
+'''
+This experiment implement a scan of a clock weak experiment
+'''    
        
 class MOT_loading(experiment):
     ##name of the experiment to be shown in the scriptscanner
