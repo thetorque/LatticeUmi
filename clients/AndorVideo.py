@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet.task import LoopingCall
 from clients.connection import connection
+#from connection import connection
 import numpy as np
 import pyqtgraph as pg
 
