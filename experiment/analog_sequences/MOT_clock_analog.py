@@ -68,8 +68,14 @@ class MOT_clock_analog(analog_sequence):
         self.addAnalog(5, p.MOT_loading.loading_time-WithUnit(0.1,'ms'), compress_current)
         
         
+        ### lattice
+        self.addAnalog(6, WithUnit(0.0,'ms'), -0.8)
+        self.addAnalog(6, p.MOT_loading.loading_time-WithUnit(173.0,'ms'), -0.8)
+        self.addAnalog(6, p.MOT_loading.loading_time-WithUnit(170.0,'ms'), -1.7)
+        self.addAnalog(6, p.MOT_loading.loading_time-WithUnit(4.0,'ms'), -1.7)
+        self.addAnalog(6, p.MOT_loading.loading_time-WithUnit(1.0,'ms'), -1.0)
         
-        self.addAnalog(6, WithUnit(0.0,'ms'), 0.0)
+        
         self.addAnalog(7, WithUnit(0.0,'ms'), 10.0) ### clock
         
         

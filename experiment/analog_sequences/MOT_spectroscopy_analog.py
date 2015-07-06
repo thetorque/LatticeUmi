@@ -12,9 +12,11 @@ class MOT_spectroscopy_analog(analog_sequence):
                            ('MOT_loading', 'B_y_det'),
                            ('MOT_loading', 'B_z_det'),
                            ('MOT_loading', 'wait_time'),
+                           ('MOT_loading', 'MOT_current_compress'),
                            ('Clock', 'B_x_clock'),
                            ('Clock', 'B_y_clock'),
                            ('Clock', 'B_z_clock'),
+                           ('Clock', 'SP1_freq'),
                            ]
 #     
     required_subsequences = []
@@ -44,20 +46,24 @@ class MOT_spectroscopy_analog(analog_sequence):
         
         ## MOT AO frequency is channel 0
         
-        self.addAnalog(0, self.start+WithUnit(2,'ms'), detect_freq)
-        self.addAnalog(0, self.end-WithUnit(2,'ms'), detect_freq)
+        SP1_freq = p.Clock.SP1_freq
+        
+        self.addAnalog(0, self.start+WithUnit(2,'ms'), SP1_freq)
+        self.addAnalog(0, self.end-WithUnit(2,'ms'), SP1_freq)
         
         ### B field
         
+        time_before_detect = WithUnit(32, 'ms')
+        
         self.addAnalog(2, self.start+WithUnit(2,'ms'), B_x_clock)
-        self.addAnalog(2, self.end-WithUnit(17,'ms'), B_x_clock)
-        self.addAnalog(2, self.end-WithUnit(15,'ms'), B_x_det)
+        self.addAnalog(2, self.end-time_before_detect, B_x_clock)
+        self.addAnalog(2, self.end-time_before_detect + WithUnit(2,'ms'), B_x_det)
         self.addAnalog(3, self.start+WithUnit(2,'ms'), B_y_clock)
-        self.addAnalog(3, self.end-WithUnit(17,'ms'), B_y_clock)
-        self.addAnalog(3, self.end-WithUnit(15,'ms'), B_y_det)
+        self.addAnalog(3, self.end-time_before_detect, B_y_clock)
+        self.addAnalog(3, self.end-time_before_detect + WithUnit(2,'ms'), B_y_det)
         self.addAnalog(4, self.start+WithUnit(2,'ms'), B_z_clock)
-        self.addAnalog(4, self.end-WithUnit(17,'ms'), B_z_clock)
-        self.addAnalog(4, self.end-WithUnit(15,'ms'), B_z_det)
+        self.addAnalog(4, self.end-time_before_detect, B_z_clock)
+        self.addAnalog(4, self.end-time_before_detect + WithUnit(2,'ms'), B_z_det)
         
         ### MOT_AO intensity
         
@@ -66,11 +72,14 @@ class MOT_spectroscopy_analog(analog_sequence):
         
         ## MOT coil
         self.addAnalog(5, self.start+WithUnit(2,'ms'), 0.0)
-        self.addAnalog(5, self.end-WithUnit(17,'ms'), 0.0)
+        self.addAnalog(5, self.end-time_before_detect, 0.0)
+        self.addAnalog(5, self.end-time_before_detect + WithUnit(2,'ms'), p.MOT_loading.MOT_current_compress)
         
         ### Lattice
-        self.addAnalog(6, self.start+WithUnit(2,'ms'), 0.0)
-        self.addAnalog(6, self.end-WithUnit(2,'ms'), 0.0)
+        self.addAnalog(6, self.start+WithUnit(2,'ms'), -1.0)
+        self.addAnalog(6, self.start+WithUnit(12,'ms'), -1.0)
+        self.addAnalog(6, self.start+WithUnit(15,'ms'), -1.3)
+        self.addAnalog(6, self.end-WithUnit(3,'ms'), -1.3)
         
         ### clock
         self.addAnalog(7, self.start+WithUnit(2,'ms'), 10.0)

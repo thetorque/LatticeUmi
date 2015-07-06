@@ -2,6 +2,7 @@ from servers.script_scanner.scan_methods import experiment
 #from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
 from experiment.pulser_sequences.MOT_loading import MOT_loading_seq
 from experiment.analog_sequences.MOT_loading_analog import MOT_loading_analog
+from experiment.analog_sequences.MOT_clock_analog import MOT_clock_analog
 
 from labrad.units import WithUnit
 import labrad
@@ -36,6 +37,7 @@ class MOT_loading(experiment):
     pulse_sequence = MOT_loading_seq
     ## define which analog sequence to use
     analog_sequence = MOT_loading_analog
+    #analog_sequence = MOT_clock_analog
 
     
     @classmethod

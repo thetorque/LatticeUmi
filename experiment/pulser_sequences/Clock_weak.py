@@ -68,10 +68,15 @@ class Clock_weak(pulse_sequence):
         SP1 = p.Clock.SP1_duration
         SP2 = p.Clock.SP2_duration
         if SP1 > WithUnit(0.1,'us'):
-            self.addTTL('SP1', loading_time + time_before_clock/2, SP1)
+            print SP1
+            self.addTTL('SP1', loading_time, time_before_clock)
+            self.addDDS('SMALL_MOT',   loading_time + time_before_clock/2.0, SP1, MOT_freq, detection_power)
         if SP2 > WithUnit(0.1,'us'):
-            self.addTTL('SP2', loading_time + time_before_clock/2, SP2)
+            print SP2
+            self.addTTL('SP2', loading_time, time_before_clock)
+            self.addDDS('SMALL_MOT',   loading_time + time_before_clock/2.0, SP2, MOT_freq, detection_power)
         self.addTTL('sMOT_PROBE_SPIN', loading_time, time_before_clock)
+        
         
         ### detection
             
@@ -79,7 +84,7 @@ class Clock_weak(pulse_sequence):
         self.addDDS('BIG_MOT',   loading_time, WithUnit(150,'ms')+wait_time, MOT_freq, off_power)
         self.addTTL('sMOT_PROBE', loading_time+wait_time-WithUnit(5,'ms'), WithUnit(150,'ms'))
         self.addTTL('sMOT_PROBE_SPIN', loading_time+wait_time-WithUnit(5,'ms'), WithUnit(150,'ms'))
-        self.addDDS('SMALL_MOT',   loading_time+wait_time,                    WithUnit(40,'ms'), MOT_freq, detection_power)
+        self.addDDS('SMALL_MOT',   loading_time+wait_time, WithUnit(40,'ms'), MOT_freq, detection_power)
         self.addTTL('405_ECDL', loading_time+wait_time+WithUnit(40,'ms'),WithUnit(10,'ms'))
         self.addDDS('SMALL_MOT',   loading_time+wait_time+WithUnit(50,'ms'),  WithUnit(40,'ms'), MOT_freq, detection_power)
         self.addDDS('SMALL_MOT',   loading_time+wait_time+WithUnit(100,'ms'), WithUnit(40,'ms'), MOT_freq, detection_power)

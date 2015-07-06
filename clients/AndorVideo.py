@@ -58,17 +58,17 @@ class AndorVideo(QtGui.QWidget):
         s_image = np.array(image[0])
         self.ccd_view_0.setImage(s_image)
         s_average = np.average(s_image) ## shows only two decimal point
-        self.label_s.setText("Average S: %.2f" % s_average)
+        self.label_s.setText("Average S: %.2f" % s_average, bold=True, size = '18pt')
         
         p_image = np.array(image[1])
         self.ccd_view_1.setImage(p_image)
         p_average = np.average(p_image)
-        self.label_p.setText("Average P: %.2f" % p_average)
+        self.label_p.setText("Average P: %.2f" % p_average, bold=True, size = '18pt')
         
         bg_image = np.array(image[2])
         self.ccd_view_2.setImage(bg_image)
         bg_average = np.average(bg_image)
-        self.label_bg.setText("Average BG: %.2f" % bg_average)
+        self.label_bg.setText("Average BG: %.2f" % bg_average, bold=True, size = '18pt')
         
         self.img_view.setImage(np.array(image_main))
         self.img_view.setPos(pos[0],pos[1])

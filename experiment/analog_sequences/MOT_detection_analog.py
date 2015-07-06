@@ -86,8 +86,10 @@ class MOT_detection_analog(analog_sequence):
         
         
         
-        self.addAnalog(6, self.start-WithUnit(0.1,'ms'), 0.0)
-        self.addAnalog(6, self.end, 0.0)
+        self.addAnalog(6, self.start+WithUnit(1.0,'ms'), -1.3)
+        self.addAnalog(6, self.end-WithUnit(6.0,'ms'), -1.3)
+        self.addAnalog(6, self.end-WithUnit(3.0,'ms'), -0.8)
+        self.addAnalog(6, self.end, -0.8)
         
         self.addAnalog(7, self.start-WithUnit(0.1,'ms'), 10.0)
         self.addAnalog(7, self.end, 10.0)
