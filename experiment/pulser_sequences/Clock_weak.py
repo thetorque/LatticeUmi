@@ -56,6 +56,9 @@ class Clock_weak(pulse_sequence):
         ##clock laser
         ## for convenience, we offset the clock frequency by about 196 MHz
         clock_freq = p.Clock.Clock_freq + p.Clock.Clock_offset_freq
+        print p.Clock.Clock_freq
+        print p.Clock.Clock_offset_freq
+        print clock_freq
         
         clock_duration = p.Clock.clock_duration
         time_before_clock = p.Clock.time_before_clock

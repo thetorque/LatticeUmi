@@ -1,6 +1,7 @@
 from servers.script_scanner.scan_methods import experiment
 #from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
-from experiment.pulser_sequences.Clock_weak import Clock_weak
+from experiment.pulser_sequences.MOT_loading import MOT_loading_seq
+from experiment.analog_sequences.MOT_loading_analog import MOT_loading_analog
 from experiment.analog_sequences.MOT_clock_analog import MOT_clock_analog
 
 from labrad.units import WithUnit
@@ -13,12 +14,12 @@ from datetime import datetime
 Template for the experiment. By Hong.
 '''
 '''
-This experiment implement a single excitation of the clock laser with the weak laser configuration (includes Doppler noise cancellation)
+This experiment implement a scan of a clock weak experiment
 '''    
        
-class Clock_weak(experiment):
+class MOT_loading(experiment):
     ##name of the experiment to be shown in the scriptscanner
-    name = 'Clock weak'  
+    name = 'MOT loading'  
     ## list required parameters for this experiment
     experiment_required_parameters = [('CCD_settings','exposure_time'),
                                       ('CCD_settings','EMCCD_gain'),
@@ -33,9 +34,10 @@ class Clock_weak(experiment):
                                       ('CCD_settings','y_max_cropped'),
                                       ]
     ## define which pulse sequence to use
-    pulse_sequence = Clock_weak
+    pulse_sequence = MOT_loading_seq
     ## define which analog sequence to use
-    analog_sequence = MOT_clock_analog
+    analog_sequence = MOT_loading_analog
+    #analog_sequence = MOT_clock_analog
 
     
     @classmethod
@@ -89,12 +91,11 @@ class Clock_weak(experiment):
         self.camera.set_trigger_mode('External')
         
     def setup_data_vault(self):
-        ### save the MOT population data to MOT loading dataset
         localtime = time.localtime()
         self.datasetNameAppend = time.strftime("%Y%b%d_%H",localtime)
         dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H", localtime)]
         self.save_directory = ['','Experiments']
-        self.save_directory.extend(['MOT loading'])
+        self.save_directory.extend([self.name])
         self.save_directory.extend(dirappend)
         self.dv.cd(self.save_directory ,True, context = self.readout_save_context)
         
@@ -113,14 +114,14 @@ class Clock_weak(experiment):
             self.dv.add_parameter('Window', ['MOT population'], context = self.readout_save_context)     
             ## open the graph once the data set is created
             self.dv.add_parameter('plotLive', True, context = self.readout_save_context)     
-
+        
     def plot_current_sequence(self, cxn):
         from servers.pulser.pulse_sequences.plot_sequence import SequencePlotter
         dds = cxn.pulser.human_readable_dds()
         ttl = cxn.pulser.human_readable_ttl()
         channels = cxn.pulser.get_channels().asarray
         sp = SequencePlotter(ttl.asarray, dds.aslist, channels)
-        sp.makePlot()  
+        sp.makePlot()    
         
     def initSequence(self):
         ## setup pulse sequence and program
@@ -149,13 +150,13 @@ class Clock_weak(experiment):
         self.pulser.start_number(1)
         self.pulser.wait_sequence_done()
         self.pulser.stop_sequence()
-        self.NI_analog.stop_voltage_pattern()    
+        self.NI_analog.stop_voltage_pattern()
+        
         
     def run(self, cxn, context):
         '''
         main experiment running method
         '''
-        
         
         self.initSequence()
         
@@ -172,16 +173,16 @@ class Clock_weak(experiment):
         
         #### stop analog pattern
         
+        
         Atom_number_data = self.perform_readout(cxn, context)
         ### wait to see if the camera is missing some pictures
         
         
-        ## save atom number data to DV
+        ## save to DV
         self.dv.add(Atom_number_data, context = self.readout_save_context)
 
         ### return value for this experiment. Used for scanning this script.
-
-        return Atom_number_data[2]/Atom_number_data[3]
+        return Atom_number_data[3]
     
     def perform_readout(self, cxn, context):
         '''
@@ -222,8 +223,12 @@ class Clock_weak(experiment):
         P_state = P_state/0.45
         
         return numpy.array([self.start_time,S_state,P_state,S_state+P_state])
+        
     
     def cropImage(self, images):
+        '''
+        crop image according to the parameter crop. This will reduce noise from the region of the camera picture without meaningful data.
+        '''
         ### crop image
         
         x_min_index = numpy.floor((self.parameters['CCD_settings.x_min_cropped'] - self.parameters['CCD_settings.x_min'])/self.parameters['CCD_settings.binning'])
@@ -232,6 +237,9 @@ class Clock_weak(experiment):
         y_max_index = numpy.floor((self.parameters['CCD_settings.y_max_cropped'] - self.parameters['CCD_settings.y_min'])/self.parameters['CCD_settings.binning'])
         
         if (x_min_index < 0) or (y_min_index < 0) or (x_max_index > (self.x_pixels-1)) or (y_max_index > (self.y_pixels-1)):
+            '''
+            if the cropping region is not good (too big), then just do not do any cropping
+            '''
             x_min_index = 0
             y_min_index = 0
             x_max_index = self.x_pixels-1
@@ -245,14 +253,13 @@ class Clock_weak(experiment):
         ### save parameter to also datavault data set
         d = dict(self.parameters)
         for name in d.keys():
-            #print name, d[name]
             self.dv.add_parameter_over_write(name,d[name], context = self.readout_save_context)
-        #self.camera.start_live_display()
+
 
 
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = Clock_weak(cxn = cxn)
+    exprt = MOT_loading(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

@@ -96,7 +96,7 @@ class Clock_spectrum(experiment):
         self.datasetNameAppend = time.strftime("%Y%b%d_%H",localtime)
         dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H", localtime)]
         self.save_directory = ['','Experiments']
-        self.save_directory.extend([self.name])
+        self.save_directory.extend(['MOT loading'])
         self.save_directory.extend(dirappend)
         self.dv.cd(self.save_directory ,True, context = self.readout_save_context)
         
