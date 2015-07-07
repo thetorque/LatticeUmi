@@ -1,6 +1,6 @@
 from servers.pulser.pulse_sequences.analog_sequence import analog_sequence
 from experiment.analog_sequences.MOT_detection_analog import MOT_detection_analog
-from experiment.analog_sequences.MOT_spectroscopy_analog import MOT_spectroscopy_analog
+#from experiment.analog_sequences.MOT_spectroscopy_analog import MOT_spectroscopy_analog
 from labrad.units import WithUnit
 from treedict import TreeDict
 
@@ -17,7 +17,7 @@ class MOT_loading_analog(analog_sequence):
                            ('MOT_loading', 'MOT_far_red_freq'),
                            ]
 #     
-    required_subsequences = [MOT_detection_analog, MOT_spectroscopy_analog]
+    required_subsequences = [MOT_detection_analog]
 #     
 #     replaced_parameters = {empty_sequence:[('EmptySequence','empty_sequence_duration')]
 #                            }
@@ -69,7 +69,9 @@ class MOT_loading_analog(analog_sequence):
         
         
         ### lattice
-        self.addAnalog(6, WithUnit(0.0,'ms'), 0.0)
+        self.addAnalog(6, WithUnit(0.0,'ms'), -0.8)
+        self.addAnalog(6, p.MOT_loading.loading_time+p.MOT_loading.wait_time-WithUnit(1.0,'ms'), -0.8)
+
         
         
         self.addAnalog(7, WithUnit(0.0,'ms'), 10.0) ### clock

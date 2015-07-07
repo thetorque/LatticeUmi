@@ -1,7 +1,7 @@
 from servers.script_scanner.scan_methods import experiment
 #from experiment.pulser_sequences.MOT_loading_seq import MOT_loading_seq
 from experiment.pulser_sequences.MOT_loading import MOT_loading_seq
-from experiment.analog_sequences.MOT_loading_analog import MOT_loading_analog
+from experiment.analog_sequences.MOT_clock_analog import MOT_clock_analog
 
 from labrad.units import WithUnit
 import labrad
@@ -13,12 +13,12 @@ from datetime import datetime
 Template for the experiment. By Hong.
 '''
 '''
-This experiment implement simple MOT loading without waiting time between big MOT and detection
+Experiment to check the loading of the lattice
 '''    
        
-class MOT_loading(experiment):
+class Lattice_loading(experiment):
     ##name of the experiment to be shown in the scriptscanner
-    name = 'MOT loading'  
+    name = 'Lattice loading'  
     ## list required parameters for this experiment
     experiment_required_parameters = [('CCD_settings','exposure_time'),
                                       ('CCD_settings','EMCCD_gain'),
@@ -35,8 +35,8 @@ class MOT_loading(experiment):
     ## define which pulse sequence to use
     pulse_sequence = MOT_loading_seq
     ## define which analog sequence to use
-    analog_sequence = MOT_loading_analog
-    #analog_sequence = MOT_clock_analog
+    #analog_sequence = MOT_loading_analog
+    analog_sequence = MOT_clock_analog
 
     
     @classmethod
@@ -48,7 +48,6 @@ class MOT_loading(experiment):
         params = params.union(set(cls.pulse_sequence.all_required_parameters()))
         params = params.union(set(cls.analog_sequence.all_required_parameters()))
         params = list(params)
-        params.remove(('MOT_loading','wait_time'))
         return params
     
     def initialize(self, cxn, context, ident):
@@ -95,7 +94,7 @@ class MOT_loading(experiment):
         self.datasetNameAppend = time.strftime("%Y%b%d_%H",localtime)
         dirappend = [ time.strftime("%Y%b%d",localtime) ,time.strftime("%H", localtime)]
         self.save_directory = ['','Experiments']
-        self.save_directory.extend([self.name])
+        self.save_directory.extend(['MOT loading'])
         self.save_directory.extend(dirappend)
         self.dv.cd(self.save_directory ,True, context = self.readout_save_context)
         
@@ -124,8 +123,6 @@ class MOT_loading(experiment):
         sp.makePlot()    
         
     def initSequence(self, cxn):
-        
-        self.parameters['MOT_loading.wait_time'] = WithUnit(0.0,'ms')
         ## setup pulse sequence and program
         pulse_sequence = self.pulse_sequence(self.parameters)
         pulse_sequence.programSequence(self.pulser)
@@ -262,6 +259,6 @@ class MOT_loading(experiment):
 if __name__ == '__main__':
     cxn = labrad.connect()
     scanner = cxn.scriptscanner
-    exprt = MOT_loading(cxn = cxn)
+    exprt = Lattice_loading(cxn = cxn)
     ident = scanner.register_external_launch(exprt.name)
     exprt.execute(ident)

@@ -12,7 +12,7 @@ from datetime import datetime
 Template for the experiment. By Hong.
 '''
 '''
-This experiment implement a single excitation of the clock laser with the weak laser configuration (includes Doppler noise cancellation)
+This experiment implement scan of the Clock_weak_scan experiment
 '''    
        
 class Clock_weak_scan(experiment):
