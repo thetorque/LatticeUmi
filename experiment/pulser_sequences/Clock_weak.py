@@ -12,6 +12,7 @@ class Clock_weak(pulse_sequence):
                            ('MOT_loading', 'detection_power'),
                            ('MOT_loading', 'wait_time'),
                            ('Clock', 'Clock_freq'),
+                           ('Clock', 'Clock_offset_freq'),
                            ('Clock', 'SP1_duration'),
                            ('Clock', 'SP2_duration'),
                            ('Clock', 'time_before_clock'),
@@ -53,8 +54,9 @@ class Clock_weak(pulse_sequence):
         self.end = loading_time+wait_time + WithUnit(160, 'ms')
         
         ##clock laser
+        ## for convenience, we offset the clock frequency by about 196 MHz
+        clock_freq = p.Clock.Clock_freq + p.Clock.Clock_offset_freq
         
-        clock_freq = p.Clock.Clock_freq
         clock_duration = p.Clock.clock_duration
         time_before_clock = p.Clock.time_before_clock
         ## add the clock interrogation pulse
@@ -71,7 +73,7 @@ class Clock_weak(pulse_sequence):
             print SP1
             self.addTTL('SP1', loading_time, time_before_clock)
             self.addDDS('SMALL_MOT',   loading_time + time_before_clock/2.0, SP1, MOT_freq, detection_power)
-        if SP2 > WithUnit(0.1,'us'):
+        elif SP2 > WithUnit(0.1,'us'):
             print SP2
             self.addTTL('SP2', loading_time, time_before_clock)
             self.addDDS('SMALL_MOT',   loading_time + time_before_clock/2.0, SP2, MOT_freq, detection_power)

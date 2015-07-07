@@ -132,7 +132,7 @@ class Clock_weak(experiment):
         ### setup analog sequence and program
         analog_sequence = self.analog_sequence(self.parameters)
         
-        #analog_sequence.plotPatternArray(self.NI_analog)
+        analog_sequence.plotPatternArray(self.NI_analog)
         
         analog_sequence.programAnalog(self.NI_analog)
         

@@ -16,7 +16,10 @@ class MOT_spectroscopy_analog(analog_sequence):
                            ('Clock', 'B_x_clock'),
                            ('Clock', 'B_y_clock'),
                            ('Clock', 'B_z_clock'),
+                           ('Clock', 'SP1_duration'),
+                           ('Clock', 'SP2_duration'),
                            ('Clock', 'SP1_freq'),
+                           ('Clock', 'SP2_freq'),
                            ]
 #     
     required_subsequences = []
@@ -45,11 +48,17 @@ class MOT_spectroscopy_analog(analog_sequence):
         B_z_det = p.MOT_loading.B_z_det
         
         ## MOT AO frequency is channel 0
+        ## if spin-polarization is selected, then change the frequency to the appropriate one. If not, just go to -0.2
         
-        SP1_freq = p.Clock.SP1_freq
+        if p.Clock.SP1_duration > WithUnit(0.1,'us'):
+            SP_freq = p.Clock.SP1_freq
+        elif p.Clock.SP2_duration > WithUnit(0.1,'us'):
+            SP_freq = p.Clock.SP2_freq
+        else:
+            SP_freq = -0.2
         
-        self.addAnalog(0, self.start+WithUnit(2,'ms'), SP1_freq)
-        self.addAnalog(0, self.end-WithUnit(2,'ms'), SP1_freq)
+        self.addAnalog(0, self.start+WithUnit(2,'ms'), SP_freq)
+        self.addAnalog(0, self.end-WithUnit(2,'ms'), SP_freq)
         
         ### B field
         
