@@ -130,7 +130,8 @@ class Clock_weak_scan(experiment):
             self.parameters['Clock.Clock_freq'] = freq
             ## set parameters of the sub experiment and run
             self.sub_experiment.set_parameters(self.parameters)
-            excitation = self.sub_experiment.run(cxn, context)
+            result = self.sub_experiment.run(cxn, context)
+            excitation = result[0]
             ## make data to be saved to DV
             submission = [freq['kHz']]
             submission.extend([excitation])

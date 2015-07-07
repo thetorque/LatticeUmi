@@ -14,6 +14,7 @@ class config(object):
 #                ('experiment.experiment_scripts.spectrum', 'spectrum'), 
 #                ('experiment.experiment_scripts.spectrum2', 'spectrum'), 
                ('experiment.experiment_scripts.MOT_loading', 'MOT_loading'),
+               ('experiment.experiment_scripts.Clock_stabilization', 'Clock_stabilization'),
                ('experiment.experiment_scripts.Lattice_loading', 'Lattice_loading'),
                ('experiment.experiment_scripts.quick_MOT', 'quick_MOT'),
                ('experiment.experiment_scripts.Clock_weak_scan', 'Clock_weak_scan'),

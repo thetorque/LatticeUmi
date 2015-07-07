@@ -87,6 +87,7 @@ class saved_frequencies_table(QtGui.QTableWidget):
         form = '{' + '0:.{}f'.format(self.sig_figs) + '}' + ' {}'.format( self.suffix)
         for enum,tup in enumerate(info):
             name,val = tup
+            val = val*1000
             val_name = form.format(val)
             try:
                 label = self.cellWidget(enum, 0)

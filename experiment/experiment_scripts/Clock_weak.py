@@ -181,7 +181,7 @@ class Clock_weak(experiment):
 
         ### return value for this experiment. Used for scanning this script.
 
-        return Atom_number_data[2]/Atom_number_data[3]
+        return Atom_number_data[2]/Atom_number_data[3], Atom_number_data[3]
     
     def perform_readout(self, cxn, context):
         '''
