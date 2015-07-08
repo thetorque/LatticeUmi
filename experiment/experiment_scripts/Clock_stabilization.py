@@ -133,17 +133,18 @@ class Clock_stabilization(experiment):
         self.sub_experiment.set_parameters(self.parameters)
         result_2 = self.sub_experiment.run(cxn,context)
         
-        result_1 = (0.32, 500.0)
-        result_2 = (0.29, 500.0)
+        #result_1 = (0.32, 500.0)
+        #result_2 = (0.29, 500.0)
         
         ## calculate correction
         gain = 1.4
         error_signal = freq_step*gain*(result_1[0] - result_2[0])
         #error_signal = error_signal['Hz']
         average_excitation = (result_1[0] + result_2[0])/2.0
+        print error_signal
         
         ## calculate new frequency
-        new_freq_1 = (freq_line_1 + freq_line_2)/2.0 - error_signal
+        new_freq_1 = (freq_line_1 + freq_line_2)/2.0 + error_signal
         
         ## get drift rate
         drift_rate_1 = self.sd.get_fit_parameters('linecenter')[-2]*1000000.0 ## the returning fit parameter is a*x + b
