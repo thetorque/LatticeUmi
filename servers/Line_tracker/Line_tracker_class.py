@@ -36,8 +36,8 @@ class Line(object):
         self.line_center = numpy.append(self.line_center , freq['kHz'])
         ## add to the overall data array
         
-        self.all_line_array = numpy.append(self.line_center , freq['kHz'])
-        self.all_time_array = numpy.append(self.t_measure, t_measure)
+        self.all_line_array = numpy.append(self.all_line_array, freq['kHz'])
+        self.all_time_array = numpy.append(self.all_time_array, t_measure)
         
         #try to save to data vault
         #yield self.save_result_datavault(t_measure, freq['kHz'])
@@ -63,6 +63,25 @@ class Line(object):
         for t, freq in zip(self.t_measure, self.line_center):
             history_line.append((WithUnit(t,'s'), WithUnit(freq, 'kHz')))
         return history_line
+    
+    def get_all_history(self, only_unfitted_points = True):
+        '''
+        return all the lines which are currently active in the fit. Options are to include the currently actively fitted points or not
+        '''
+        history_line = []
+        if only_unfitted_points:
+            index_i = numpy.size(self.t_measure)
+            if index_i == 0: ## if there's no active points fitting, then return everything
+                for t, freq in zip(self.all_time_array, self.all_line_array):
+                    history_line.append((WithUnit(t,'s'), WithUnit(freq, 'kHz')))                
+            else:    
+                for t, freq in zip(self.all_time_array[0:-index_i], self.all_line_array[0:-index_i]):
+                    history_line.append((WithUnit(t,'s'), WithUnit(freq, 'kHz')))
+        else:
+            for t, freq in zip(self.all_time_array, self.all_line_array):
+                history_line.append((WithUnit(t,'s'), WithUnit(freq, 'kHz')))
+        
+        return history_line
         
     def do_fit(self):
         '''
@@ -87,5 +106,6 @@ class Line(object):
         '''
         current_time = time.time() - self.start_time
         keep_line_center = numpy.where( (current_time - self.t_measure) < self.keep_line_measurements)
+        print "time is ", self.keep_line_measurements
         self.t_measure = self.t_measure[keep_line_center]
         self.line_center = self.line_center[keep_line_center]

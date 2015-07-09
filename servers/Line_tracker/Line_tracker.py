@@ -17,17 +17,17 @@ timeout = 5
 from labrad.server import setting, LabradServer, Signal
 from labrad.units import WithUnit
 from twisted.internet.defer import returnValue, inlineCallbacks
-import time
 from Line_tracker_config import config as conf
-from Line_calculator import Transitions_Hg, fitter
-import numpy
 from Line_tracker_class import Line
+import time
+import numpy
+
 
 class LineTracker(LabradServer):
-    """Provides ability to track drifts of the SD line"""
+    """Provides ability to track drifts of the multiple lines"""
     name = 'Line Tracker'
     
-    onNewFit = Signal( 768120, 'signal: new fit', '' )
+    onNewFit = Signal( 768121, 'signal: new fit', '' )
     
     @inlineCallbacks
     def initServer(self):
@@ -38,7 +38,12 @@ class LineTracker(LabradServer):
         self.dv_save_context = [] ## array to keep track of all the save context
 
         yield self.setupListeners()
-    
+        
+        default_channel_number = 4
+        for i in range(default_channel_number):
+            print i
+            self.add_tracker(0)
+        
 
     
     @inlineCallbacks
@@ -107,6 +112,7 @@ class LineTracker(LabradServer):
             self.save_result_datavault(t_measure, freq, tracker_number)
             ## fit
             tracker.do_fit()
+            self.onNewFit(None)
         except IndexError:
             raise Exception("Tracker out of range.")
         
@@ -168,11 +174,12 @@ class LineTracker(LabradServer):
             tracker = self.Line_tracker[tracker_id] # access the correct tracker
         except IndexError:
             raise Exception("Tracker out of range.")
-
+        
         try:
             tracker.t_measure = numpy.delete(tracker.t_measure, point)
             tracker.line_center = numpy.delete(tracker.line_center, point)
             tracker.do_fit()
+            self.onNewFit(None)
         except ValueError or IndexError:
             raise Exception("Point not found")
 
@@ -192,7 +199,7 @@ class LineTracker(LabradServer):
     
         
     @setting(7, 'History Duration', tracker_number = 'i', duration = 'v[s]', returns = 'v[s]')
-    def get_history_duration(self, c, tracker_number = 1, duration = None):
+    def history_duration(self, c, tracker_number = 1, duration = None):
         '''
         Set the duration in the history for points participate in the fit
         '''
@@ -206,6 +213,26 @@ class LineTracker(LabradServer):
             tracker.keep_line_measurements = duration['s']
             tracker.remove_old_measurements()
         return WithUnit(tracker.keep_line_measurements,'s')
+    
+    @setting(8, 'Get All History', tracker_number = 'i', returns = '*(v[s]v[kHz])')
+    def get_all_history(self, c, tracker_number = 1):
+        '''
+        Return all points participating in the fit
+        '''
+        tracker_id = tracker_number - 1
+        try:
+            tracker = self.Line_tracker[tracker_id] # access the correct tracker
+        except IndexError:
+            raise Exception("Tracker out of range.")
+        
+        return tracker.get_all_history()
+    
+    @setting(9, 'Get Tracker Number', returns = 'i')
+    def get_tracker_number(self, c):
+        '''
+        Return the number of tracker initialized
+        '''
+        return self.numbers_of_tracker
 
 if __name__ == '__main__':
     from labrad import util

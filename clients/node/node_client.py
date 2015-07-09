@@ -18,6 +18,7 @@ nodeDict = {
                 'NI Analog Server',
                 #'NormalPMTFlow',
                 'SD Tracker',
+                'Line Tracker',
                 'ScriptScanner',
                 'ParameterVault',
                 'Pulser'],

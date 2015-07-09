@@ -5,7 +5,7 @@ class config(object):
     
     fit_order = 1 #order of polynomial for fitting
     
-    keep_line_measurements = 24 * 3600
+    keep_line_measurements = 120
     
     #data vault saving configuration
     save_folder = ['', 'Line_Tracking']

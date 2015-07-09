@@ -32,15 +32,24 @@ class LATTICE_GUI(QtGui.QMainWindow):
         andor_video = AndorVideo(reactor, cxn)
         #andor_video.show()        
         
+
+        line_tracker_widget = self.make_line_tracker_widet(reactor, cxn)
+        
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(andor_video,'&Camera')
         self.tabWidget.addTab(contrl_widget,'&Control')
+        self.tabWidget.addTab(line_tracker_widget,'&Line Tracker')
         
         #self.tabWidget.addTab(histogram, '&Readout Histogram')
         self.tabWidget.addTab(drift_tracker, '&Clock Drift Tracker')
         layout.addWidget(self.tabWidget)
         centralWidget.setLayout(layout)
         self.setCentralWidget(centralWidget)
+        
+    def make_line_tracker_widet(self, reactor, cxn):
+        from clients.line_tracker.line_tracker import line_tracker
+        widget = line_tracker(reactor, cxn = cxn, clipboard = self.clipboard)
+        return widget
     
     def make_drift_tracker_widget(self, reactor, cxn):
         from clients.drift_tracker.drift_tracker import drift_tracker
