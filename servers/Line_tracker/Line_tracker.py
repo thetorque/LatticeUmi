@@ -32,39 +32,32 @@ class LineTracker(LabradServer):
     @inlineCallbacks
     def initServer(self):
         self.start_time = time.time() ## start time upon initialization of the server
-#         self.keep_line_center_measurements = conf.keep_line_center_measurements
-#         self.keep_B_measurements = conf.keep_B_measurements
-#         self.tr = Transitions_SD()
-#         self.fitter = fitter()
-#         self.t_measure_line_center = numpy.array([])
-#         self.t_measure_B = numpy.array([])
-#         self.B_field = numpy.array([])
-#         self.line_center = numpy.array([])
-#         self.B_fit = None
-#         self.line_center_fit = None
-#         self.dv = None
+
         self.numbers_of_tracker = 0
         self.Line_tracker = [] ## array to keep track of all the line tracker object
         self.dv_save_context = [] ## array to keep track of all the save context
-#         yield self.connect_data_vault()
+
         yield self.setupListeners()
     
 
     
     @inlineCallbacks
     def setup_dv_dataset(self, number_of_tracker):
+        '''
+        create a new session in DV for each tracker initiated.
+        '''
         try:
             context_ID = number_of_tracker
             
             self.dv = yield self.client.data_vault
             directory = list(conf.save_folder)
-            localtime = time.localtime()
+            localtime = time.localtime(self.start_time)
             dirappend = [time.strftime("%Y%b%d",localtime), time.strftime("%H%M_%S", localtime)]
             directory.extend(dirappend)
             yield self.dv.cd(directory, True, context = (0, context_ID))
             
             dataset_name = str(number_of_tracker)
-
+            print "data set number is ", context_ID
             yield self.dv.new(dataset_name, [('t', 'sec')], [('Line Center','Line Center','kHz')], context = (0, context_ID))
             yield self.dv.add_parameter('start_time', self.start_time, context = (0, context_ID))
         except AttributeError:
@@ -100,151 +93,119 @@ class LineTracker(LabradServer):
         self.setup_dv_dataset(self.numbers_of_tracker)
     
         
-    @setting(2, 'Set Measurement', freq = 'v[kHz]', time_offset = 'v', tracker_number = 'i', returns = '') ## input tracker number start from 1
-    def set_measurement(self, c, freq, time_offset = 0.0, tracker_number = 1):
-        '''set_measurement to the corresponding tracker'''
+    @setting(2, 'Set Measurement', freq = 'v[kHz]', tracker_number = 'i', time_offset = 'v', returns = '') ## input tracker number start from 1
+    def set_measurement(self, c, freq, tracker_number = 1, time_offset = 0.0):
+        '''set_measurement to the corresponding tracker. tracker_number by default is 1 and we start counting from 1 for this.'''
+        #print freq
         tracker_id = tracker_number - 1
-        tracker = self.Line_tracker[tracker_id]
-        tracker.set_measurement(freq)
-        t_measure = time.time() - self.start_time
-        self.save_result_datavault(t_measure, freq, tracker_number)
+        try:
+            tracker = self.Line_tracker[tracker_id] # access the correct tracker
+            tracker.set_measurement(freq) # set freq
+            t_measure = time.time() - self.start_time
+            t_measure = t_measure + time_offset
+        
+            self.save_result_datavault(t_measure, freq, tracker_number)
+            ## fit
+            tracker.do_fit()
+        except IndexError:
+            raise Exception("Tracker out of range.")
+        
+        
+
         
     @inlineCallbacks
     def save_result_datavault(self, t_measure, freq, tracker_number):
         try:
-            yield self.dv.add((t_measure, freq), context = (0, tracker_number))
+            print "track number is ", tracker_number
+            yield self.dv.add([t_measure, freq['kHz']] , context = (0, tracker_number))
         except AttributeError:
             print 'Data Vault Not Available, not saving'
             yield None
             
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-    
-    @setting(4, "Get Fit Parameters", name = 's', returns = '*v')
-    def get_fit_parameters(self, c, name):
-        '''returns the parameters for the latest fit, name can be linecenter or bfield'''
-        if name == 'linecenter':
-            fit = self.line_center_fit
-        elif name =='bfield':
-            fit = self.B_fit
-        else:
-            raise Exception("Provided name not found")
+    @setting(3, "Get Fit Parameters", tracker_number = 'i', returns = '*v')
+    def get_fit_parameters(self, c, tracker_number = 1):
+        '''returns the parameters for the latest fit for a given tracker'''
+        tracker_id = tracker_number - 1
+        try:
+            tracker = self.Line_tracker[tracker_id] # access the correct tracker
+            fit = tracker.line_fit
+        except IndexError:
+            raise Exception("Tracker out of range.")
+        
+        
         if fit is not None:
             return fit
         else:
-            raise Exception("Fit has not been calculated")
+            raise Exception("Fit has not been calculated")                
+
     
-    @setting(5, "Get Current Lines", time_offset = 'v', returns = '*(sv[MHz])')
-    def get_current_lines(self, c, time_offset = 0.0):
-        '''get the frequency of the current line specified by name. if name is not provided, get all lines'''
-        lines = []
+    @setting(4, "Get Current Line", tracker_number = 'i', time_offset = 'v', returns = 'v[kHz]')
+    def get_current_line(self, c, tracker_number = 1, time_offset = 0.0):
+        '''get the current line prediction for a given tracker number'''
+        
+        tracker_id = tracker_number - 1
+        try:
+            tracker = self.Line_tracker[tracker_id] # access the correct tracker
+        except IndexError:
+            raise Exception("Tracker out of range.")
+        
         current_time = time.time() - self.start_time
         ## add additional offset to predict frequency in the future
         current_time = current_time + time_offset
+        
         try:
-            B = self.fitter.evaluate(current_time, self.B_fit)
-            center = self.fitter.evaluate(current_time, self.line_center_fit)
+            freq = tracker.fitter.evaluate(current_time, tracker.line_fit)
         except TypeError:
             raise Exception ("Fit is not available")
-        B = WithUnit(B, 'gauss')
-        center = WithUnit(center, 'MHz')
-        result = self.tr.get_transition_energies(B, center)
-        for name,freq in result:
-            lines.append((name, freq))
-        return lines
-    
-    @setting(6, "Get Current Line", name = 's', time_offset = 'v', returns = 'v[MHz]')
-    def get_current_line(self, c, name, time_offset = 0.0):
-        lines = yield self.get_current_lines(c, time_offset)
-        d = dict(lines)
+        freq = WithUnit(freq, 'kHz')
+        return freq
+
+    @setting(5, 'Remove Measurement', tracker_number = 'i', point = 'i')
+    def remove_measurement(self, c, tracker_number = 1, point = 0):
+        '''removes the point w, can also be negative to count from the end'''
+        tracker_id = tracker_number - 1
         try:
-            returnValue(d[name])
-        except KeyError:
-            raise Exception ("Requested line not found")
-    
-    @setting(7, "Get Current B", time_offset = 'v', returns = 'v[gauss]')
-    def get_current_b(self, c, time_offset = 0.0):
-        current_time = time.time() - self.start_time
-        current_time = current_time + time_offset
-        B = self.fitter.evaluate(current_time, self.B_fit)
-        B = WithUnit(B, 'gauss')
-        return B
-        #returnValue(B)
+            tracker = self.Line_tracker[tracker_id] # access the correct tracker
+        except IndexError:
+            raise Exception("Tracker out of range.")
+
+        try:
+            tracker.t_measure = numpy.delete(tracker.t_measure, point)
+            tracker.line_center = numpy.delete(tracker.line_center, point)
+            tracker.do_fit()
+        except ValueError or IndexError:
+            raise Exception("Point not found")
+
+
+    @setting(6, 'Get Fit History', tracker_number = 'i', returns = '*(v[s]v[kHz])')
+    def get_fit_history(self, c, tracker_number = 1):
+        '''
+        Return all points participating in the fit
+        '''
+        tracker_id = tracker_number - 1
+        try:
+            tracker = self.Line_tracker[tracker_id] # access the correct tracker
+        except IndexError:
+            raise Exception("Tracker out of range.")
         
-    @setting(13, "Get Current Center", time_offset = 'v', returns = 'v[MHz]')
-    def get_current_center(self, c, time_offset = 0.0):
-        current_time = time.time() - self.start_time
-        current_time = current_time + time_offset
-        center = self.fitter.evaluate(current_time, self.line_center_fit)
-        center = WithUnit(center, 'MHz')
-        return center
-        #returnValue(center)
+        return tracker.get_fit_history()
     
-    @setting(10, 'Remove B Measurement', point = 'i')
-    def remove_B_measurement(self, c, point):
-        '''removes the point w, can also be negative to count from the end'''
+        
+    @setting(7, 'History Duration', tracker_number = 'i', duration = 'v[s]', returns = 'v[s]')
+    def get_history_duration(self, c, tracker_number = 1, duration = None):
+        '''
+        Set the duration in the history for points participate in the fit
+        '''
+        tracker_id = tracker_number - 1
         try:
-            self.t_measure_B = numpy.delete(self.t_measure_B, point)
-            self.B_field = numpy.delete(self.B_field, point)
-        except ValueError or IndexError:
-            raise Exception("Point not found")
-        self.do_fit()
-
-    @setting(11, 'Remove Line Center Measurement', point = 'i')
-    def remove_line_center_measurement(self, c, point):
-        '''removes the point w, can also be negative to count from the end'''
-        try:
-            self.t_measure_line_center = numpy.delete(self.t_measure_line_center, point)
-            self.line_center = numpy.delete(self.line_center, point)
-        except ValueError or IndexError:
-            raise Exception("Point not found")
-        self.do_fit()
-
-    @setting(8, 'Get Fit History', returns = '(*(v[s]v[gauss]) *(v[s]v[MHz]))')
-    def get_fit_history(self, c):
-        history_B = []
-        history_line_center = []
-        for t,b_field in zip(self.t_measure_B, self.B_field):
-            history_B.append((WithUnit(t,'s'),WithUnit(b_field,'gauss')))
-        for t, freq in zip(self.t_measure_line_center, self.line_center):
-            history_line_center.append((WithUnit(t,'s'), WithUnit(freq, 'MHz')))
-        return [history_B, history_line_center]
-    
-    @setting(9, 'History Duration', duration = '*v[s]', returns = '*v[s]')
-    def get_history_duration(self, c, duration = None):
+            tracker = self.Line_tracker[tracker_id] # access the correct tracker
+        except IndexError:
+            raise Exception("Tracker out of range.")
+        
         if duration is not None:
-            self.keep_B_measurements = duration[0]['s']
-            self.keep_line_center_measurements = duration[1]['s']
-        return [ WithUnit(self.keep_B_measurements,'s'), WithUnit(self.keep_line_center_measurements, 's') ]
-    
-    def do_fit(self):
-        self.remove_old_measurements()
-        if (len(self.t_measure_B) and len(self.t_measure_line_center)):
-            self.B_fit = self.fitter.fit(self.t_measure_B, self.B_field)
-            self.line_center_fit = self.fitter.fit(self.t_measure_line_center, self.line_center)
-        self.onNewFit(None)
-    
-    def remove_old_measurements(self):
-        current_time = time.time() - self.start_time
-        
-        keep_line_center = numpy.where( (current_time - self.t_measure_line_center) < self.keep_line_center_measurements)
-        keep_B = numpy.where( (current_time - self.t_measure_B) < self.keep_B_measurements)
-
-        self.t_measure_line_center = self.t_measure_line_center[keep_line_center]
-        self.t_measure_B = self.t_measure_B[keep_B]
-        self.B_field = self.B_field[keep_B]
-        self.line_center = self.line_center[keep_line_center]
+            tracker.keep_line_measurements = duration['s']
+            tracker.remove_old_measurements()
+        return WithUnit(tracker.keep_line_measurements,'s')
 
 if __name__ == '__main__':
     from labrad import util

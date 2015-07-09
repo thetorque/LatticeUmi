@@ -15,7 +15,7 @@ class Line(object):
     def __init__(self, start_time, tracker_id = 0):
         self.tracker_id = tracker_id # for identification of the Line object in case of multiple tracker being used
         self.start_time = start_time
-        self.keep_line_center_measurements = conf.keep_line_measurements
+        self.keep_line_measurements = conf.keep_line_measurements
         self.tr = Transitions_Hg()
         self.fitter = fitter()
         self.t_measure = numpy.array([]) # Array to keep all the time used for fitting
@@ -86,26 +86,6 @@ class Line(object):
         remove measurement points older than a specified time
         '''
         current_time = time.time() - self.start_time
-        keep_line_center = numpy.where( (current_time - self.t_measure) < self.keep_line_center_measurements)
+        keep_line_center = numpy.where( (current_time - self.t_measure) < self.keep_line_measurements)
         self.t_measure = self.t_measure[keep_line_center]
         self.line_center = self.line_center[keep_line_center]
-
-if __name__ == '__main__':
-    import time
-    start_time = time.time()
-    line1 = Line(start_time)
-    print line1.tracker_id
-    line1.set_measurement(WithUnit(0.1,'kHz'))
-    
-    time.sleep(0.5)
-    line1.set_measurement(WithUnit(0.12,'kHz'))
-    time.sleep(0.5)
-    line1.set_measurement(WithUnit(0.14,'kHz'))
-    print line1.line_fit
-    print line1.t_measure
-    print line1.line_center
-    print line1.get_fit_history()
-    line1.remove_line_measurement(0)
-    print line1.line_fit
-    print line1.t_measure
-    print line1.line_center
