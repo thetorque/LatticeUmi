@@ -52,7 +52,7 @@ class dac_widget(QtGui.QFrame, widget_ui):
         value1 = yield self.server.get_voltage('B_x')
         value2 = yield self.server.get_voltage('B_y')
         value3 = yield self.server.get_voltage('B_z')
-        value4 = yield self.server.get_voltage('MOT')
+        value4 = yield self.server.get_voltage('MOT_coil')
 
         self.doubleSpinBox0.blockSignals(True)
         self.doubleSpinBox0.setValue(value1['V'])
@@ -79,11 +79,11 @@ class dac_widget(QtGui.QFrame, widget_ui):
         self.doubleSpinBox0.valueChanged.connect(lambda: self.setVoltage('B_x'))
         self.doubleSpinBox1.valueChanged.connect(lambda: self.setVoltage('B_y'))
         self.doubleSpinBox2.valueChanged.connect(lambda: self.setVoltage('B_z'))
-        self.doubleSpinBox3.valueChanged.connect(lambda: self.setVoltage('MOT'))
+        self.doubleSpinBox3.valueChanged.connect(lambda: self.setVoltage('MOT_coil'))
         self.label0.setText('B_x')
         self.label1.setText('B_y')
         self.label2.setText('B_z')
-        self.label3.setText('MOT')
+        self.label3.setText('MOT_coil')
         
     @inlineCallbacks
     def setVoltage(self, chan_name):
@@ -103,10 +103,10 @@ class dac_widget(QtGui.QFrame, widget_ui):
                 voltage = self.doubleSpinBox2.value()
                 val = self.types.Value(voltage, 'V')
                 yield self.server.set_voltage('B_z', val, context = self.context)
-            elif chan_name == 'MOT':
+            elif chan_name == 'MOT_coil':
                 voltage = self.doubleSpinBox3.value()
                 val = self.types.Value(voltage, 'V')
-                yield self.server.set_voltage('MOT', val, context = self.context)
+                yield self.server.set_voltage('MOT_coil', val, context = self.context)
             
         except self.Error as e:
             #old_value =  yield self.server.frequency(self.chan, context = self.context)
@@ -134,8 +134,8 @@ class dac_widget(QtGui.QFrame, widget_ui):
             self.doubleSpinBox2.blockSignals(True)
             self.doubleSpinBox2.setValue(param['V'])
             self.doubleSpinBox2.blockSignals(False)
-        elif chan == "MOT":
-            print "MOT just got updated"
+        elif chan == "MOT_coil":
+            print "MOT_coil just got updated"
             self.doubleSpinBox3.blockSignals(True)
             self.doubleSpinBox3.setValue(param['V'])
             self.doubleSpinBox3.blockSignals(False)
