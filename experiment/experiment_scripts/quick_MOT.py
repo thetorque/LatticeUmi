@@ -63,7 +63,7 @@ class quick_MOT(experiment):
         #self.camera_initially_live_display = self.camera.is_live_display_running()
         self.camera.abort_acquisition()
         self.camera.set_exposure_time(WithUnit(10.0,'ms'))
-        self.camera.set_emccd_gain(int(1.0))
+        self.camera.set_emccd_gain(1)
         
         self.binning = int(4.0)
         self.image_region = [

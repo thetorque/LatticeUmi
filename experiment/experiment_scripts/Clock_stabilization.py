@@ -19,6 +19,7 @@ class Clock_stabilization(experiment):
     name = 'Clock stabilization'  
     ## list required parameters for this experiment
     experiment_required_parameters = [('Clock_stab','Half_linewidth'),
+                                      ('Clock_stab','Tracker_number'),
                                       ]
     ## define which pulse sequence to use
     #pulse_sequence = Clock_weak
@@ -50,6 +51,7 @@ class Clock_stabilization(experiment):
         self.dv = cxn.data_vault ## data vault server for saving data
         self.pv = cxn.parametervault ## parameter vault server for loading/saving parameters of the experiment
         self.sd = cxn.sd_tracker ### drifttracker
+        self.tracker = cxn.line_tracker
 
         self.readout_save_context = cxn.context() ## context for saving data
         self.ident = ident
@@ -119,16 +121,26 @@ class Clock_stabilization(experiment):
         '''
         now = datetime.now()
         self.start_time = (now-now.replace(hour=0,minute=0,second=0,microsecond=0)).total_seconds()
+        
+        tracker_channel = int(self.parameters['Clock_stab.Tracker_number'])
+        
         ###
         freq_step = self.parameters['Clock_stab.Half_linewidth']
         ## do the first side of the first line
-        freq_line_1 = self.sd.get_current_line('S+1/2P+1/2') + freq_step
+        #freq_line_1 = self.sd.get_current_line('S+1/2P+1/2') + freq_step
+        freq_line_1 = self.tracker.get_current_line(tracker_channel) + freq_step
+        print freq_line_1
+        
         self.parameters['Clock.Clock_freq'] = freq_line_1
         self.sub_experiment.set_parameters(self.parameters)
         result_1 = self.sub_experiment.run(cxn,context)
 
         ## do the second side of the first line
-        freq_line_2 = self.sd.get_current_line('S+1/2P+1/2') - freq_step
+        #freq_line_2 = self.sd.get_current_line('S+1/2P+1/2') - freq_step
+        
+        freq_line_2 = self.tracker.get_current_line(tracker_channel) - freq_step
+        print freq_line_2
+        
         self.parameters['Clock.Clock_freq'] = freq_line_2
         self.sub_experiment.set_parameters(self.parameters)
         result_2 = self.sub_experiment.run(cxn,context)
@@ -147,7 +159,7 @@ class Clock_stabilization(experiment):
         new_freq_1 = (freq_line_1 + freq_line_2)/2.0 + error_signal
         
         ## get drift rate
-        drift_rate_1 = self.sd.get_fit_parameters('linecenter')[-2]*1000000.0 ## the returning fit parameter is a*x + b
+        drift_rate_1 = self.tracker.get_fit_parameters(tracker_channel)[-2]*1000.0 ## the returning fit parameter is a*x + b
         
         #print drift_rate_1
         
@@ -165,11 +177,14 @@ class Clock_stabilization(experiment):
         
         if is_locked > 0.5: ## if no problem, feed it back to sd_tracker
             #print "submit to tracker"
-            freq_submission = [
-                               ('S+1/2P+1/2', new_freq_1),
-                               ('S-1/2P-1/2',WithUnit(0.0,'Hz'))]
-            print freq_submission
-            self.sd.set_measurements(freq_submission)
+#             freq_submission = [
+#                                ('S+1/2P+1/2', new_freq_1),
+#                                ('S-1/2P-1/2',WithUnit(0.0,'Hz'))]
+            freq_submission = new_freq_1
+            print "submit ", freq_submission
+            self.tracker.set_measurement(freq_submission, tracker_channel)
+        else:
+            print "condition not met"
 
     def finalize(self, cxn, context):
 
