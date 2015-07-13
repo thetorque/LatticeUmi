@@ -81,7 +81,7 @@ class LATTICE_GUI(QtGui.QMainWindow):
         #from PMT_CONTROL import pmtWidget
         from SWITCH_CONTROL import switchWidget
         from DDS_CONTROL import DDS_CONTROL
-        #from common.clients.LINETRIGGER_CONTROL import linetriggerWidget
+        from LINETRIGGER_CONTROL import linetriggerWidget
         #from quick_actions.quick_actions import actions_widget
         #from indicator.indicator import indicator_widget
         #from agilent_E3633A.agilent_E3633A import magnet_Control, oven_Control
@@ -95,8 +95,9 @@ class LATTICE_GUI(QtGui.QMainWindow):
         #gridLayout.addWidget(multiplexerWidget(reactor),        0,4,3,1)
         gridLayout.addWidget(switchWidget(reactor, cxn),        0,0)
         #gridLayout.addWidget(pmtWidget(reactor),                3,2,1,1)
-        #gridLayout.addWidget(linetriggerWidget(reactor, cxn),   3,3,1,1)
+        
         gridLayout.addWidget(DDS_CONTROL(reactor, cxn),         1,0)
+        gridLayout.addWidget(linetriggerWidget(reactor, cxn),   2,0)
         widget.setLayout(gridLayout)
         return widget
 
