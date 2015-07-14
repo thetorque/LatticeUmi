@@ -126,6 +126,9 @@ class Clock_stabilization(experiment):
         
         ###
         freq_step = self.parameters['Clock_stab.Half_linewidth']
+        
+        ###freq_step = 0.89/self.parameters['Clock.clock_duration'] ## calculate frequency setp directly from the clock_duration
+        
         ## do the first side of the first line
         #freq_line_1 = self.sd.get_current_line('S+1/2P+1/2') + freq_step
         freq_line_1 = self.tracker.get_current_line(tracker_channel) + freq_step

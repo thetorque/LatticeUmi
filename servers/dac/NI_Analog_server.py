@@ -200,7 +200,7 @@ class NI_Analog_Server(LabradServer):
     @inlineCallbacks
     def stopServer(self):
         '''save the latest voltage information into registry'''
-        ## set zero all channels #
+        ## set zero all channels when closing the server#
         for name,channel in self.d.iteritems():
             self.setVoltage(1, name, WithUnit(0.0,'V'))
 
