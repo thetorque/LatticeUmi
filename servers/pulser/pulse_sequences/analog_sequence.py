@@ -1,4 +1,6 @@
 from analog_sequences_config import analog_name_dictionary as analog_config
+from ni_AO_plotter import AO_plotter
+from servers.dac.api_dac import api_dac
 from labrad.units import WithUnit
 from treedict import TreeDict
 import numpy as np
@@ -83,10 +85,18 @@ class analog_sequence(object):
 		self.end = max(self.end, seq.end)
 	
 	def programAnalog(self, analog_server):
+		
 		pattern = self.convert_sequence(self._analog_pulses)
-		print "program Analog"
-		waveform = analog_server.set_voltage_pattern(pattern,True,100000)
+		#print "program Analog"
+		waveform = analog_server.set_voltage_pattern(pattern,True,100000.0)
 		return waveform
+	
+	
+ 	def plotPatternArray(self, analog_server):
+ 		#print self._analog_pulses
+ 		pattern = self.convert_sequence(self._analog_pulses)
+ 		waveform = api_dac.calculateVoltagePattern(pattern,True,100000.0)
+ 		AO_plotter(waveform)
 		
 	def convert_sequence(self, sequence_data):
 		'''
@@ -132,16 +142,16 @@ class analog_sequence(object):
 		channel_6 = np.delete(channel_6,0,1)
 		channel_7 = np.delete(channel_7,0,1)
 		
-		print channel_0
+		#print channel_2
+		
+		#print channel_0
 		
 		
 		time = reduce(np.union1d,(channel_0[0],channel_1[0],channel_2[0],channel_3[0],channel_4[0],channel_5[0],channel_6[0],channel_7[0]))
 		#print time
 		total_data = time
 		
-		#print channel_0
-		
- 		for channel, data in [(0, channel_0),
+		for channel, data in [(0, channel_0),
  		                      (1, channel_1),
  		                      (2, channel_2),
  		                      (3, channel_3),
@@ -150,31 +160,17 @@ class analog_sequence(object):
  		                      (6, channel_6),
  		                      (7, channel_7),
  		                       ]:
- 			voltage_array = data[1]
- 			time_array = data[0]
- 			ch = np.ones_like(time)
- 			ch[0] = voltage_array[0] ## initialize first element
- 
- 			index = np.searchsorted(time_array,time, side='left')
- 			for i in range(np.size(index)-1):
- 				i = i+1
- 				slope = (voltage_array[index[i]]-voltage_array[index[i]-1])/(time_array[index[i]]-time_array[index[i]-1])
- 				ch[i] = ch[i-1]+slope*(time[i]-time[i-1])
- 			total_data = np.vstack((total_data,ch))
- 
- 		pattern = total_data
- 		return pattern
+			voltage_array = data[1]
+			time_array = data[0]
+			ch = np.ones_like(time)
+			ch[0] = voltage_array[0] ## initialize first element
+			index = np.searchsorted(time_array,time, side='left')
+			for i in range(np.size(index)-1):
+				i = i+1
+				slope = (voltage_array[index[i]]-voltage_array[index[i]-1])/(time_array[index[i]]-time_array[index[i]-1])
+				ch[i] = ch[i-1]+slope*(time[i]-time[i-1])
+			#print ch
+			total_data = np.vstack((total_data,ch))
+		pattern = total_data
+		return pattern
 		
-		### create common-time array
-		
-		
-		
-		
-		
-		
-		#print self._analog_pulses
-		
-# 		pulser.new_sequence()
-# 		pulser.add_ttl_pulses(self._ttl_pulses)
-# 		pulser.add_dds_pulses(self._dds_pulses)
-# 		pulser.program_sequence()

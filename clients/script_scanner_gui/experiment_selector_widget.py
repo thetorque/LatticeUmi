@@ -166,7 +166,7 @@ class repeat_dialog(QtGui.QDialog):
         self.repeat.setRange(1, 10000)
         save_label = QtGui.QLabel("Save Data")
         self.should_save = QtGui.QCheckBox()
-        self.should_save.setChecked(True)
+        self.should_save.setChecked(False)
         self.okay_button = QtGui.QPushButton('Okay')
         self.cancel_button = QtGui.QPushButton("Cancel")
         layout.addWidget(rep_label)
@@ -222,6 +222,7 @@ class experiment_selector_widget(QtGui.QWidget):
     
     on_run = QtCore.pyqtSignal(str)
     on_repeat = QtCore.pyqtSignal(str, int, bool)
+    on_loop = QtCore.pyqtSignal(str, int, bool)
     on_schedule = QtCore.pyqtSignal(str, float, str, bool)
     on_experiment_selected = QtCore.pyqtSignal(str)
     on_scan = QtCore.pyqtSignal(str, str, tuple, float, float, int, str)
@@ -251,14 +252,16 @@ class experiment_selector_widget(QtGui.QWidget):
         self.dropdown.setModel(sorting_model)
         self.run_button = QtGui.QPushButton("Run")
         self.repeat_button = QtGui.QPushButton("Repeat")
+        self.loop_button = QtGui.QPushButton("Loop")  ### add by Hong to have perpetual looping of the experiment
         self.scan_button = QtGui.QPushButton("Scan")
         self.schedule_button = QtGui.QPushButton("Schedule")
         layout.addWidget(label, 0, 0, 1 , 1)
-        layout.addWidget(self.dropdown, 0, 1, 1, 3)
+        layout.addWidget(self.dropdown, 0, 1, 1, 4)
         layout.addWidget(self.run_button, 1, 0, 1, 1)
         layout.addWidget(self.repeat_button, 1, 1, 1, 1)
         layout.addWidget(self.scan_button, 1, 2, 1, 1,)
         layout.addWidget(self.schedule_button, 1, 3, 1, 1)
+        layout.addWidget(self.loop_button, 1, 4, 1, 1)
         self.setLayout(layout)
         self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
         self.check_button_disable(self.dropdown.currentText())
@@ -273,15 +276,16 @@ class experiment_selector_widget(QtGui.QWidget):
         self.repeat_button.pressed.connect(self.on_repeat_button)
         self.schedule_button.pressed.connect(self.on_schedule_button)
         self.scan_button.pressed.connect(self.on_scan_button)
+        self.loop_button.pressed.connect(self.on_loop_button)
         self.dropdown.currentIndexChanged[QtCore.QString].connect(self.on_experiment_selected)
         self.dropdown.currentIndexChanged[QtCore.QString].connect(self.check_button_disable)
     
     def check_button_disable(self, selection):
         if not selection:
-            for button in [self.run_button, self.repeat_button, self.schedule_button, self.scan_button]:
+            for button in [self.run_button, self.repeat_button, self.schedule_button, self.scan_button, self.loop_button]:
                 button.setDisabled(True)
         else:
-            for button in [self.run_button, self.repeat_button, self.schedule_button, self.scan_button]:
+            for button in [self.run_button, self.repeat_button, self.schedule_button, self.scan_button, self.loop_button]:
                 button.setDisabled(False)
         
     def on_schedule_button(self):
@@ -292,6 +296,11 @@ class experiment_selector_widget(QtGui.QWidget):
             priority = dialog.priority.currentText()
             run_now = dialog.start_immediately.isChecked()
             self.on_schedule.emit(name, duration, priority, run_now)
+    
+    ###        
+    def on_loop_button(self):
+        name = self.dropdown.currentText()
+        self.on_loop.emit(name,999999,False)
     
     def on_repeat_button(self):
         dialog = repeat_dialog()

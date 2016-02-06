@@ -19,6 +19,7 @@ nodeDict = {
                 'NormalPMTFlow',
                 'SD Tracker',
                 'ScriptScanner',
+                'Line Tracker',
                 'ParameterVault',
                 'Pulser'],
     }

@@ -50,7 +50,8 @@ class hardwareConfiguration(object):
     collectionMode = 'Normal' #default PMT mode
     collectionTime = {'Normal':0.100,'Differential':0.100} #default counting rates
     okDeviceID = 'Pulser2'
-    okDeviceFile = 'photon_2015_06_10.bit'
+    #okDeviceFile = 'photon_2015_06_10.bit'
+    okDeviceFile = 'photon_2015_7_13.bit'
     lineTriggerLimits = (0, 15000)#values in microseconds 
     secondPMT = False
     DAC = False
@@ -60,17 +61,28 @@ class hardwareConfiguration(object):
                    'ttl_0':channelConfiguration(0, False, False, False, False), ## camera
                    'sMOT_PROBE':channelConfiguration(1, False, False, False, False),
                    'sMOT_PROBE_SPIN':channelConfiguration(2, False, False, False, False),
-                   'BIG_MOT_SH':channelConfiguration(3, False, True, False, False),
+                   'BIG_MOT_SH':channelConfiguration(3, False, False, True, True),
                    'sMOT_AO':channelConfiguration(4, False, False, False, False),
                    'BIG_MOT_AO':channelConfiguration(5, False, True, False, False),
+                   '405_ECDL':channelConfiguration(6, False, False, False, False),
+                   '405_Raman':channelConfiguration(7, False, False, False, False),
+                   '435_Raman':channelConfiguration(8, False, False, False, False),
+                   '266_SB':channelConfiguration(9, False, False, False, False),
+                   'SP1':channelConfiguration(10, False, False, False, False),
+                   'SP2':channelConfiguration(11, False, False, False, False),
                    'AdvanceDDS':channelConfiguration(18, False, False, False, False),
                    'ResetDDS':channelConfiguration(19, False, False, False, False),
                    'AO1':channelConfiguration(20, False, False, False, False), ### triggering for analog board
                    'AO2':channelConfiguration(21, False, False, False, False), ### triggering for analog board
+                   'B_x_sign':channelConfiguration(21, True, False, False, False), 
+                   'B_y_sign':channelConfiguration(22, True, True, False, False),
+                   'B_z_sign':channelConfiguration(23, True, True, False, False), 
+                   'dummy_clock':channelConfiguration(24, False, False, False, False), ## for plotting the clock purpose only 
                    
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
+<<<<<<< HEAD
                 'DDS_0':ddsConfiguration(    0,  (0.1,300.0),   (-37.0,17.0),  40.0,   7.0),
                  'DDS_1':ddsConfiguration(    1,  (0.1,300.0),   (-37.0,17.0),  40.0,   7.0),
 #                  'DDS_2':ddsConfiguration(    2,  (0.1,300.0),   (-37.0,17.0),  42.0,   -37.0),
@@ -90,6 +102,13 @@ class hardwareConfiguration(object):
 #                 '254_COMB':ddsConfiguration(    2,  (6.5,11.0),   (-37.0,5.0),  9.0,   -37.0),
 #                 'SMALL_MOT':ddsConfiguration(    3,  (145.0,155.0),   (-37.0,-8.0),  150.0,   -37.0),
 #                 'LATTICE':ddsConfiguration(    4,  (199.0,201.0),   (-37.0,-5.0),  200.0,   -37.0),
+=======
+                 'DDS_0':ddsConfiguration(    0,  (0.0,800.0),   (-48.0,6.0),  70.0,   -48.0),
+                'BIG_MOT':ddsConfiguration(    1,  (145.0,155.0),   (-48.0,-5.0),  150.0,   -6.0),
+                'Clock':ddsConfiguration(    2,  (180.0,220.0),   (-48.0,-3.0),  198.0,   -5.0),
+                'SMALL_MOT':ddsConfiguration(    3,  (145.0,155.0),   (-48.0,-8.0),  150.0,   -48.0),
+                'Clock_SB':ddsConfiguration(    4,  (140.0,200.0),   (-48.0,-5.0),  156.2634,   -48.0), ##-7.0
+>>>>>>> e000b64c3de51c14b8f20b035fcaea328934a214
 #                 'DDS_5':ddsConfiguration(    5,  (0.0,800.0),   (-63.0,-3.0),  95.0,   -63.0),
 #                 'DDS_6':ddsConfiguration(    6,  (0.0,800.0),   (-63.0,-3.0), 100.0,   -63.0),
 #                 'DDS_7':ddsConfiguration(    7,  (0.0,800.0),   (-63.0,-3.0), 105.0,   -63.0),

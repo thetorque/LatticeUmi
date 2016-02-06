@@ -2,6 +2,7 @@
   Bind failed with error code 0
 18:57:51 06/10/15
   Bind failed with error code 0
+<<<<<<< HEAD
 21:00:28 10/02/15
   Bind failed with error code 0
 11:18:13 10/07/15
@@ -32,3 +33,7 @@
   Bind failed with error code 0
 15:24:44 02/06/16
   Bind failed with error code 0
+=======
+13:26:31 07/01/15
+  Write failed with error code 10053
+>>>>>>> e000b64c3de51c14b8f20b035fcaea328934a214

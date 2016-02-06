@@ -1,1 +1,1 @@
-python C:\Users\Hg-team\Desktop\LatticeUmi\clients\script_scanner_gui\script_scanner_gui.py
+python C:\Users\Hg-team\Desktop\LatticeUmi\clients\MainGUI.py

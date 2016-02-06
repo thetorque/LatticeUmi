@@ -67,9 +67,9 @@ class NI_Analog_Server(LabradServer):
                              ('B_x', 2),
                              ('B_y', 3),
                              ('B_z',4),
-                             ('MOT',5),
-                             ('unused_1',6),
-                             ('unused_2',7),
+                             ('MOT_coil',5),
+                             ('Lattice',6),
+                             ('Clock',7),
                              ]: 
             chan = dac_channel(name, channel_number)
             chan.voltage = yield self.getRegValue(name)   # get value of each channel from the registry
@@ -100,6 +100,7 @@ class NI_Analog_Server(LabradServer):
         '''
         Get the values of the voltage from the registry
         '''
+
         yield self.client.registry.cd(['','Servers', 'DAC'], True)
         try:
             voltage = yield self.client.registry.get(name)
@@ -113,6 +114,7 @@ class NI_Analog_Server(LabradServer):
         '''
         Set voltage for a given channel name
         '''
+        print channel
         try:
             ### check of the name of channel is correct or not
             chan = self.d[channel]
@@ -165,32 +167,18 @@ class NI_Analog_Server(LabradServer):
     @setting(3, "Stop Voltage Pattern", returns = '')
     def stopVoltagePattern(self, c):
         '''
-        Generate the voltage pattern given the vertex of the time (first row) and voltages (subsequent rows). Trigger
-        indiciate if the voltage pattern will wait for a trigger or not. Sampling is the sample rate of this voltage pattern.
+        Stop the voltage pattern to release the thread. This will free up the NI analog server for the next pattern.
         '''
-        #print "array is", vertex_array
 
-        #waveform = yield self.do_set_voltagePattern(vertex_array, trigger, sampling)
         
         self.waveform.stop()
         
-        #self.notifyOtherListeners(c, (channel, voltage), self.onNewVoltage)
-            
-    #@inlineCallbacks
+
     def do_set_voltagePattern(self, vertex_array, trigger, sampling):
         '''
         This method takes the input voltage array and program the NI analog card via the api calling
         '''
-#         yield self.inCommunication.acquire()
-#         try:
-#             #yield deferToThread(self.api_dac.setVoltagePattern, vertex_array, trigger,sampling)
-#             #waveform = yield self.api_dac.setVoltagePattern(vertex_array, trigger, sampling)
-#             
-#         except Exception as e:
-#             raise e
-#         finally:
-#             self.inCommunication.release()
-            
+ 
         waveform = self.api_dac.setVoltagePattern(vertex_array, trigger, sampling)    
         return waveform
     
@@ -212,13 +200,19 @@ class NI_Analog_Server(LabradServer):
     @inlineCallbacks
     def stopServer(self):
         '''save the latest voltage information into registry'''
-        try:
-            yield self.client.registry.cd(['','Servers', 'DAC'], True)
-            for name,channel in self.d.iteritems():
-                yield self.client.registry.set(name, channel.voltage)
-        except AttributeError:
-            #if dictionary doesn't exist yet (i.e bad identification error), do nothing
-            pass
+        ## set zero all channels when closing the server#
+        for name,channel in self.d.iteritems():
+            self.setVoltage(1, name, WithUnit(0.0,'V'))
+
+#         try:
+#             #yield self.client.registry.cd(['','Servers', 'DAC'], True)
+#             print "here"
+#             for name,channel in self.d.iteritems():
+#                 yield self.client.registry.set(name, channel.voltage)
+#             print "lala"
+#         except AttributeError:
+#             #if dictionary doesn't exist yet (i.e bad identification error), do nothing
+#             pass
 
 if __name__ == '__main__':
     from labrad import util

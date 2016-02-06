@@ -1,0 +1,1 @@
+python C:\Users\Hg-team\Desktop\LatticeUmi\clients\AndorVideo_client.py

@@ -251,7 +251,10 @@ class scan_experiment_1D(experiment):
             result = self.script.run(cxn, context)
             if self.script.should_stop: return
             if result is not None:
-                cxn.data_vault.add([scan_value[self.units], result], context = context)
+                if isinstance(result,tuple):  ## add functionality if a tuple is returned from run
+                    cxn.data_vault.add([scan_value[self.units], result[0]], context = context)
+                else:
+                    cxn.data_vault.add([scan_value[self.units], result], context = context)
             self.update_progress(i)
     
     def navigate_data_vault(self, cxn, context):
@@ -259,7 +262,7 @@ class scan_experiment_1D(experiment):
         local_time = localtime()
         dataset_name = self.name + strftime("%Y%b%d_%H%M_%S",local_time)
         directory = ['','ScriptScanner']
-        directory.extend([strftime("%Y%b%d",local_time), strftime("%H%M_%S", local_time)])
+        directory.extend([strftime("%Y%b%d",local_time), strftime("%H%M_%S", local_time)+self.name])
         dv.cd(directory, True, context = context)
         dv.new(dataset_name, [('Iteration', 'Arb')], [(self.script.name, 'Arb', 'Arb')], context = context)
         dv.add_parameter('plotLive',True, context = context)

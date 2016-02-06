@@ -1024,7 +1024,13 @@ class DataVault( LabradServer ):
         Returns the path and name for this dataset.
         """
         if len( dtype ) != 1 or dtype not in 'fs': raise TypeError( "dtype keyword only accepts 'f' or 's'" )
+        ##
+        #print c
+        ##
         session = self.getSession( c )
+        ##
+        #print session
+        ##
         dataset = session.newDataset( name or 'untitled', independents, dependents, dtype )
         self.onNewDatasetDir((dataset.name, session.path), self.root.listeners) ####MR
         c['dataset'] = dataset.name # not the same as name; has number prefixed
@@ -1079,6 +1085,7 @@ class DataVault( LabradServer ):
         to the total number of variables in the data set
         (independents + dependents).
         """
+        #print c
         dataset = self.getDataset( c )
         if not c['writing']:
             raise ReadOnlyError()
