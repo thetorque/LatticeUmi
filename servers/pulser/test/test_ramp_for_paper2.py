@@ -22,10 +22,10 @@ amp2 = WithUnit(-40,'dBm')
 no_amp_ramp = WithUnit(0,'dB')
 
 
-DDS = [('DDS_0', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(0.1, 'MHz'), WithUnit(-20,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp),
-       ('DDS_0', WithUnit(200.0, 'ms'), WithUnit(200.0, 'ms'), WithUnit(0.1, 'MHz'), WithUnit(-63,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),WithUnit(20,'dB')),
-       ('DDS_1', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(0.1, 'MHz'), WithUnit(-20,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp),
-       ('DDS_1', WithUnit(200.0, 'ms'), WithUnit(200.0, 'ms'), WithUnit(0.1, 'MHz'), WithUnit(-63,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp)
+DDS = [('DDS_0', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(0.1, 'MHz'), WithUnit(0,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp),
+       ('DDS_0', WithUnit(200.0, 'ms'), WithUnit(200.0, 'ms'), WithUnit(0.1, 'MHz'), WithUnit(-37,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),WithUnit(20,'dB')),
+       ('DDS_1', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(0.1, 'MHz'), WithUnit(0,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp),
+       ('DDS_1', WithUnit(200.0, 'ms'), WithUnit(200.0, 'ms'), WithUnit(0.1, 'MHz'), WithUnit(-37,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp)
        ]
 
 ## program DDS

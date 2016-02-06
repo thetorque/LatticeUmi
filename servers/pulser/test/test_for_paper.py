@@ -18,11 +18,11 @@ p.add_ttl_pulse('ttl_0',WithUnit(400,'ms'),WithUnit(100,'ms'))
 ## add a list of DDS ##
 
 amp1 = WithUnit(-30,'dBm')
-amp2 = WithUnit(-40,'dBm')
+amp2 = WithUnit(-36,'dBm')
 no_amp_ramp = WithUnit(0,'dB')
 
 
-DDS = [('DDS_0', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(50.0, 'MHz'), WithUnit(-50,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp),
+DDS = [('DDS_0', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(50.0, 'MHz'), WithUnit(-36,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp),
        ('DDS_0', WithUnit(200.0, 'ms'), WithUnit(100.0, 'ms'), WithUnit(20.0, 'MHz'), WithUnit(-20,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp)
        ]
 

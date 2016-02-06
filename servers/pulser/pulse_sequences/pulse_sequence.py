@@ -90,6 +90,7 @@ class pulse_sequence(object):
 		replacement.update(self.replace)
 		replacement.update(replacement_dict)
 		seq = sequence(replacement, start = position)
+		#print seq
 		self._dds_pulses.extend( seq._dds_pulses )
 		#self._ttl_pulses.extend( seq._ttl_pulses )
 		self.end = max(self.end, seq.end)
