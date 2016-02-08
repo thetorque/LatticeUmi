@@ -22,8 +22,8 @@ amp2 = WithUnit(-36,'dBm')
 no_amp_ramp = WithUnit(0,'dB')
 
 
-DDS = [('DDS_0', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(50.0, 'MHz'), WithUnit(-36,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp),
-       ('DDS_0', WithUnit(200.0, 'ms'), WithUnit(100.0, 'ms'), WithUnit(20.0, 'MHz'), WithUnit(-20,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp)
+DDS = [('DDS_2', WithUnit(0.1, 'ms'), WithUnit(199.9, 'ms'), WithUnit(50.0, 'MHz'), WithUnit(-10,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp),
+       ('DDS_2', WithUnit(200.0, 'ms'), WithUnit(100.0, 'ms'), WithUnit(20.0, 'MHz'), WithUnit(-10,'dBm'), WithUnit(0.0,'deg'),WithUnit(0.0, 'MHz'),no_amp_ramp)
        ]
 
 ## program DDS
