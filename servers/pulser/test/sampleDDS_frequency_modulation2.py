@@ -1,3 +1,8 @@
+
+'''
+test frequency modulation of a single DDS channel to try to create a rectangle frequency window.
+'''
+
 from servers.pulser.pulse_sequences.pulse_sequence import pulse_sequence
 from labrad.units import WithUnit
 from treedict import TreeDict
@@ -25,13 +30,15 @@ no_freq_ramp = WithUnit(0.0, 'MHz')
 no_phase = WithUnit(0.0,'deg')
 
 time_step = 250.0
-total_time = 1.0 #in ms
+total_time = 100.0 #in ms
 
 DDS = [('DDS_0', WithUnit(0.001, 'ms'), WithUnit(0.001, 'ms'), WithUnit(60.0, 'MHz'), amp1, no_phase,no_freq_ramp,no_amp_ramp)]
 
 for j in range(int(time_step)):
     i = j+1
-    local_DDS = ('DDS_0', WithUnit(float(i)*total_time/time_step, 'ms'), WithUnit(total_time/time_step, 'ms'), WithUnit(60.0+1.0*np.sin(2*np.pi*float(i)/time_step), 'MHz'), amp1, no_phase,no_freq_ramp,no_amp_ramp)
+    freq = 60.0+10.0*np.random.rand()
+    print freq
+    local_DDS = ('DDS_0', WithUnit(float(i)*total_time/time_step, 'ms'), WithUnit(total_time/time_step, 'ms'), WithUnit(freq, 'MHz'), amp1, no_phase,no_freq_ramp,no_amp_ramp)
     DDS.append(local_DDS)
     print i
 

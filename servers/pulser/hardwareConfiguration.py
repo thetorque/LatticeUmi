@@ -86,14 +86,14 @@ class hardwareConfiguration(object):
                 }
     #address, allowedfreqrange, allowedamplrange, frequency, amplitude, **args):
     ddsDict =   {
-                'Moving Lattice':ddsConfiguration(    0,  (0.1,300.0),   (-37.0,17.0),  40.0,   7.0),
-                 'DDS_1':ddsConfiguration(    1,  (0.1,300.0),   (-37.0,17.0),  40.0,   7.0),
-                 'DDS_2':ddsConfiguration(    2,  (0.1,300.0),   (-37.0,17.0),  41.0,   7.0),
-#                  'DDS_3':ddsConfiguration(    3,  (0.1,300.0),   (-37.0,17.0),  44.0,   -37.0),
-#                  'DDS_4':ddsConfiguration(    4,  (40.0,300.0),   (-37.0,17.0),  46.0,   -37.0),
-#                  'DDS_5':ddsConfiguration(    5,  (40.0,300.0),   (-37.0,17.0),  48.0,   -37.0),
-#                 'DDS_6':ddsConfiguration(    6,  (40.0,300.0),   (-37.0,17.0),  56.0,   -36.0),
-#                 'DDS_7':ddsConfiguration(    7,  (40.0,300.0),   (-37.0,17.0),  57.0,   -36.0),
+                'DDS_0':ddsConfiguration(    0,  (0.1,41.0),   (-37.0,-10.0),  40.0,   -36.0),
+#                  'DDS_1':ddsConfiguration(    1,  (0.1,300.0),   (-37.0,17.0),  41.0,   10.0),
+#                  'DDS_2':ddsConfiguration(    2,  (0.1,300.0),   (-37.0,17.0),  42.0,   10.0),
+#                  'DDS_3':ddsConfiguration(    3,  (0.1,300.0),   (-37.0,17.0),  43.0,   10.0),
+#                  'DDS_4':ddsConfiguration(    4,  (40.0,300.0),   (-37.0,17.0),  44.0,   10.0),
+#                  'DDS_5':ddsConfiguration(    5,  (40.0,300.0),   (-37.0,17.0),  45.0,   10.0),
+#                 'DDS_6':ddsConfiguration(    6,  (40.0,300.0),   (-37.0,17.0),  46.0,   10.0),
+#                'Moving Lattice':ddsConfiguration(    7,  (40.0,300.0),   (-37.0,17.0),  47.0,   0.0),
 #                 'DDS_8':ddsConfiguration(    8,  (40.0,300.0),   (-37.0,17.0),  58.0,   -36.0),
 #                 'DDS_9':ddsConfiguration(    9,  (40.0,300.0),   (-37.0,17.0),  59.0,   -36.0),
 #                'DDS_10':ddsConfiguration(    10,  (0.0,200.0),   (-37.0,0),  120.0,   -37.0),

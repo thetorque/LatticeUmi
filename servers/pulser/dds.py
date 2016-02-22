@@ -5,6 +5,7 @@ import array
 from labrad.units import WithUnit
 from errors import dds_access_locked
 import numpy as np
+import time
 
 class DDS(LabradServer):
     
@@ -15,7 +16,11 @@ class DDS(LabradServer):
     @inlineCallbacks
     def initializeDDS(self):
         self.ddsLock = False
+        time.sleep(0.1)
         self.api.initializeDDS()
+        time.sleep(0.1)
+        self.api.initializeDDS()
+        
         for name,channel in self.ddsDict.iteritems():
             channel.name = name
             freq,ampl = (channel.frequency, channel.amplitude)
